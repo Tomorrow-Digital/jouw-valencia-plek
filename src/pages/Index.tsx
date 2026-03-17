@@ -7,10 +7,10 @@ import {
 } from "date-fns";
 import { nl, enUS } from "date-fns/locale";
 import {
-  Bath, ChefHat, Snowflake, Wifi, Bed, DoorOpen, Car, WashingMachine,
-  Shirt, Wind, TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
+  Bath, ChefHat, Wifi, Bed, DoorOpen, Car, WashingMachine,
+  TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
   Star, Mail, Phone, Instagram, MessageCircle, Clock, BanIcon, PartyPopper,
-  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane, Check, Send
+  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane, Check, Send, Sun
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WhatsAppContact } from "@/components/WhatsAppContact"; 
@@ -70,7 +70,7 @@ const getTranslations = (minimumStay: number) => ({
     },
     space: {
       title: "De Ruimte",
-      room: { title: "De Kamer", desc: "Wakker worden met Spaans licht door de luiken. Tweepersoonsbed, airco, en precies de juiste stilte." },
+      room: { title: "De Kamer", desc: "Wakker worden met Spaans licht door de luiken. Tweepersoonsbed en precies de juiste stilte." },
       bathroom: { title: "De Badkamer", desc: "Inloopdouche, verse handdoeken en een ochtend die helemaal van jou is." },
       kitchen: { title: "De Buitenkeuken", desc: "Koken onder het terras met uitzicht op het zwembad. Gasfornuis, koelkast en alles bij de hand." },
       vibe: "Dit is geen hotel en geen Airbnb-fabriek. Dit is een plek met ziel. Waar je 's ochtends wakker wordt met zonlicht door de luiken, koffie zet in je eigen keuken en de dag begint op jouw tempo.",
@@ -79,8 +79,8 @@ const getTranslations = (minimumStay: number) => ({
     amenities: {
       title: "Voorzieningen",
       intro: "Alles wat je nodig hebt. Niets wat je niet nodig hebt.",
-      main: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Airconditioning", "Gratis WiFi", "Eigen ingang", "Parkeerplaats op het terrein", "Buitenterras met tuinmeubelen"],
-      practical: ["Verse handdoeken & beddengoed", "Wasmachine (gedeeld)", "Strijkijzer", "Haardroger"],
+      main: ["Privé badkamer", "Buitenkeuken met koelkast en fornuis", "Zwembad", "Ligbedden", "Gratis WiFi", "Gratis parkeren", "Eigen ingang", "Buitenterras met tuinmeubelen", "Kingsize bed", "Hangmat"],
+      practical: ["Handdoeken & beddengoed", "Wasmachine (gedeeld)"],
       localTips: { title: "Lokale tips van Charmaine", subtitle: "Een persoonlijke gids met de beste restaurants, markten, stranden en verborgen plekjes in de regio. Je krijgt hem bij aankomst." },
     },
     location: {
@@ -181,7 +181,7 @@ const getTranslations = (minimumStay: number) => ({
     },
     space: {
       title: "The Space",
-      room: { title: "The Room", desc: "Wake up to Spanish light through the shutters. Double bed, airco, and just the right silence." },
+      room: { title: "The Room", desc: "Wake up to Spanish light through the shutters. Double bed and just the right silence." },
       bathroom: { title: "The Bathroom", desc: "Walk-in shower, fresh towels and a morning that's all yours." },
       kitchen: { title: "The Outdoor Kitchen", desc: "Cooking under the terrace with a view of the pool. Gas stove, fridge and everything at hand." },
       vibe: "This isn't a hotel and not an Airbnb factory. This is a place with soul. Where you wake up with sunlight through the shutters, make coffee in your own kitchen and start the day at your own pace.",
@@ -190,8 +190,8 @@ const getTranslations = (minimumStay: number) => ({
     amenities: {
       title: "Amenities",
       intro: "Everything you need. Nothing you don't.",
-      main: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Air conditioning", "Free WiFi", "Private entrance", "On-site parking", "Outdoor terrace with garden furniture"],
-      practical: ["Fresh towels & linens", "Washing machine (shared)", "Iron", "Hair dryer"],
+      main: ["Private bathroom", "Outdoor kitchen with fridge and stove", "Swimming pool", "Sun loungers", "Free WiFi", "Free parking", "Private entrance", "Outdoor terrace with garden furniture", "King-size bed", "Hammock"],
+      practical: ["Towels & linens", "Washing machine (shared)"],
       localTips: { title: "Local tips from Charmaine", subtitle: "A personal guide with the best restaurants, markets, beaches and hidden gems in the area. You'll receive it upon arrival." },
     },
     location: {
@@ -411,8 +411,8 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
 
-const mainAmenityIcons = [Bath, ChefHat, Snowflake, Wifi, DoorOpen, Car, TreePalm];
-const practicalAmenityIcons = [Bed, WashingMachine, Shirt, Wind];
+const mainAmenityIcons = [Bath, ChefHat, Waves, Sun, Wifi, Car, DoorOpen, TreePalm, Bed, Moon];
+const practicalAmenityIcons = [Bed, WashingMachine];
 
 const ruleIcons: Record<string, React.ElementType> = {
   clock: Clock, ban: BanIcon, party: PartyPopper, moon: Moon, paw: PawPrint,
@@ -916,30 +916,16 @@ export default function Index() {
             <p className="text-center font-serif italic text-lg text-muted-foreground mb-12">{t.amenities.intro}</p>
           </FadeInSection>
 
-          {/* Main amenities */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {t.amenities.main.map((item, i) => {
-              const Icon = mainAmenityIcons[i] || Bath;
+          {/* All amenities */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            {[...t.amenities.main, ...t.amenities.practical].map((item, i) => {
+              const allIcons = [...mainAmenityIcons, ...practicalAmenityIcons];
+              const Icon = allIcons[i] || Bath;
               return (
                 <FadeInSection key={i}>
-                  <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm h-full">
                     <Icon size={22} className="text-primary shrink-0" />
                     <span className="text-sm font-medium">{item}</span>
-                  </div>
-                </FadeInSection>
-              );
-            })}
-          </div>
-
-          {/* Practical amenities — subtler */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
-            {t.amenities.practical.map((item, i) => {
-              const Icon = practicalAmenityIcons[i] || Bed;
-              return (
-                <FadeInSection key={i}>
-                  <div className="flex items-center gap-3 rounded-lg p-3 border border-border/50">
-                    <Icon size={16} className="text-muted-foreground shrink-0" />
-                    <span className="text-sm text-muted-foreground">{item}</span>
                   </div>
                 </FadeInSection>
               );
@@ -1025,19 +1011,6 @@ export default function Index() {
         <div className="max-w-5xl mx-auto">
           <FadeInSection>
             <h2 className="font-serif text-3xl sm:text-4xl text-center mb-4">{t.pricing.title}</h2>
-            {/* From-price indicator */}
-            <p className="text-center text-lg mb-2">
-              <span className="font-semibold">Vanaf €{pricingConfig.defaultPricePerNight}</span>{" "}
-              <span className="text-muted-foreground">{t.pricing.fromPrice.replace("{min}", String(pricingConfig.minimumStay))}</span>
-            </p>
-            {/* Season price summary */}
-            {seasonPriceSummary && seasonPriceSummary.seasons.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-6">
-                {seasonPriceSummary.seasons.map((s, i) => (
-                  <span key={i}>{lang === "nl" ? s.label : s.labelEn}: €{s.pricePerNight}/{lang === "nl" ? "nacht" : "night"}</span>
-                ))}
-              </div>
-            )}
             <p className="text-center text-muted-foreground mb-10">{t.pricing.selectDates}</p>
           </FadeInSection>
 
