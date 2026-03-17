@@ -137,7 +137,7 @@ const getTranslations = (minimumStay: number) => ({
   },
   en: {
     nav: { space: "The Space", amenities: "Amenities", location: "Location", pricing: "Pricing & Booking", reviews: "Reviews", contact: "Contact" },
-    hero: { headline1: "Tapas in the city.", headline2: "And relaxing by the pool.", subtitle: "Private guesthouse with garden and pool, fifteen minutes from Valencia.", cta: "Check availability" },
+    hero: { headline1: "Tapas in the city.", headline2: "Relaxing by the pool.", subtitle: "Private guesthouse with garden and pool, fifteen minutes from Valencia.", cta: "Check availability" },
     space: {
       title: "The Space",
       room: { title: "The Room", desc: "A quiet, bright bedroom with comfortable double bed, air conditioning and authentic Spanish atmosphere." },
