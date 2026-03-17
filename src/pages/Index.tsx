@@ -12,39 +12,33 @@ import {
   Star, Mail, Phone, Instagram, MessageCircle, Clock, BanIcon, PartyPopper,
   Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
-import heroImg from "@/assets/hero.jpg";
-import roomImg from "@/assets/room.jpg";
-import bathroomImg from "@/assets/bathroom.jpg";
-import kitchenImg from "@/assets/kitchen.jpg";
-import hostImg from "@/assets/host.jpg";
+// Fallback images
+import heroImgFallback from "@/assets/hero.jpg";
+import roomImgFallback from "@/assets/room.jpg";
+import bathroomImgFallback from "@/assets/bathroom.jpg";
+import kitchenImgFallback from "@/assets/kitchen.jpg";
+import hostImgFallback from "@/assets/host.jpg";
 
 // ═══════════════════════════════════════════════════════════════
-// CONFIGURATION — Edit these objects to update site content
+// TYPES
 // ═══════════════════════════════════════════════════════════════
 
-const PRICING_CONFIG = {
-  defaultPricePerNight: 65,
-  cleaningFee: 35,
-  minimumStay: 2,
-  maximumStay: 28,
-  seasonalPricing: [
-    { label: "Laagseizoen", labelEn: "Low season", startDate: "2025-11-01", endDate: "2026-02-28", pricePerNight: 55 },
-    { label: "Tussenseizoen", labelEn: "Mid season", startDate: "2026-03-01", endDate: "2026-05-31", pricePerNight: 65 },
-    { label: "Hoogseizoen", labelEn: "High season", startDate: "2026-06-01", endDate: "2026-09-30", pricePerNight: 85 },
-    { label: "Tussenseizoen", labelEn: "Mid season", startDate: "2026-10-01", endDate: "2026-10-31", pricePerNight: 65 },
-  ],
-  customPricing: [
-    { startDate: "2026-03-15", endDate: "2026-03-22", pricePerNight: 95, label: "Fallas festival" },
-  ],
-  blockedDates: [
-    { startDate: "2026-01-10", endDate: "2026-01-15", reason: "Privé" },
-  ],
-  discounts: {
-    weeklyDiscount: 10,
-    monthlyDiscount: 20,
-  },
-};
+interface PricingConfig {
+  defaultPricePerNight: number;
+  cleaningFee: number;
+  minimumStay: number;
+  maximumStay: number;
+  seasonalPricing: { label: string; labelEn: string; startDate: string; endDate: string; pricePerNight: number }[];
+  customPricing: { startDate: string; endDate: string; pricePerNight: number; label: string }[];
+  blockedDates: { startDate: string; endDate: string; reason: string }[];
+  discounts: { weeklyDiscount: number; monthlyDiscount: number };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATIC CONFIG — Reviews & translations (not in DB)
+// ═══════════════════════════════════════════════════════════════
 
 const REVIEWS = [
   { name: "Sophie", country: "🇳🇱", date: "2025-09", rating: 5, nl: "Wat een heerlijke plek! De buitenkeuken is fantastisch en de kamer is prachtig ingericht. We komen zeker terug.", en: "What a wonderful place! The outdoor kitchen is fantastic and the room is beautifully decorated. We'll definitely be back." },
@@ -53,7 +47,7 @@ const REVIEWS = [
   { name: "Emma", country: "🇬🇧", date: "2025-10", rating: 5, nl: "Absoluut de mooiste plek waar we ooit gelogeerd hebben. Persoonlijk, warm en met zoveel aandacht voor detail.", en: "Absolutely the most beautiful place we've ever stayed. Personal, warm and with so much attention to detail." },
 ];
 
-const translations = {
+const getTranslations = (minimumStay: number) => ({
   nl: {
     nav: { space: "De Ruimte", amenities: "Voorzieningen", location: "Omgeving", pricing: "Prijzen & Boeken", reviews: "Reviews", contact: "Contact" },
     hero: { headline: "Jouw eigen plek in Valencia", subtitle: "Eén kamer. Eén keuken. Helemaal van jou.", cta: "Bekijk beschikbaarheid" },
@@ -87,7 +81,7 @@ const translations = {
       selectDates: "Selecteer je data",
       selectCheckIn: "Kies een incheckdatum",
       selectCheckOut: "Kies een uitcheckdatum",
-      minStayWarning: `Minimaal verblijf is ${PRICING_CONFIG.minimumStay} nachten`,
+      minStayWarning: `Minimaal verblijf is ${minimumStay} nachten`,
       season: "Seizoen",
       period: "Periode",
       pricePerNight: "Prijs per nacht",
@@ -117,7 +111,7 @@ const translations = {
         { q: "Zijn huisdieren toegestaan?", a: "In overleg. Neem contact met ons op om de mogelijkheden te bespreken." },
         { q: "Hoe bereik ik het centrum van Valencia?", a: "Met de auto ben je er in circa 25 minuten. Met het openbaar vervoer (metro) in ongeveer 35 minuten." },
         { q: "Kan ik de keuken volledig gebruiken?", a: "Absoluut! De buitenkeuken is volledig privé en uitgerust met gasfornuis, koelkast en gootsteen." },
-        { q: "Is er een minimaal verblijf?", a: `Ja, het minimale verblijf is ${PRICING_CONFIG.minimumStay} nachten.` },
+        { q: "Is er een minimaal verblijf?", a: `Ja, het minimale verblijf is ${minimumStay} nachten.` },
         { q: "Hoe werkt betaling?", a: "Na bevestiging van je boeking ontvang je een betaalverzoek. We accepteren bankoverschrijving en de meeste gangbare betaalmethoden." },
         { q: "Wat als ik moet annuleren?", a: "Tot 14 dagen voor aankomst kun je kosteloos annuleren. Daarna wordt 50% van het totaalbedrag in rekening gebracht." },
       ],
@@ -174,7 +168,7 @@ const translations = {
       selectDates: "Select your dates",
       selectCheckIn: "Choose a check-in date",
       selectCheckOut: "Choose a check-out date",
-      minStayWarning: `Minimum stay is ${PRICING_CONFIG.minimumStay} nights`,
+      minStayWarning: `Minimum stay is ${minimumStay} nights`,
       season: "Season",
       period: "Period",
       pricePerNight: "Price per night",
@@ -204,7 +198,7 @@ const translations = {
         { q: "Are pets allowed?", a: "By arrangement. Contact us to discuss options." },
         { q: "How do I reach Valencia city center?", a: "By car in about 25 minutes. By public transport (metro) in approximately 35 minutes." },
         { q: "Can I fully use the kitchen?", a: "Absolutely! The outdoor kitchen is fully private with gas stove, fridge and sink." },
-        { q: "Is there a minimum stay?", a: `Yes, the minimum stay is ${PRICING_CONFIG.minimumStay} nights.` },
+        { q: "Is there a minimum stay?", a: `Yes, the minimum stay is ${minimumStay} nights.` },
         { q: "How does payment work?", a: "After confirming your booking, you'll receive a payment request. We accept bank transfer and most common payment methods." },
         { q: "What if I need to cancel?", a: "Free cancellation up to 14 days before arrival. After that, 50% of the total amount will be charged." },
       ],
@@ -228,7 +222,7 @@ const translations = {
       footer: "Made with ♥ in Valencia",
     },
   },
-};
+});
 
 type Lang = "nl" | "en";
 
@@ -242,33 +236,32 @@ const ruleIcons: Record<string, React.ElementType> = {
   clock: Clock, ban: BanIcon, party: PartyPopper, moon: Moon, paw: PawPrint,
 };
 
-function isDateBlocked(date: Date): boolean {
-  return PRICING_CONFIG.blockedDates.some(b =>
+function isDateBlockedWith(date: Date, blockedDates: PricingConfig["blockedDates"]): boolean {
+  return blockedDates.some(b =>
     isWithinInterval(date, { start: parseISO(b.startDate), end: parseISO(b.endDate) })
   );
 }
 
-function getPriceForDate(date: Date): number {
-  for (const cp of PRICING_CONFIG.customPricing) {
+function getPriceForDateWith(date: Date, config: PricingConfig): number {
+  for (const cp of config.customPricing) {
     if (isWithinInterval(date, { start: parseISO(cp.startDate), end: parseISO(cp.endDate) }))
       return cp.pricePerNight;
   }
-  for (const sp of PRICING_CONFIG.seasonalPricing) {
+  for (const sp of config.seasonalPricing) {
     if (isWithinInterval(date, { start: parseISO(sp.startDate), end: parseISO(sp.endDate) }))
       return sp.pricePerNight;
   }
-  return PRICING_CONFIG.defaultPricePerNight;
+  return config.defaultPricePerNight;
 }
 
-function calculatePricing(checkIn: Date, checkOut: Date) {
+function calculatePricingWith(checkIn: Date, checkOut: Date, config: PricingConfig) {
   const nights = differenceInCalendarDays(checkOut, checkIn);
   const nightPrices: { date: Date; price: number }[] = [];
   for (let i = 0; i < nights; i++) {
     const d = addDays(checkIn, i);
-    nightPrices.push({ date: d, price: getPriceForDate(d) });
+    nightPrices.push({ date: d, price: getPriceForDateWith(d, config) });
   }
 
-  // Group consecutive nights by price
   const groups: { price: number; count: number }[] = [];
   for (const np of nightPrices) {
     if (groups.length > 0 && groups[groups.length - 1].price === np.price) {
@@ -281,18 +274,18 @@ function calculatePricing(checkIn: Date, checkOut: Date) {
   const subtotal = nightPrices.reduce((s, np) => s + np.price, 0);
   let discountPct = 0;
   let discountLabel = "";
-  if (nights >= 21) { discountPct = PRICING_CONFIG.discounts.monthlyDiscount; discountLabel = "monthly"; }
-  else if (nights >= 7) { discountPct = PRICING_CONFIG.discounts.weeklyDiscount; discountLabel = "weekly"; }
+  if (nights >= 21) { discountPct = config.discounts.monthlyDiscount; discountLabel = "monthly"; }
+  else if (nights >= 7) { discountPct = config.discounts.weeklyDiscount; discountLabel = "weekly"; }
 
   const discountAmount = Math.round(subtotal * discountPct / 100);
-  const total = subtotal - discountAmount + PRICING_CONFIG.cleaningFee;
+  const total = subtotal - discountAmount + config.cleaningFee;
 
-  return { nights, groups, subtotal, discountPct, discountLabel, discountAmount, cleaningFee: PRICING_CONFIG.cleaningFee, total };
+  return { nights, groups, subtotal, discountPct, discountLabel, discountAmount, cleaningFee: config.cleaningFee, total };
 }
 
-function hasBlockedDateInRange(start: Date, end: Date): boolean {
+function hasBlockedDateInRangeWith(start: Date, end: Date, blockedDates: PricingConfig["blockedDates"]): boolean {
   const days = eachDayOfInterval({ start, end: addDays(end, -1) });
-  return days.some(isDateBlocked);
+  return days.some(d => isDateBlockedWith(d, blockedDates));
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -331,7 +324,90 @@ export default function Index() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
 
-  const t = translations[lang];
+  // ═══ DATABASE STATE ═══
+  const [pricingConfig, setPricingConfig] = useState<PricingConfig>({
+    defaultPricePerNight: 65, cleaningFee: 35, minimumStay: 2, maximumStay: 28,
+    seasonalPricing: [], customPricing: [], blockedDates: [],
+    discounts: { weeklyDiscount: 10, monthlyDiscount: 20 },
+  });
+  const [photos, setPhotos] = useState<Record<string, { primary: string; gallery: string[] }>>({});
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  // Fetch all data from DB
+  useEffect(() => {
+    async function fetchData() {
+      const [
+        { data: cfg },
+        { data: seasonal },
+        { data: custom },
+        { data: blocked },
+        { data: sitePhotos },
+      ] = await Promise.all([
+        supabase.from("pricing_config").select("*").limit(1).single(),
+        supabase.from("seasonal_pricing").select("*").order("start_date"),
+        supabase.from("custom_pricing").select("*").order("start_date"),
+        supabase.from("blocked_dates").select("*").order("start_date"),
+        supabase.from("site_photos").select("*").order("sort_order"),
+      ]);
+
+      if (cfg) {
+        setPricingConfig({
+          defaultPricePerNight: cfg.default_price_per_night,
+          cleaningFee: cfg.cleaning_fee,
+          minimumStay: cfg.minimum_stay,
+          maximumStay: cfg.maximum_stay,
+          seasonalPricing: (seasonal || []).map(s => ({
+            label: s.label, labelEn: s.label_en, startDate: s.start_date, endDate: s.end_date, pricePerNight: s.price_per_night,
+          })),
+          customPricing: (custom || []).map(c => ({
+            label: c.label, startDate: c.start_date, endDate: c.end_date, pricePerNight: c.price_per_night,
+          })),
+          blockedDates: (blocked || []).map(b => ({
+            startDate: b.start_date, endDate: b.end_date, reason: b.reason || "",
+          })),
+          discounts: { weeklyDiscount: cfg.weekly_discount, monthlyDiscount: cfg.monthly_discount },
+        });
+      }
+
+      // Process photos
+      if (sitePhotos && sitePhotos.length > 0) {
+        const photoMap: Record<string, { primary: string; gallery: string[] }> = {};
+        for (const p of sitePhotos) {
+          if (!photoMap[p.category]) photoMap[p.category] = { primary: "", gallery: [] };
+          photoMap[p.category].gallery.push(p.url);
+          if (p.is_primary) photoMap[p.category].primary = p.url;
+        }
+        // If no primary set, use first
+        for (const cat of Object.keys(photoMap)) {
+          if (!photoMap[cat].primary && photoMap[cat].gallery.length > 0) {
+            photoMap[cat].primary = photoMap[cat].gallery[0];
+          }
+        }
+        setPhotos(photoMap);
+      }
+
+      setDataLoaded(true);
+    }
+    fetchData();
+  }, []);
+
+  // Get image for category (DB or fallback)
+  const getImg = useCallback((category: string, fallback: string) => {
+    return photos[category]?.primary || fallback;
+  }, [photos]);
+
+  const getGallery = useCallback((category: string, fallback: string) => {
+    if (photos[category]?.gallery.length > 0) return photos[category].gallery;
+    return [fallback];
+  }, [photos]);
+
+  const heroImg = getImg("hero", heroImgFallback);
+  const roomImg = getImg("room", roomImgFallback);
+  const bathroomImg = getImg("bathroom", bathroomImgFallback);
+  const kitchenImg = getImg("kitchen", kitchenImgFallback);
+  const hostImg = getImg("host", hostImgFallback);
+
+  const t = useMemo(() => getTranslations(pricingConfig.minimumStay)[lang], [lang, pricingConfig.minimumStay]);
   const dateFnsLocale = lang === "nl" ? nl : enUS;
 
   // Scroll listener for nav
@@ -360,7 +436,7 @@ export default function Index() {
 
   // Calendar date click
   const handleDateClick = useCallback((date: Date) => {
-    if (isDateBlocked(date)) return;
+    if (isDateBlockedWith(date, pricingConfig.blockedDates)) return;
     if (isBefore(startOfDay(date), startOfDay(new Date()))) return;
 
     if (!checkIn || (checkIn && checkOut)) {
@@ -373,7 +449,7 @@ export default function Index() {
       } else if (isSameDay(date, checkIn)) {
         return;
       } else {
-        if (hasBlockedDateInRange(checkIn, date)) {
+        if (hasBlockedDateInRangeWith(checkIn, date, pricingConfig.blockedDates)) {
           setCheckIn(date);
           setCheckOut(null);
         } else {
@@ -381,15 +457,15 @@ export default function Index() {
         }
       }
     }
-  }, [checkIn, checkOut]);
+  }, [checkIn, checkOut, pricingConfig.blockedDates]);
 
   const pricing = useMemo(() => {
-    if (checkIn && checkOut) return calculatePricing(checkIn, checkOut);
+    if (checkIn && checkOut) return calculatePricingWith(checkIn, checkOut, pricingConfig);
     return null;
-  }, [checkIn, checkOut]);
+  }, [checkIn, checkOut, pricingConfig]);
 
   const nightCount = pricing?.nights ?? 0;
-  const belowMinimum = nightCount > 0 && nightCount < PRICING_CONFIG.minimumStay;
+  const belowMinimum = nightCount > 0 && nightCount < pricingConfig.minimumStay;
 
   // Form submit
   const handleBookingSubmit = (e: React.FormEvent) => {
@@ -413,7 +489,6 @@ export default function Index() {
     setBookingSubmitted(true);
   };
 
-  // Sections config for nav
   const navSections = [
     { id: "space", label: t.nav.space },
     { id: "amenities", label: t.nav.amenities },
@@ -424,9 +499,9 @@ export default function Index() {
   ];
 
   const spaceCards = [
-    { img: roomImg, ...t.space.room, gallery: [roomImg, heroImg] },
-    { img: bathroomImg, ...t.space.bathroom, gallery: [bathroomImg, heroImg] },
-    { img: kitchenImg, ...t.space.kitchen, gallery: [kitchenImg, heroImg] },
+    { img: roomImg, ...t.space.room, gallery: getGallery("room", roomImgFallback) },
+    { img: bathroomImg, ...t.space.bathroom, gallery: getGallery("bathroom", bathroomImgFallback) },
+    { img: kitchenImg, ...t.space.kitchen, gallery: getGallery("kitchen", kitchenImgFallback) },
   ];
 
   // ─── RENDER ─────────────────────────────────────────────────
@@ -651,7 +726,7 @@ export default function Index() {
                   const monthStart = startOfMonth(month);
                   const monthEnd = endOfMonth(month);
                   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
-                  const startPad = getDay(monthStart) === 0 ? 6 : getDay(monthStart) - 1; // Monday start
+                  const startPad = getDay(monthStart) === 0 ? 6 : getDay(monthStart) - 1;
                   const dayLabels = lang === "nl" ? ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"] : ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
                   return (
@@ -670,7 +745,7 @@ export default function Index() {
                           const today = startOfDay(new Date());
                           const isToday = isSameDay(day, today);
                           const isPast = isBefore(day, today);
-                          const blocked = isDateBlocked(day);
+                          const blocked = isDateBlockedWith(day, pricingConfig.blockedDates);
                           const isStart = checkIn && isSameDay(day, checkIn);
                           const isEnd = checkOut && isSameDay(day, checkOut);
                           const inRange = checkIn && checkOut && isAfter(day, checkIn) && isBefore(day, checkOut);
@@ -830,7 +905,7 @@ export default function Index() {
                     </tr>
                   </thead>
                   <tbody>
-                    {PRICING_CONFIG.seasonalPricing.map((s, i) => (
+                    {pricingConfig.seasonalPricing.map((s, i) => (
                       <tr key={i} className="border-b border-border/50">
                         <td className="py-2.5">{lang === "nl" ? s.label : s.labelEn}</td>
                         <td className="py-2.5 text-muted-foreground">
