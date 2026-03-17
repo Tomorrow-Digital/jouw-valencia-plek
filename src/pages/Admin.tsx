@@ -508,13 +508,36 @@ function PricingTab() {
         <h3 className="font-serif text-lg mb-4">Speciale periodes</h3>
         <div className="space-y-2 mb-4">
           {custom.map(c => (
-            <div key={c.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3">
-              <div className="text-sm">
-                <span className="font-medium">{c.label}</span>
-                <span className="text-muted-foreground ml-2">{c.start_date} → {c.end_date}</span>
-                <span className="ml-2 font-medium">€{c.price_per_night}/nacht</span>
-              </div>
-              <button onClick={() => handleDeleteCustom(c.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
+            <div key={c.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3 gap-2">
+              {editingCustomId === c.id ? (
+                <>
+                  <div className="flex flex-wrap gap-2 flex-1 items-center text-sm">
+                    <input value={editingCustom.label} onChange={e => setEditingCustom({ ...editingCustom, label: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-32" />
+                    <input type="date" value={editingCustom.start_date} onChange={e => setEditingCustom({ ...editingCustom, start_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                    <input type="date" value={editingCustom.end_date} onChange={e => setEditingCustom({ ...editingCustom, end_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs">€</span>
+                      <input type="number" value={editingCustom.price_per_night} onChange={e => setEditingCustom({ ...editingCustom, price_per_night: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-20" />
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={handleSaveCustom} className="text-primary hover:text-primary/80"><Check size={16} /></button>
+                    <button onClick={() => setEditingCustomId(null)} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-sm">
+                    <span className="font-medium">{c.label}</span>
+                    <span className="text-muted-foreground ml-2">{c.start_date} → {c.end_date}</span>
+                    <span className="ml-2 font-medium">€{c.price_per_night}/nacht</span>
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={() => handleEditCustom(c)} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
+                    <button onClick={() => handleDeleteCustom(c.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
