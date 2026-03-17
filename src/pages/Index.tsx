@@ -574,7 +574,7 @@ export default function Index() {
       (priceStr ? `Totaalprijs: ${priceStr}\n` : "") +
       (message ? `Bericht: ${message}\n` : "")
     );
-    window.open(`https://wa.me/34600000000?text=${waText}`, "_blank");
+    window.open(`https://wa.me/31630093776?text=${waText}`, "_blank");
   };
 
   const navSections = [
@@ -1189,7 +1189,7 @@ export default function Index() {
                 <Mail size={18} className="text-primary" /> hola@casavalencia.es
               </a>
               <a
-                href="https://wa.me/34600000000?text=Hola!%20Ik%20heb%20interesse%20in%20een%20verblijf%20bij%20Casa%20Valencia."
+                href="https://wa.me/31630093776?text=Hola!%20Ik%20heb%20interesse%20in%20een%20verblijf%20bij%20Casa%20Valencia."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-secondary text-secondary-foreground rounded-lg px-5 py-3 shadow-sm hover:shadow-md transition-shadow text-sm font-medium"
@@ -1226,7 +1226,7 @@ export default function Index() {
               <a href="mailto:hola@casavalencia.es" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email">
                 <Mail size={18} />
               </a>
-              <a href="https://wa.me/34600000000" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="WhatsApp">
+              <a href="https://wa.me/31630093776" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="WhatsApp">
                 <MessageCircle size={18} />
               </a>
               <a href="https://instagram.com/casavalencia" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
