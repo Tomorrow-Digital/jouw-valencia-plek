@@ -561,20 +561,24 @@ export default function Index() {
 
     setBookingSubmitted(true);
 
-    // Open WhatsApp with pre-filled message
-    const checkInStr = checkIn ? format(checkIn, "d MMM yyyy") : "?";
-    const checkOutStr = checkOut ? format(checkOut, "d MMM yyyy") : "?";
-    const priceStr = pricing?.total ? `€${pricing.total}` : "";
-    const waText = encodeURIComponent(
-      `Hola! Ik wil graag boeken bij Casa Valencia.\n\n` +
-      `Naam: ${firstName} ${lastName}\n` +
-      `Check-in: ${checkInStr}\n` +
-      `Check-out: ${checkOutStr}\n` +
-      `Gasten: ${guests}\n` +
-      (priceStr ? `Totaalprijs: ${priceStr}\n` : "") +
-      (message ? `Bericht: ${message}\n` : "")
-    );
-    window.open(`https://wa.me/31630093776?text=${waText}`, "_blank");
+    // Send confirmation email (best-effort, don't block on failure)
+    try {
+      await supabase.functions.invoke("send-booking-confirmation", {
+        body: {
+          firstName,
+          lastName,
+          email,
+          checkIn: checkIn ? format(checkIn, "yyyy-MM-dd") : "",
+          checkOut: checkOut ? format(checkOut, "yyyy-MM-dd") : "",
+          guests,
+          totalPrice: pricing?.total ?? null,
+          arrivalTime: arrivalTime || null,
+          message: message || null,
+        },
+      });
+    } catch (emailErr) {
+      console.error("Confirmation email error:", emailErr);
+    }
   };
 
   const navSections = [
