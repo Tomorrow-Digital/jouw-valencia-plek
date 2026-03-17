@@ -13,6 +13,8 @@ import {
   Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { WhatsAppContact } from "@/components/WhatsAppContact"; 
+// of import { WhatsAppContact } from "../components/WhatsAppContact"; afhankelijk van hoe je paden zijn ingesteld.
 
 // Fallback images
 import heroImgFallback from "@/assets/hero.jpg";
@@ -1241,6 +1243,9 @@ export default function Index() {
           <p className="text-center text-xs text-muted-foreground">{t.footer.copyright}</p>
         </div>
       </footer>
+
+      {/* ═══ WHATSAPP ZWEVENDE KNOP ═══ */}
+      <WhatsAppContact />
 
       {/* ═══ LIGHTBOX ═══ */}
       <AnimatePresence>
