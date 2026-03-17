@@ -14,7 +14,147 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      blocked_dates: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          reason: string | null
+          start_date: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          reason?: string | null
+          start_date: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          reason?: string | null
+          start_date?: string
+        }
+        Relationships: []
+      }
+      custom_pricing: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          label: string
+          price_per_night: number
+          start_date: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          label: string
+          price_per_night: number
+          start_date: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          label?: string
+          price_per_night?: number
+          start_date?: string
+        }
+        Relationships: []
+      }
+      pricing_config: {
+        Row: {
+          cleaning_fee: number
+          default_price_per_night: number
+          id: string
+          maximum_stay: number
+          minimum_stay: number
+          monthly_discount: number
+          updated_at: string
+          weekly_discount: number
+        }
+        Insert: {
+          cleaning_fee?: number
+          default_price_per_night?: number
+          id?: string
+          maximum_stay?: number
+          minimum_stay?: number
+          monthly_discount?: number
+          updated_at?: string
+          weekly_discount?: number
+        }
+        Update: {
+          cleaning_fee?: number
+          default_price_per_night?: number
+          id?: string
+          maximum_stay?: number
+          minimum_stay?: number
+          monthly_discount?: number
+          updated_at?: string
+          weekly_discount?: number
+        }
+        Relationships: []
+      }
+      seasonal_pricing: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          label: string
+          label_en: string
+          price_per_night: number
+          start_date: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          label: string
+          label_en?: string
+          price_per_night: number
+          start_date: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          label?: string
+          label_en?: string
+          price_per_night?: number
+          start_date?: string
+        }
+        Relationships: []
+      }
+      site_photos: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_primary: boolean
+          sort_order: number
+          url: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          sort_order?: number
+          url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          sort_order?: number
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
