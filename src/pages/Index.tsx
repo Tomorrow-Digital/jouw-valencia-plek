@@ -1189,7 +1189,7 @@ export default function Index() {
                 <Mail size={18} className="text-primary" /> hola@casavalencia.es
               </a>
               <a
-                href="https://wa.me/34600000000?text=Hola!%20Ik%20heb%20interesse%20in%20een%20verblijf%20bij%20Casa%20Valencia."
+                href="https://wa.me/31630093776?text=Hola!%20Ik%20heb%20interesse%20in%20een%20verblijf%20bij%20Casa%20Valencia."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-secondary text-secondary-foreground rounded-lg px-5 py-3 shadow-sm hover:shadow-md transition-shadow text-sm font-medium"
