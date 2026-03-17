@@ -1226,7 +1226,7 @@ export default function Index() {
               <a href="mailto:hola@casavalencia.es" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email">
                 <Mail size={18} />
               </a>
-              <a href="https://wa.me/34600000000" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="WhatsApp">
+              <a href="https://wa.me/31630093776" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="WhatsApp">
                 <MessageCircle size={18} />
               </a>
               <a href="https://instagram.com/casavalencia" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
