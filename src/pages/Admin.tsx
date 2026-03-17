@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, Plus, Upload, LogOut, Save, Image, Calendar, Euro, X, Pencil, Check, ClipboardList } from "lucide-react";
+import { Trash2, Plus, Upload, LogOut, Save, Image, Calendar, Euro, X, Pencil, Check, ClipboardList, MessageSquare } from "lucide-react";
 
-type Tab = "photos" | "calendar" | "pricing" | "bookings";
+type Tab = "photos" | "calendar" | "pricing" | "bookings" | "messages";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -39,6 +39,7 @@ export default function Admin() {
 
   const tabs: { id: Tab; label: string; icon: any }[] = [
     { id: "bookings", label: "Boekingen", icon: ClipboardList },
+    { id: "messages", label: "Berichten", icon: MessageSquare },
     { id: "photos", label: "Foto's", icon: Image },
     { id: "calendar", label: "Kalender", icon: Calendar },
     { id: "pricing", label: "Prijzen", icon: Euro },
@@ -74,6 +75,7 @@ export default function Admin() {
         </div>
 
         {tab === "bookings" && <BookingsTab />}
+        {tab === "messages" && <MessagesTab />}
         {tab === "photos" && <PhotosTab />}
         {tab === "calendar" && <CalendarTab />}
         {tab === "pricing" && <PricingTab />}
@@ -703,6 +705,62 @@ function BookingsTab() {
               )}
               <p className="text-xs text-muted-foreground mt-3">
                 Ontvangen: {new Date(b.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════
+// MESSAGES TAB
+// ═══════════════════════════════════════
+
+function MessagesTab() {
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchMessages = useCallback(async () => {
+    const { data } = await supabase
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setMessages(data || []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchMessages(); }, [fetchMessages]);
+
+  const handleDelete = async (id: string) => {
+    await supabase.from("contact_messages").delete().eq("id", id);
+    setMessages(prev => prev.filter(m => m.id !== id));
+  };
+
+  if (loading) return <p className="text-muted-foreground">Laden...</p>;
+
+  return (
+    <div>
+      <h2 className="text-lg font-semibold mb-4">Contactberichten ({messages.length})</h2>
+      {messages.length === 0 ? (
+        <p className="text-muted-foreground text-sm">Nog geen berichten ontvangen.</p>
+      ) : (
+        <div className="space-y-3">
+          {messages.map(m => (
+            <div key={m.id} className="bg-card border border-border rounded-xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-medium">{m.name}</p>
+                  <a href={`mailto:${m.email}`} className="text-sm text-primary hover:underline">{m.email}</a>
+                </div>
+                <button onClick={() => handleDelete(m.id)} className="text-muted-foreground hover:text-destructive transition-colors p-1">
+                  <Trash2 size={16} />
+                </button>
+              </div>
+              <p className="mt-3 text-sm text-foreground whitespace-pre-wrap">{m.message}</p>
+              <p className="text-xs text-muted-foreground mt-3">
+                {new Date(m.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
               </p>
             </div>
           ))}

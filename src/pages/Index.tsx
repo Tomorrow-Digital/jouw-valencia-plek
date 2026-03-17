@@ -10,7 +10,7 @@ import {
   Bath, ChefHat, Snowflake, Wifi, Bed, DoorOpen, Car, WashingMachine,
   Shirt, Wind, TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
   Star, Mail, Phone, Instagram, MessageCircle, Clock, BanIcon, PartyPopper,
-  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane
+  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane, Check, Send
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WhatsAppContact } from "@/components/WhatsAppContact"; 
@@ -156,6 +156,14 @@ const getTranslations = (minimumStay: number) => ({
       hostDesc: "Ik ben Charmaine en woon zelf in Valencia. Ik ken de beste plekjes, van lokale markten tot verborgen restaurantjes. Heb je vragen over het guesthouse of wil je tips voor je verblijf? Stuur me gerust een bericht.",
       whatsapp: "WhatsApp",
       footer: "Gemaakt met ♥ in Valencia",
+      formTitle: "Stuur een bericht",
+      formName: "Naam",
+      formEmail: "E-mailadres",
+      formMessage: "Bericht",
+      formSend: "Verstuur bericht",
+      formSending: "Versturen...",
+      formSuccess: "Bericht verstuurd! We nemen zo snel mogelijk contact met je op.",
+      formError: "Er ging iets mis. Probeer het opnieuw of stuur een WhatsApp.",
     },
     footer: {
       tagline: "Jouw eigen plek in Valencia",
@@ -259,6 +267,14 @@ const getTranslations = (minimumStay: number) => ({
       hostDesc: "I'm Charmaine and I live in Valencia. I know the best spots, from local markets to hidden restaurants. Have questions about the guesthouse or want tips for your stay? Feel free to send me a message.",
       whatsapp: "WhatsApp",
       footer: "Made with ♥ in Valencia",
+      formTitle: "Send a message",
+      formName: "Name",
+      formEmail: "Email address",
+      formMessage: "Message",
+      formSend: "Send message",
+      formSending: "Sending...",
+      formSuccess: "Message sent! We'll get back to you as soon as possible.",
+      formError: "Something went wrong. Please try again or send a WhatsApp.",
     },
     footer: {
       tagline: "Your own place in Valencia",
@@ -268,6 +284,98 @@ const getTranslations = (minimumStay: number) => ({
 });
 
 type Lang = "nl" | "en";
+
+// ═══════════════════════════════════════════════════════════════
+// CONTACT FORM
+// ═══════════════════════════════════════════════════════════════
+
+function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    setError(false);
+    setSuccess(false);
+
+    const { error: dbError } = await supabase
+      .from("contact_messages")
+      .insert({ name: name.trim(), email: email.trim(), message: message.trim() });
+
+    setSending(false);
+    if (dbError) {
+      setError(true);
+    } else {
+      setSuccess(true);
+      setName("");
+      setEmail("");
+      setMessage("");
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8 text-center gap-3">
+        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+          <Check className="w-6 h-6 text-primary" />
+        </div>
+        <p className="text-sm text-muted-foreground">{t.contact.formSuccess}</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="text-sm font-medium mb-1 block">{t.contact.formName}</label>
+        <input
+          type="text"
+          required
+          maxLength={100}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        />
+      </div>
+      <div>
+        <label className="text-sm font-medium mb-1 block">{t.contact.formEmail}</label>
+        <input
+          type="email"
+          required
+          maxLength={255}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        />
+      </div>
+      <div>
+        <label className="text-sm font-medium mb-1 block">{t.contact.formMessage}</label>
+        <textarea
+          required
+          maxLength={2000}
+          rows={4}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        />
+      </div>
+      {error && <p className="text-sm text-destructive">{t.contact.formError}</p>}
+      <button
+        type="submit"
+        disabled={sending}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+      >
+        <Send size={16} />
+        {sending ? t.contact.formSending : t.contact.formSend}
+      </button>
+    </form>
+  );
+}
 
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
@@ -1180,31 +1288,42 @@ export default function Index() {
 
       {/* ═══ CONTACT ═══ */}
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-accent/30">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto">
           <FadeInSection>
-            <h2 className="font-serif text-3xl sm:text-4xl mb-8">{t.contact.title}</h2>
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <img src={hostImg} alt="Host" className="w-44 h-44 rounded-full object-cover shadow-md" loading="lazy" />
-              <div className="text-left">
-                <p className="font-serif text-lg">{t.contact.hostedBy}</p>
-                <p className="text-sm text-muted-foreground">{t.contact.hostDesc}</p>
+            <h2 className="font-serif text-3xl sm:text-4xl mb-8 text-center">{t.contact.title}</h2>
+            <div className="grid md:grid-cols-2 gap-12">
+              {/* Left: Host info + links */}
+              <div className="text-center md:text-left">
+                <div className="flex flex-col items-center md:items-start gap-4 mb-8">
+                  <img src={hostImg} alt="Host" className="w-36 h-36 rounded-full object-cover shadow-md" loading="lazy" />
+                  <div>
+                    <p className="font-serif text-lg">{t.contact.hostedBy}</p>
+                    <p className="text-sm text-muted-foreground">{t.contact.hostDesc}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                  <a href="mailto:hola@casavalencia.es" className="flex items-center gap-2 bg-card rounded-lg px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow text-sm font-medium">
+                    <Mail size={16} className="text-primary" /> hola@casavalencia.es
+                  </a>
+                  <a
+                    href="https://wa.me/31630093776?text=Hola!%20Ik%20heb%20interesse%20in%20een%20verblijf%20bij%20Casa%20Valencia."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-secondary text-secondary-foreground rounded-lg px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow text-sm font-medium"
+                  >
+                    <MessageCircle size={16} /> {t.contact.whatsapp}
+                  </a>
+                  <a href="https://instagram.com/casavalencia" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-card rounded-lg px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow text-sm font-medium">
+                    <Instagram size={16} className="text-primary" /> Instagram
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <a href="mailto:hola@casavalencia.es" className="flex items-center gap-2 bg-card rounded-lg px-5 py-3 shadow-sm hover:shadow-md transition-shadow text-sm font-medium">
-                <Mail size={18} className="text-primary" /> hola@casavalencia.es
-              </a>
-              <a
-                href="https://wa.me/31630093776?text=Hola!%20Ik%20heb%20interesse%20in%20een%20verblijf%20bij%20Casa%20Valencia."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-secondary text-secondary-foreground rounded-lg px-5 py-3 shadow-sm hover:shadow-md transition-shadow text-sm font-medium"
-              >
-                <MessageCircle size={18} /> {t.contact.whatsapp}
-              </a>
-              <a href="https://instagram.com/casavalencia" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-card rounded-lg px-5 py-3 shadow-sm hover:shadow-md transition-shadow text-sm font-medium">
-                <Instagram size={18} className="text-primary" /> Instagram
-              </a>
+
+              {/* Right: Contact form */}
+              <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
+                <h3 className="font-serif text-xl mb-4">{t.contact.formTitle}</h3>
+                <ContactForm t={t} />
+              </div>
             </div>
           </FadeInSection>
         </div>
