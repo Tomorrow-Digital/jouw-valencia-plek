@@ -713,3 +713,59 @@ function BookingsTab() {
     </div>
   );
 }
+
+// ═══════════════════════════════════════
+// MESSAGES TAB
+// ═══════════════════════════════════════
+
+function MessagesTab() {
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchMessages = useCallback(async () => {
+    const { data } = await supabase
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setMessages(data || []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchMessages(); }, [fetchMessages]);
+
+  const handleDelete = async (id: string) => {
+    await supabase.from("contact_messages").delete().eq("id", id);
+    setMessages(prev => prev.filter(m => m.id !== id));
+  };
+
+  if (loading) return <p className="text-muted-foreground">Laden...</p>;
+
+  return (
+    <div>
+      <h2 className="text-lg font-semibold mb-4">Contactberichten ({messages.length})</h2>
+      {messages.length === 0 ? (
+        <p className="text-muted-foreground text-sm">Nog geen berichten ontvangen.</p>
+      ) : (
+        <div className="space-y-3">
+          {messages.map(m => (
+            <div key={m.id} className="bg-card border border-border rounded-xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-medium">{m.name}</p>
+                  <a href={`mailto:${m.email}`} className="text-sm text-primary hover:underline">{m.email}</a>
+                </div>
+                <button onClick={() => handleDelete(m.id)} className="text-muted-foreground hover:text-destructive transition-colors p-1">
+                  <Trash2 size={16} />
+                </button>
+              </div>
+              <p className="mt-3 text-sm text-foreground whitespace-pre-wrap">{m.message}</p>
+              <p className="text-xs text-muted-foreground mt-3">
+                {new Date(m.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
