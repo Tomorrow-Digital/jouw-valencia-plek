@@ -303,19 +303,49 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
     setError(false);
     setSuccess(false);
 
+    // 1. Eerst opslaan in Supabase
     const { error: dbError } = await supabase
       .from("contact_messages")
       .insert({ name: name.trim(), email: email.trim(), message: message.trim() });
 
-    setSending(false);
     if (dbError) {
+      console.error("Database error:", dbError);
+      setSending(false);
       setError(true);
-    } else {
-      setSuccess(true);
-      setName("");
-      setEmail("");
-      setMessage("");
+      return;
     }
+
+    // 2. --- NIEUW: Stuur data naar n8n voor WhatsApp melding ---
+    try {
+      // BELANGRIJK: Maak in n8n een NIEUWE workflow (Webhook POST) en plak de URL hieronder:
+      const n8nContactWebhookUrl = "https://tomorrowdigital.app.n8n.cloud/webhook-test/60bc8d35-63ac-4a74-8aba-6ee26492378c"; 
+      
+      await fetch(n8nContactWebhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formType: "contact_vraag",
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim(),
+          timestamp: new Date().toISOString()
+        }),
+      });
+      console.log("Contactvraag doorgestuurd naar n8n!");
+    } catch (webhookError) {
+      // We loggen de fout, maar laten de bezoeker wel de succes-melding zien 
+      // omdat de database-save (stap 1) wel gelukt is.
+      console.error("WhatsApp melding sturen mislukt:", webhookError);
+    }
+    // -------------------------------------------------------
+
+    setSending(false);
+    setSuccess(true);
+    setName("");
+    setEmail("");
+    setMessage("");
   };
 
   if (success) {
