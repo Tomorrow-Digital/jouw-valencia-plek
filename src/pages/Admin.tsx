@@ -38,6 +38,7 @@ export default function Admin() {
   if (!user) return null;
 
   const tabs: { id: Tab; label: string; icon: any }[] = [
+    { id: "bookings", label: "Boekingen", icon: ClipboardList },
     { id: "photos", label: "Foto's", icon: Image },
     { id: "calendar", label: "Kalender", icon: Calendar },
     { id: "pricing", label: "Prijzen", icon: Euro },
