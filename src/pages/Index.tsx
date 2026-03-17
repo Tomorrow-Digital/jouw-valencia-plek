@@ -50,7 +50,7 @@ const REVIEWS = [
 const getTranslations = (minimumStay: number) => ({
   nl: {
     nav: { space: "De Ruimte", amenities: "Voorzieningen", location: "Omgeving", pricing: "Prijzen & Boeken", reviews: "Reviews", contact: "Contact" },
-    hero: { headline: "Tapas in de stad. En relaxen bij het zwembad.", subtitle: "Eigen guesthouse met tuin en zwembad, een kwartiertje van Valencia.", cta: "Bekijk beschikbaarheid" },
+    hero: { headline1: "Tapas in de stad.", headline2: "En relaxen bij het zwembad.", subtitle: "Eigen guesthouse met tuin en zwembad, een kwartiertje van Valencia.", cta: "Bekijk beschikbaarheid" },
     space: {
       title: "De Ruimte",
       room: { title: "De Kamer", desc: "Een rustige, lichte slaapkamer met comfortabel tweepersoonsbed, airconditioning en authentieke Spaanse sfeer." },
