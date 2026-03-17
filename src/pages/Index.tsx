@@ -886,28 +886,14 @@ export default function Index() {
             <p className="text-center font-serif italic text-lg text-muted-foreground mb-12">{t.amenities.intro}</p>
           </FadeInSection>
 
-          {/* Main amenities */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {t.amenities.main.map((item, i) => {
-              const Icon = mainAmenityIcons[i] || Bath;
-              return (
-                <FadeInSection key={i}>
-                  <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm">
-                    <Icon size={22} className="text-primary shrink-0" />
-                    <span className="text-sm font-medium">{item}</span>
-                  </div>
-                </FadeInSection>
-              );
-            })}
-          </div>
-
-          {/* Practical amenities */}
+          {/* All amenities */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            {t.amenities.practical.map((item, i) => {
-              const Icon = practicalAmenityIcons[i] || Bed;
+            {[...t.amenities.main, ...t.amenities.practical].map((item, i) => {
+              const allIcons = [...mainAmenityIcons, ...practicalAmenityIcons];
+              const Icon = allIcons[i] || Bath;
               return (
                 <FadeInSection key={i}>
-                  <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm h-full">
                     <Icon size={22} className="text-primary shrink-0" />
                     <span className="text-sm font-medium">{item}</span>
                   </div>
