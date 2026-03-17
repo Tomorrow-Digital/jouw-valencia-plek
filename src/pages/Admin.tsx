@@ -303,6 +303,10 @@ function PricingTab() {
   const [saving, setSaving] = useState(false);
   const [newSeasonal, setNewSeasonal] = useState({ label: "", label_en: "", start_date: "", end_date: "", price_per_night: "" });
   const [newCustom, setNewCustom] = useState({ label: "", start_date: "", end_date: "", price_per_night: "" });
+  const [editingSeasonalId, setEditingSeasonalId] = useState<string | null>(null);
+  const [editingSeasonal, setEditingSeasonal] = useState<any>(null);
+  const [editingCustomId, setEditingCustomId] = useState<string | null>(null);
+  const [editingCustom, setEditingCustom] = useState<any>(null);
 
   const fetchAll = useCallback(async () => {
     const [{ data: cfg }, { data: sea }, { data: cus }] = await Promise.all([
@@ -349,6 +353,25 @@ function PricingTab() {
     fetchAll();
   };
 
+  const handleEditSeasonal = (s: any) => {
+    setEditingSeasonalId(s.id);
+    setEditingSeasonal({ label: s.label, label_en: s.label_en || "", start_date: s.start_date, end_date: s.end_date, price_per_night: s.price_per_night });
+  };
+
+  const handleSaveSeasonal = async () => {
+    if (!editingSeasonalId || !editingSeasonal) return;
+    await supabase.from("seasonal_pricing").update({
+      label: editingSeasonal.label,
+      label_en: editingSeasonal.label_en,
+      start_date: editingSeasonal.start_date,
+      end_date: editingSeasonal.end_date,
+      price_per_night: Number(editingSeasonal.price_per_night),
+    }).eq("id", editingSeasonalId);
+    setEditingSeasonalId(null);
+    setEditingSeasonal(null);
+    fetchAll();
+  };
+
   const handleAddCustom = async (e: React.FormEvent) => {
     e.preventDefault();
     await supabase.from("custom_pricing").insert({
@@ -363,6 +386,24 @@ function PricingTab() {
 
   const handleDeleteCustom = async (id: string) => {
     await supabase.from("custom_pricing").delete().eq("id", id);
+    fetchAll();
+  };
+
+  const handleEditCustom = (c: any) => {
+    setEditingCustomId(c.id);
+    setEditingCustom({ label: c.label, start_date: c.start_date, end_date: c.end_date, price_per_night: c.price_per_night });
+  };
+
+  const handleSaveCustom = async () => {
+    if (!editingCustomId || !editingCustom) return;
+    await supabase.from("custom_pricing").update({
+      label: editingCustom.label,
+      start_date: editingCustom.start_date,
+      end_date: editingCustom.end_date,
+      price_per_night: Number(editingCustom.price_per_night),
+    }).eq("id", editingCustomId);
+    setEditingCustomId(null);
+    setEditingCustom(null);
     fetchAll();
   };
 
