@@ -75,6 +75,7 @@ export default function Admin() {
         </div>
 
         {tab === "bookings" && <BookingsTab />}
+        {tab === "messages" && <MessagesTab />}
         {tab === "photos" && <PhotosTab />}
         {tab === "calendar" && <CalendarTab />}
         {tab === "pricing" && <PricingTab />}
