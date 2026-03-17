@@ -217,7 +217,7 @@ const getTranslations = (minimumStay: number) => ({
     contact: {
       title: "Contact",
       hostedBy: "Hosted by Charmaine",
-      hostDesc: "I live in Valencia myself and I'm happy to help with tips, routes and everything you need for an unforgettable stay.",
+      hostDesc: "I'm Charmaine and I live in Valencia. I often have one drink too many. Eating paella together is my dream. I love doing laundry and vacuuming.",
       whatsapp: "WhatsApp",
       footer: "Made with ♥ in Valencia",
     },
