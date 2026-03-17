@@ -7,10 +7,10 @@ import {
 } from "date-fns";
 import { nl, enUS } from "date-fns/locale";
 import {
-  Bath, ChefHat, Snowflake, Wifi, Bed, DoorOpen, Car, WashingMachine,
-  Shirt, Wind, TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
+  Bath, ChefHat, Wifi, Bed, DoorOpen, Car, WashingMachine,
+  TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
   Star, Mail, Phone, Instagram, MessageCircle, Clock, BanIcon, PartyPopper,
-  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane, Check, Send
+  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane, Check, Send, Sun
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WhatsAppContact } from "@/components/WhatsAppContact"; 
