@@ -231,7 +231,7 @@ const getTranslations = (minimumStay: number) => ({
     faq: {
       title: "Frequently asked questions",
       items: [
-        { q: "How do I book?", a: "Choose your dates in the calendar above and send a message via WhatsApp or email. You'll receive a confirmation with payment instructions within 24 hours." },
+        { q: "How do I book?", a: "Choose your dates in the calendar above and fill in the booking form. You'll receive an instant confirmation email and payment instructions within 24 hours." },
         { q: "What is the minimum stay?", a: "Minimum 3 nights. In high season (July-August) we require a minimum of 5 nights." },
         { q: "How do I get there from the airport?", a: "Valencia Airport is 25 minutes by car. By metro you're in Torrent in 40 minutes. We'll send you directions with your booking." },
         { q: "Is there parking?", a: "Yes, there's a private parking spot on the premises. Free and right next to the guesthouse." },
