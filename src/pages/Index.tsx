@@ -509,7 +509,8 @@ export default function Index() {
   const belowMinimum = nightCount > 0 && nightCount < pricingConfig.minimumStay;
 
   // Form submit
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const [bookingSaving, setBookingSaving] = useState(false);
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const form = formRef.current;
     if (!form) return;
@@ -527,7 +528,53 @@ export default function Index() {
 
     if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
     setFormErrors({});
+    setBookingSaving(true);
+
+    const firstName = data.get("firstName") as string;
+    const lastName = data.get("lastName") as string;
+    const guests = Number(data.get("guests"));
+    const arrivalTime = data.get("arrivalTime") as string;
+    const message = data.get("message") as string;
+
+    // Save to database
+    const { error } = await supabase.from("bookings").insert({
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      phone,
+      guests,
+      check_in: checkIn ? format(checkIn, "yyyy-MM-dd") : "",
+      check_out: checkOut ? format(checkOut, "yyyy-MM-dd") : "",
+      arrival_time: arrivalTime || null,
+      message: message || null,
+      total_price: pricing?.total ?? null,
+      status: "pending",
+    });
+
+    setBookingSaving(false);
+
+    if (error) {
+      console.error("Booking save error:", error);
+      setFormErrors({ general: "Er ging iets mis. Probeer het opnieuw." });
+      return;
+    }
+
     setBookingSubmitted(true);
+
+    // Open WhatsApp with pre-filled message
+    const checkInStr = checkIn ? format(checkIn, "d MMM yyyy") : "?";
+    const checkOutStr = checkOut ? format(checkOut, "d MMM yyyy") : "?";
+    const priceStr = pricing?.total ? `€${pricing.total}` : "";
+    const waText = encodeURIComponent(
+      `Hola! Ik wil graag boeken bij Casa Valencia.\n\n` +
+      `Naam: ${firstName} ${lastName}\n` +
+      `Check-in: ${checkInStr}\n` +
+      `Check-out: ${checkOutStr}\n` +
+      `Gasten: ${guests}\n` +
+      (priceStr ? `Totaalprijs: ${priceStr}\n` : "") +
+      (message ? `Bericht: ${message}\n` : "")
+    );
+    window.open(`https://wa.me/34600000000?text=${waText}`, "_blank");
   };
 
   const navSections = [
