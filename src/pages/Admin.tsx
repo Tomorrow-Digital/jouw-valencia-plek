@@ -39,6 +39,7 @@ export default function Admin() {
 
   const tabs: { id: Tab; label: string; icon: any }[] = [
     { id: "bookings", label: "Boekingen", icon: ClipboardList },
+    { id: "messages", label: "Berichten", icon: MessageSquare },
     { id: "photos", label: "Foto's", icon: Image },
     { id: "calendar", label: "Kalender", icon: Calendar },
     { id: "pricing", label: "Prijzen", icon: Euro },
