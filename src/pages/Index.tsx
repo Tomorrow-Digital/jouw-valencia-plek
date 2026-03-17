@@ -1196,31 +1196,42 @@ export default function Index() {
 
       {/* ═══ CONTACT ═══ */}
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-accent/30">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto">
           <FadeInSection>
-            <h2 className="font-serif text-3xl sm:text-4xl mb-8">{t.contact.title}</h2>
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <img src={hostImg} alt="Host" className="w-44 h-44 rounded-full object-cover shadow-md" loading="lazy" />
-              <div className="text-left">
-                <p className="font-serif text-lg">{t.contact.hostedBy}</p>
-                <p className="text-sm text-muted-foreground">{t.contact.hostDesc}</p>
+            <h2 className="font-serif text-3xl sm:text-4xl mb-8 text-center">{t.contact.title}</h2>
+            <div className="grid md:grid-cols-2 gap-12">
+              {/* Left: Host info + links */}
+              <div className="text-center md:text-left">
+                <div className="flex flex-col items-center md:items-start gap-4 mb-8">
+                  <img src={hostImg} alt="Host" className="w-36 h-36 rounded-full object-cover shadow-md" loading="lazy" />
+                  <div>
+                    <p className="font-serif text-lg">{t.contact.hostedBy}</p>
+                    <p className="text-sm text-muted-foreground">{t.contact.hostDesc}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                  <a href="mailto:hola@casavalencia.es" className="flex items-center gap-2 bg-card rounded-lg px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow text-sm font-medium">
+                    <Mail size={16} className="text-primary" /> hola@casavalencia.es
+                  </a>
+                  <a
+                    href="https://wa.me/31630093776?text=Hola!%20Ik%20heb%20interesse%20in%20een%20verblijf%20bij%20Casa%20Valencia."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-secondary text-secondary-foreground rounded-lg px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow text-sm font-medium"
+                  >
+                    <MessageCircle size={16} /> {t.contact.whatsapp}
+                  </a>
+                  <a href="https://instagram.com/casavalencia" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-card rounded-lg px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow text-sm font-medium">
+                    <Instagram size={16} className="text-primary" /> Instagram
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <a href="mailto:hola@casavalencia.es" className="flex items-center gap-2 bg-card rounded-lg px-5 py-3 shadow-sm hover:shadow-md transition-shadow text-sm font-medium">
-                <Mail size={18} className="text-primary" /> hola@casavalencia.es
-              </a>
-              <a
-                href="https://wa.me/31630093776?text=Hola!%20Ik%20heb%20interesse%20in%20een%20verblijf%20bij%20Casa%20Valencia."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-secondary text-secondary-foreground rounded-lg px-5 py-3 shadow-sm hover:shadow-md transition-shadow text-sm font-medium"
-              >
-                <MessageCircle size={18} /> {t.contact.whatsapp}
-              </a>
-              <a href="https://instagram.com/casavalencia" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-card rounded-lg px-5 py-3 shadow-sm hover:shadow-md transition-shadow text-sm font-medium">
-                <Instagram size={18} className="text-primary" /> Instagram
-              </a>
+
+              {/* Right: Contact form */}
+              <div className="bg-card rounded-2xl p-6 shadow-sm border border-border">
+                <h3 className="font-serif text-xl mb-4">{t.contact.formTitle}</h3>
+                <ContactForm t={t} />
+              </div>
             </div>
           </FadeInSection>
         </div>
