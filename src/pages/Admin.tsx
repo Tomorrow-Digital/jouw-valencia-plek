@@ -444,13 +444,37 @@ function PricingTab() {
         <h3 className="font-serif text-lg mb-4">Seizoensprijzen</h3>
         <div className="space-y-2 mb-4">
           {seasonal.map(s => (
-            <div key={s.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3">
-              <div className="text-sm">
-                <span className="font-medium">{s.label}</span>
-                <span className="text-muted-foreground ml-2">{s.start_date} → {s.end_date}</span>
-                <span className="ml-2 font-medium">€{s.price_per_night}/nacht</span>
-              </div>
-              <button onClick={() => handleDeleteSeasonal(s.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
+            <div key={s.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3 gap-2">
+              {editingSeasonalId === s.id ? (
+                <>
+                  <div className="flex flex-wrap gap-2 flex-1 items-center text-sm">
+                    <input value={editingSeasonal.label} onChange={e => setEditingSeasonal({ ...editingSeasonal, label: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-32" />
+                    <input value={editingSeasonal.label_en} onChange={e => setEditingSeasonal({ ...editingSeasonal, label_en: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-32" placeholder="EN" />
+                    <input type="date" value={editingSeasonal.start_date} onChange={e => setEditingSeasonal({ ...editingSeasonal, start_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                    <input type="date" value={editingSeasonal.end_date} onChange={e => setEditingSeasonal({ ...editingSeasonal, end_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs">€</span>
+                      <input type="number" value={editingSeasonal.price_per_night} onChange={e => setEditingSeasonal({ ...editingSeasonal, price_per_night: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-20" />
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={handleSaveSeasonal} className="text-primary hover:text-primary/80"><Check size={16} /></button>
+                    <button onClick={() => setEditingSeasonalId(null)} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-sm">
+                    <span className="font-medium">{s.label}</span>
+                    <span className="text-muted-foreground ml-2">{s.start_date} → {s.end_date}</span>
+                    <span className="ml-2 font-medium">€{s.price_per_night}/nacht</span>
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={() => handleEditSeasonal(s)} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
+                    <button onClick={() => handleDeleteSeasonal(s.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
