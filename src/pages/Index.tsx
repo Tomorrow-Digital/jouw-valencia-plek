@@ -50,7 +50,7 @@ const REVIEWS = [
 const getTranslations = (minimumStay: number) => ({
   nl: {
     nav: { space: "De Ruimte", amenities: "Voorzieningen", location: "Omgeving", pricing: "Prijzen & Boeken", reviews: "Reviews", contact: "Contact" },
-    hero: { headline: "Jouw eigen plek in Valencia", subtitle: "Eén kamer. Eén keuken. Helemaal van jou.", cta: "Bekijk beschikbaarheid" },
+    hero: { headline: "Tapas in de stad. Of stilte bij het zwembad.", subtitle: "Eigen guesthouse met tuin en zwembad, een kwartiertje van Valencia.", cta: "Bekijk beschikbaarheid" },
     space: {
       title: "De Ruimte",
       room: { title: "De Kamer", desc: "Een rustige, lichte slaapkamer met comfortabel tweepersoonsbed, airconditioning en authentieke Spaanse sfeer." },
@@ -137,7 +137,7 @@ const getTranslations = (minimumStay: number) => ({
   },
   en: {
     nav: { space: "The Space", amenities: "Amenities", location: "Location", pricing: "Pricing & Booking", reviews: "Reviews", contact: "Contact" },
-    hero: { headline: "Your own place in Valencia", subtitle: "One room. One kitchen. All yours.", cta: "Check availability" },
+    hero: { headline: "Tapas in the city. Or silence by the pool.", subtitle: "Private guesthouse with garden and pool, fifteen minutes from Valencia.", cta: "Check availability" },
     space: {
       title: "The Space",
       room: { title: "The Room", desc: "A quiet, bright bedroom with comfortable double bed, air conditioning and authentic Spanish atmosphere." },
