@@ -7,10 +7,10 @@ import {
 } from "date-fns";
 import { nl, enUS } from "date-fns/locale";
 import {
-  Bath, ChefHat, Snowflake, Wifi, Bed, DoorOpen, Car, WashingMachine,
-  Shirt, Wind, TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
+  Bath, ChefHat, Wifi, Bed, DoorOpen, Car, WashingMachine,
+  TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
   Star, Mail, Phone, Instagram, MessageCircle, Clock, BanIcon, PartyPopper,
-  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane, Check, Send
+  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane, Check, Send, Sun
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WhatsAppContact } from "@/components/WhatsAppContact"; 
@@ -70,7 +70,7 @@ const getTranslations = (minimumStay: number) => ({
     },
     space: {
       title: "De Ruimte",
-      room: { title: "De Kamer", desc: "Wakker worden met Spaans licht door de luiken. Tweepersoonsbed, airco, en precies de juiste stilte." },
+      room: { title: "De Kamer", desc: "Wakker worden met Spaans licht door de luiken. Tweepersoonsbed en precies de juiste stilte." },
       bathroom: { title: "De Badkamer", desc: "Inloopdouche, verse handdoeken en een ochtend die helemaal van jou is." },
       kitchen: { title: "De Buitenkeuken", desc: "Koken onder het terras met uitzicht op het zwembad. Gasfornuis, koelkast en alles bij de hand." },
       vibe: "Dit is geen hotel en geen Airbnb-fabriek. Dit is een plek met ziel. Waar je 's ochtends wakker wordt met zonlicht door de luiken, koffie zet in je eigen keuken en de dag begint op jouw tempo.",
@@ -79,8 +79,8 @@ const getTranslations = (minimumStay: number) => ({
     amenities: {
       title: "Voorzieningen",
       intro: "Alles wat je nodig hebt. Niets wat je niet nodig hebt.",
-      main: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Airconditioning", "Gratis WiFi", "Eigen ingang", "Parkeerplaats op het terrein", "Buitenterras met tuinmeubelen"],
-      practical: ["Verse handdoeken & beddengoed", "Wasmachine (gedeeld)", "Strijkijzer", "Haardroger"],
+      main: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Zwembad", "Ligbedden", "Gratis WiFi", "Gratis parkeren", "Eigen ingang", "Buitenterras met tuinmeubelen"],
+      practical: ["Handdoeken & beddengoed", "Wasmachine (gedeeld)"],
       localTips: { title: "Lokale tips van Charmaine", subtitle: "Een persoonlijke gids met de beste restaurants, markten, stranden en verborgen plekjes in de regio. Je krijgt hem bij aankomst." },
     },
     location: {
@@ -181,7 +181,7 @@ const getTranslations = (minimumStay: number) => ({
     },
     space: {
       title: "The Space",
-      room: { title: "The Room", desc: "Wake up to Spanish light through the shutters. Double bed, airco, and just the right silence." },
+      room: { title: "The Room", desc: "Wake up to Spanish light through the shutters. Double bed and just the right silence." },
       bathroom: { title: "The Bathroom", desc: "Walk-in shower, fresh towels and a morning that's all yours." },
       kitchen: { title: "The Outdoor Kitchen", desc: "Cooking under the terrace with a view of the pool. Gas stove, fridge and everything at hand." },
       vibe: "This isn't a hotel and not an Airbnb factory. This is a place with soul. Where you wake up with sunlight through the shutters, make coffee in your own kitchen and start the day at your own pace.",
@@ -190,8 +190,8 @@ const getTranslations = (minimumStay: number) => ({
     amenities: {
       title: "Amenities",
       intro: "Everything you need. Nothing you don't.",
-      main: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Air conditioning", "Free WiFi", "Private entrance", "On-site parking", "Outdoor terrace with garden furniture"],
-      practical: ["Fresh towels & linens", "Washing machine (shared)", "Iron", "Hair dryer"],
+      main: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Swimming pool", "Sun loungers", "Free WiFi", "Free parking", "Private entrance", "Outdoor terrace with garden furniture"],
+      practical: ["Towels & linens", "Washing machine (shared)"],
       localTips: { title: "Local tips from Charmaine", subtitle: "A personal guide with the best restaurants, markets, beaches and hidden gems in the area. You'll receive it upon arrival." },
     },
     location: {
@@ -381,8 +381,8 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
 
-const mainAmenityIcons = [Bath, ChefHat, Snowflake, Wifi, DoorOpen, Car, TreePalm];
-const practicalAmenityIcons = [Bed, WashingMachine, Shirt, Wind];
+const mainAmenityIcons = [Bath, ChefHat, Waves, Sun, Wifi, Car, DoorOpen, TreePalm];
+const practicalAmenityIcons = [Bed, WashingMachine];
 
 const ruleIcons: Record<string, React.ElementType> = {
   clock: Clock, ban: BanIcon, party: PartyPopper, moon: Moon, paw: PawPrint,
