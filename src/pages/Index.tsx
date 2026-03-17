@@ -190,8 +190,8 @@ const getTranslations = (minimumStay: number) => ({
     amenities: {
       title: "Amenities",
       intro: "Everything you need. Nothing you don't.",
-      main: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Air conditioning", "Free WiFi", "Private entrance", "On-site parking", "Outdoor terrace with garden furniture"],
-      practical: ["Fresh towels & linens", "Washing machine (shared)", "Iron", "Hair dryer"],
+      main: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Swimming pool", "Sun loungers", "Free WiFi", "Free parking", "Private entrance", "Outdoor terrace with garden furniture"],
+      practical: ["Towels & linens", "Washing machine (shared)"],
       localTips: { title: "Local tips from Charmaine", subtitle: "A personal guide with the best restaurants, markets, beaches and hidden gems in the area. You'll receive it upon arrival." },
     },
     location: {
