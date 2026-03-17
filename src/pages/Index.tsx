@@ -10,7 +10,7 @@ import {
   Bath, ChefHat, Snowflake, Wifi, Bed, DoorOpen, Car, WashingMachine,
   Shirt, Wind, TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
   Star, Mail, Phone, Instagram, MessageCircle, Clock, BanIcon, PartyPopper,
-  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves
+  Moon, PawPrint, Globe, MapPin, ShoppingBag, Waves, Plane
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -43,32 +43,53 @@ interface PricingConfig {
 const REVIEWS = [
   { name: "Sophie", country: "🇳🇱", date: "2025-09", rating: 5, nl: "Wat een heerlijke plek! De buitenkeuken is fantastisch en de kamer is prachtig ingericht. We komen zeker terug.", en: "What a wonderful place! The outdoor kitchen is fantastic and the room is beautifully decorated. We'll definitely be back." },
   { name: "Thomas", country: "🇧🇪", date: "2025-08", rating: 5, nl: "Rustig, authentiek en precies wat we zochten. De host denkt echt aan alles. Perfecte uitvalsbasis voor Valencia.", en: "Quiet, authentic and exactly what we were looking for. The host really thinks of everything. Perfect base for Valencia." },
-  { name: "Laura & Marc", country: "🇩🇪", date: "2025-07", rating: 4, nl: "Geweldige ervaring! De locatie is rustig maar goed bereikbaar. De buitenkeuken 's avonds gebruiken is magisch.", en: "Great experience! The location is quiet but easily accessible. Using the outdoor kitchen in the evening is magical." },
   { name: "Emma", country: "🇬🇧", date: "2025-10", rating: 5, nl: "Absoluut de mooiste plek waar we ooit gelogeerd hebben. Persoonlijk, warm en met zoveel aandacht voor detail.", en: "Absolutely the most beautiful place we've ever stayed. Personal, warm and with so much attention to detail." },
+  { name: "Laura & Marc", country: "🇩🇪", date: "2025-07", rating: 4, nl: "Geweldige ervaring! De locatie is rustig maar goed bereikbaar. De buitenkeuken 's avonds gebruiken is magisch.", en: "Great experience! The location is quiet but easily accessible. Using the outdoor kitchen in the evening is magical." },
 ];
+
+const formatReviewDate = (dateStr: string, lang: "nl" | "en") => {
+  const [year, month] = dateStr.split("-");
+  const monthNames: Record<string, string[]> = {
+    nl: ["", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"],
+    en: ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  };
+  return `${monthNames[lang][parseInt(month)]} ${year}`;
+};
 
 const getTranslations = (minimumStay: number) => ({
   nl: {
     nav: { space: "De Ruimte", amenities: "Voorzieningen", location: "Omgeving", pricing: "Prijzen & Boeken", reviews: "Reviews", contact: "Contact" },
-    hero: { headline1: "Tapas in de stad.", headline2: "Relaxen aan het zwembad", subtitle: "Eigen guesthouse met tuin en zwembad, een kwartiertje van Valencia.", cta: "Bekijk beschikbaarheid" },
+    hero: {
+      headline1: "Tapas in de stad.",
+      headline2: "Relaxen aan het zwembad",
+      subtitle: "Eigen guesthouse met tuin en zwembad, een kwartiertje van Valencia.",
+      cta: "Kies je dates",
+      trust: "Privé guesthouse · Torrent, Valencia",
+    },
     space: {
       title: "De Ruimte",
-      room: { title: "De Kamer", desc: "Een rustige, lichte slaapkamer met comfortabel tweepersoonsbed, airconditioning en authentieke Spaanse sfeer." },
-      bathroom: { title: "De Badkamer", desc: "Eigen badkamer met inloopdouche, verse handdoeken en alles wat je nodig hebt." },
-      kitchen: { title: "De Buitenkeuken", desc: "Jouw eigen buitenkeuken met gasfornuis, koelkast en gootsteen onder een overdekt terras." },
-      vibe: "Dit is geen hotel, geen Airbnb-fabriek. Dit is een plek met ziel — waar je 's ochtends wakker wordt met zonlicht door de luiken, koffie zet in je eigen keuken en de dag begint op jouw tempo.",
+      room: { title: "De Kamer", desc: "Wakker worden met Spaans licht door de luiken. Tweepersoonsbed, airco, en precies de juiste stilte." },
+      bathroom: { title: "De Badkamer", desc: "Inloopdouche, verse handdoeken en een ochtend die helemaal van jou is." },
+      kitchen: { title: "De Buitenkeuken", desc: "Koken onder het terras met uitzicht op het zwembad. Gasfornuis, koelkast en alles bij de hand." },
+      vibe: "Dit is geen hotel en geen Airbnb-fabriek. Dit is een plek met ziel. Waar je 's ochtends wakker wordt met zonlicht door de luiken, koffie zet in je eigen keuken en de dag begint op jouw tempo.",
     },
+    midCta1: { headline: "Wanneer kom je?", cta: "Kies je dates" },
     amenities: {
       title: "Voorzieningen",
-      items: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Airconditioning", "Gratis WiFi", "Verse handdoeken & beddengoed", "Eigen ingang", "Parkeerplaats op het terrein", "Wasmachine (gedeeld)", "Strijkijzer", "Haardroger", "Buitenterras met tuinmeubelen", "Lokale tips & huisgids"],
+      intro: "Alles wat je nodig hebt. Niets wat je niet nodig hebt.",
+      main: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Airconditioning", "Gratis WiFi", "Eigen ingang", "Parkeerplaats op het terrein", "Buitenterras met tuinmeubelen"],
+      practical: ["Verse handdoeken & beddengoed", "Wasmachine (gedeeld)", "Strijkijzer", "Haardroger"],
+      localTips: { title: "Lokale tips van Charmaine", subtitle: "Een persoonlijke gids met de beste restaurants, markten, stranden en verborgen plekjes in de regio. Je krijgt hem bij aankomst." },
     },
     location: {
       title: "De Omgeving",
       valencia: { title: "Valencia centrum", detail: "25 min met de auto · 35 min met metro" },
       beach: { title: "Strand", detail: "30 min met de auto · Malvarrosa & El Saler" },
       shops: { title: "Supermarkt & restaurants", detail: "5 min lopen" },
+      airport: { title: "Vliegveld Valencia", detail: "25 min met de auto" },
       desc: "Gelegen in Torrent, een authentiek Spaans dorp net buiten Valencia. Hier geen toeristenmassa's, maar échte bakkers, markten op zaterdag en buurvrouwen die 's avonds op hun terras zitten. Het echte Spanje.",
     },
+    midCta2: { headline: "De stad op 20 minuten. De stilte op nul.", cta: "Bekijk beschikbaarheid" },
     pricing: {
       title: "Prijzen & Beschikbaarheid",
       nights: "nachten",
@@ -79,13 +100,14 @@ const getTranslations = (minimumStay: number) => ({
       discount: "korting",
       total: "Totaal",
       selectDates: "Selecteer je data",
-      selectCheckIn: "Kies een incheckdatum",
+      selectCheckIn: "Wanneer kom je?",
       selectCheckOut: "Kies een uitcheckdatum",
       minStayWarning: `Minimaal verblijf is ${minimumStay} nachten`,
       season: "Seizoen",
       period: "Periode",
       pricePerNight: "Prijs per nacht",
       pricingOverview: "Prijsoverzicht",
+      fromPrice: "per nacht · Minimaal {min} nachten",
     },
     booking: {
       title: "Boekingsverzoek",
@@ -102,18 +124,17 @@ const getTranslations = (minimumStay: number) => ({
       invalidEmail: "Ongeldig e-mailadres",
       invalidPhone: "Ongeldig telefoonnummer",
     },
-    reviews: { title: "Wat onze gasten zeggen", note: "Ook te vinden op Airbnb en Google" },
+    reviews: { title: "Wat onze gasten zeggen", note: "Directe boeking · Persoonlijk contact · Geen tussenpartij" },
     faq: {
-      title: "Veelgestelde Vragen",
+      title: "Veelgestelde vragen",
       items: [
-        { q: "Hoe laat kan ik inchecken / uitchecken?", a: "Inchecken kan vanaf 15:00 tot 20:00. Uitchecken vóór 11:00. Andere tijden in overleg mogelijk." },
-        { q: "Is er parkeergelegenheid?", a: "Ja, er is een gratis parkeerplaats op het terrein beschikbaar voor gasten." },
-        { q: "Zijn huisdieren toegestaan?", a: "In overleg. Neem contact met ons op om de mogelijkheden te bespreken." },
-        { q: "Hoe bereik ik het centrum van Valencia?", a: "Met de auto ben je er in circa 25 minuten. Met het openbaar vervoer (metro) in ongeveer 35 minuten." },
-        { q: "Kan ik de keuken volledig gebruiken?", a: "Absoluut! De buitenkeuken is volledig privé en uitgerust met gasfornuis, koelkast en gootsteen." },
-        { q: "Is er een minimaal verblijf?", a: `Ja, het minimale verblijf is ${minimumStay} nachten.` },
-        { q: "Hoe werkt betaling?", a: "Na bevestiging van je boeking ontvang je een betaalverzoek. We accepteren bankoverschrijving en de meeste gangbare betaalmethoden." },
-        { q: "Wat als ik moet annuleren?", a: "Tot 14 dagen voor aankomst kun je kosteloos annuleren. Daarna wordt 50% van het totaalbedrag in rekening gebracht." },
+        { q: "Hoe boek ik?", a: "Kies je dates in de kalender hierboven en stuur een bericht via WhatsApp of e-mail. Je krijgt binnen 24 uur een bevestiging met betaalinstructies." },
+        { q: "Wat is de minimale verblijfsduur?", a: "Minimaal 3 nachten. In het hoogseizoen (juli-augustus) hanteren we een minimum van 5 nachten." },
+        { q: "Hoe kom ik er vanaf het vliegveld?", a: "Vliegveld Valencia ligt op 25 minuten rijden. Met de metro ben je in 40 minuten in Torrent. We sturen je een routebeschrijving bij de boeking." },
+        { q: "Is er parkeergelegenheid?", a: "Ja, er is een eigen parkeerplaats op het terrein. Gratis en direct bij het guesthouse." },
+        { q: "Kan ik de ruimte delen met andere gasten?", a: "Nee. Het guesthouse, het zwembad en de tuin zijn volledig privé tijdens jouw verblijf." },
+        { q: "Zijn huisdieren welkom?", a: "Neem contact met ons op om de mogelijkheden te bespreken." },
+        { q: "Wat zit er in de lokale tipsgids?", a: "Een persoonlijke selectie van onze favoriete restaurants, stranden, markten, wandelingen en verborgen plekjes in Valencia en omgeving. Je krijgt hem digitaal bij aankomst." },
       ],
     },
     rules: {
@@ -129,33 +150,49 @@ const getTranslations = (minimumStay: number) => ({
     },
     contact: {
       title: "Contact",
-      hostedBy: "Gehost door Charmaine",
-      hostDesc: "Ik ben Charmaine en woon zelf in Valencia. Ik heb vaak een borreltje te veel op. Samen paella eten is mijn droom. Ik hou van de was doen en stofzuigen.",
+      hostedBy: "Je gastvrouw: Charmaine",
+      hostDesc: "Ik ben Charmaine en woon zelf in Valencia. Ik ken de beste plekjes, van lokale markten tot verborgen restaurantjes. Heb je vragen over het guesthouse of wil je tips voor je verblijf? Stuur me gerust een bericht.",
       whatsapp: "WhatsApp",
       footer: "Gemaakt met ♥ in Valencia",
+    },
+    footer: {
+      tagline: "Jouw eigen plek in Valencia",
+      copyright: `© ${new Date().getFullYear()} Casa Valencia · Torrent, Valencia, Spanje`,
     },
   },
   en: {
     nav: { space: "The Space", amenities: "Amenities", location: "Location", pricing: "Pricing & Booking", reviews: "Reviews", contact: "Contact" },
-    hero: { headline1: "Tapas in the city.", headline2: "Relaxing by the pool", subtitle: "Private guesthouse with garden and pool, fifteen minutes from Valencia.", cta: "Check availability" },
+    hero: {
+      headline1: "Tapas in the city.",
+      headline2: "Relaxing by the pool",
+      subtitle: "Private guesthouse with garden and pool, fifteen minutes from Valencia.",
+      cta: "Choose your dates",
+      trust: "Private guesthouse · Torrent, Valencia",
+    },
     space: {
       title: "The Space",
-      room: { title: "The Room", desc: "A quiet, bright bedroom with comfortable double bed, air conditioning and authentic Spanish atmosphere." },
-      bathroom: { title: "The Bathroom", desc: "Private bathroom with walk-in shower, fresh towels and everything you need." },
-      kitchen: { title: "The Outdoor Kitchen", desc: "Your own outdoor kitchen with gas stove, fridge and sink under a covered terrace." },
-      vibe: "This isn't a hotel, not an Airbnb factory. This is a place with soul — where you wake up with sunlight through the shutters, make coffee in your own kitchen and start the day at your own pace.",
+      room: { title: "The Room", desc: "Wake up to Spanish light through the shutters. Double bed, airco, and just the right silence." },
+      bathroom: { title: "The Bathroom", desc: "Walk-in shower, fresh towels and a morning that's all yours." },
+      kitchen: { title: "The Outdoor Kitchen", desc: "Cooking under the terrace with a view of the pool. Gas stove, fridge and everything at hand." },
+      vibe: "This isn't a hotel and not an Airbnb factory. This is a place with soul. Where you wake up with sunlight through the shutters, make coffee in your own kitchen and start the day at your own pace.",
     },
+    midCta1: { headline: "When are you coming?", cta: "Choose your dates" },
     amenities: {
       title: "Amenities",
-      items: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Air conditioning", "Free WiFi", "Fresh towels & linens", "Private entrance", "On-site parking", "Washing machine (shared)", "Iron", "Hair dryer", "Outdoor terrace with garden furniture", "Local tips & house guide"],
+      intro: "Everything you need. Nothing you don't.",
+      main: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Air conditioning", "Free WiFi", "Private entrance", "On-site parking", "Outdoor terrace with garden furniture"],
+      practical: ["Fresh towels & linens", "Washing machine (shared)", "Iron", "Hair dryer"],
+      localTips: { title: "Local tips from Charmaine", subtitle: "A personal guide with the best restaurants, markets, beaches and hidden gems in the area. You'll receive it upon arrival." },
     },
     location: {
       title: "The Surroundings",
       valencia: { title: "Valencia center", detail: "25 min by car · 35 min by metro" },
       beach: { title: "Beach", detail: "30 min by car · Malvarrosa & El Saler" },
       shops: { title: "Supermarket & restaurants", detail: "5 min walk" },
+      airport: { title: "Valencia Airport", detail: "25 min by car" },
       desc: "Located in Torrent, an authentic Spanish village just outside Valencia. No tourist crowds here, but real bakeries, Saturday markets and neighbors sitting on their terraces in the evening. The real Spain.",
     },
+    midCta2: { headline: "The city in 20 minutes. Silence at zero.", cta: "Check availability" },
     pricing: {
       title: "Pricing & Availability",
       nights: "nights",
@@ -166,13 +203,14 @@ const getTranslations = (minimumStay: number) => ({
       discount: "discount",
       total: "Total",
       selectDates: "Select your dates",
-      selectCheckIn: "Choose a check-in date",
+      selectCheckIn: "When are you coming?",
       selectCheckOut: "Choose a check-out date",
       minStayWarning: `Minimum stay is ${minimumStay} nights`,
       season: "Season",
       period: "Period",
       pricePerNight: "Price per night",
       pricingOverview: "Pricing overview",
+      fromPrice: "per night · Minimum {min} nights",
     },
     booking: {
       title: "Booking Request",
@@ -189,18 +227,17 @@ const getTranslations = (minimumStay: number) => ({
       invalidEmail: "Invalid email address",
       invalidPhone: "Invalid phone number",
     },
-    reviews: { title: "What our guests say", note: "Also available on Airbnb and Google" },
+    reviews: { title: "What our guests say", note: "Direct booking · Personal contact · No middleman" },
     faq: {
-      title: "Frequently Asked Questions",
+      title: "Frequently asked questions",
       items: [
-        { q: "What are the check-in / check-out times?", a: "Check-in from 15:00 to 20:00. Check-out before 11:00. Other times possible by arrangement." },
-        { q: "Is there parking available?", a: "Yes, free on-site parking is available for guests." },
-        { q: "Are pets allowed?", a: "By arrangement. Contact us to discuss options." },
-        { q: "How do I reach Valencia city center?", a: "By car in about 25 minutes. By public transport (metro) in approximately 35 minutes." },
-        { q: "Can I fully use the kitchen?", a: "Absolutely! The outdoor kitchen is fully private with gas stove, fridge and sink." },
-        { q: "Is there a minimum stay?", a: `Yes, the minimum stay is ${minimumStay} nights.` },
-        { q: "How does payment work?", a: "After confirming your booking, you'll receive a payment request. We accept bank transfer and most common payment methods." },
-        { q: "What if I need to cancel?", a: "Free cancellation up to 14 days before arrival. After that, 50% of the total amount will be charged." },
+        { q: "How do I book?", a: "Choose your dates in the calendar above and send a message via WhatsApp or email. You'll receive a confirmation with payment instructions within 24 hours." },
+        { q: "What is the minimum stay?", a: "Minimum 3 nights. In high season (July-August) we require a minimum of 5 nights." },
+        { q: "How do I get there from the airport?", a: "Valencia Airport is 25 minutes by car. By metro you're in Torrent in 40 minutes. We'll send you directions with your booking." },
+        { q: "Is there parking?", a: "Yes, there's a private parking spot on the premises. Free and right next to the guesthouse." },
+        { q: "Do I share the space with other guests?", a: "No. The guesthouse, pool and garden are completely private during your stay." },
+        { q: "Are pets welcome?", a: "Contact us to discuss the options." },
+        { q: "What's in the local tips guide?", a: "A personal selection of our favorite restaurants, beaches, markets, walks and hidden gems in Valencia and the surrounding area. You'll receive it digitally upon arrival." },
       ],
     },
     rules: {
@@ -216,10 +253,14 @@ const getTranslations = (minimumStay: number) => ({
     },
     contact: {
       title: "Contact",
-      hostedBy: "Hosted by Charmaine",
-      hostDesc: "I'm Charmaine and I live in Valencia. I often have one drink too many. Eating paella together is my dream. I love doing laundry and vacuuming.",
+      hostedBy: "Your host: Charmaine",
+      hostDesc: "I'm Charmaine and I live in Valencia. I know the best spots, from local markets to hidden restaurants. Have questions about the guesthouse or want tips for your stay? Feel free to send me a message.",
       whatsapp: "WhatsApp",
       footer: "Made with ♥ in Valencia",
+    },
+    footer: {
+      tagline: "Your own place in Valencia",
+      copyright: `© ${new Date().getFullYear()} Casa Valencia · Torrent, Valencia, Spain`,
     },
   },
 });
@@ -230,7 +271,8 @@ type Lang = "nl" | "en";
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
 
-const amenityIcons = [Bath, ChefHat, Snowflake, Wifi, Bed, DoorOpen, Car, WashingMachine, Shirt, Wind, TreePalm, BookOpen];
+const mainAmenityIcons = [Bath, ChefHat, Snowflake, Wifi, DoorOpen, Car, TreePalm];
+const practicalAmenityIcons = [Bed, WashingMachine, Shirt, Wind];
 
 const ruleIcons: Record<string, React.ElementType> = {
   clock: Clock, ban: BanIcon, party: PartyPopper, moon: Moon, paw: PawPrint,
@@ -377,7 +419,6 @@ export default function Index() {
           photoMap[p.category].gallery.push(p.url);
           if (p.is_primary) photoMap[p.category].primary = p.url;
         }
-        // If no primary set, use first
         for (const cat of Object.keys(photoMap)) {
           if (!photoMap[cat].primary && photoMap[cat].gallery.length > 0) {
             photoMap[cat].primary = photoMap[cat].gallery[0];
@@ -504,6 +545,15 @@ export default function Index() {
     { img: kitchenImg, ...t.space.kitchen, gallery: getGallery("kitchen", kitchenImgFallback) },
   ];
 
+  // Compute seasonal price summary for display
+  const seasonPriceSummary = useMemo(() => {
+    if (pricingConfig.seasonalPricing.length === 0) return null;
+    const prices = pricingConfig.seasonalPricing.map(s => s.pricePerNight);
+    const minPrice = Math.min(...prices, pricingConfig.defaultPricePerNight);
+    const maxPrice = Math.max(...prices);
+    return { min: minPrice, max: maxPrice, seasons: pricingConfig.seasonalPricing };
+  }, [pricingConfig]);
+
   // ─── RENDER ─────────────────────────────────────────────────
 
   return (
@@ -519,31 +569,17 @@ export default function Index() {
             Casa Valencia
           </button>
 
-          {/* Desktop links */}
+          {/* Desktop links — no language toggle */}
           <div className="hidden md:flex items-center gap-6">
             {navSections.map(s => (
               <button key={s.id} onClick={() => scrollTo(s.id)} className="text-sm font-medium hover:text-primary transition-colors">
                 {s.label}
               </button>
             ))}
-            <button
-              onClick={() => setLang(lang === "nl" ? "en" : "nl")}
-              className="flex items-center gap-1 text-sm border border-border rounded-lg px-3 py-1.5 hover:bg-accent transition-colors"
-              aria-label="Toggle language"
-            >
-              <Globe size={14} />
-              {lang === "nl" ? "EN" : "NL"}
-            </button>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button — no language toggle */}
           <div className="flex items-center gap-3 md:hidden">
-            <button
-              onClick={() => setLang(lang === "nl" ? "en" : "nl")}
-              className="text-sm border border-border rounded-lg px-2 py-1 hover:bg-accent transition-colors"
-            >
-              {lang === "nl" ? "EN" : "NL"}
-            </button>
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu">
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -593,6 +629,7 @@ export default function Index() {
           >
             {t.hero.cta}
           </button>
+          <p className="mt-4 text-sm text-background/60">{t.hero.trust}</p>
         </motion.div>
       </section>
 
@@ -624,32 +661,82 @@ export default function Index() {
             </FadeInSection>
           ))}
         </div>
+
+        {/* Quote block — prominent */}
         <FadeInSection>
-          <p className="text-center text-muted-foreground max-w-2xl mx-auto leading-relaxed italic">
-            {t.space.vibe}
-          </p>
+          <div className="bg-accent rounded-2xl p-8 sm:p-12 max-w-3xl mx-auto shadow-md">
+            <p className="text-center font-serif italic text-lg sm:text-xl leading-relaxed text-foreground/90">
+              {t.space.vibe}
+            </p>
+          </div>
         </FadeInSection>
+      </section>
+
+      {/* ═══ TUSSENTIJDSE CTA 1 ═══ */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden grain-overlay">
+        <img src={heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        <div className="absolute inset-0 bg-foreground/50" />
+        <div className="relative z-10 text-center max-w-2xl mx-auto">
+          <FadeInSection>
+            <h2 className="font-serif text-3xl sm:text-4xl text-background mb-6">{t.midCta1.headline}</h2>
+            <button
+              onClick={() => scrollTo("pricing")}
+              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg text-base font-medium hover:bg-primary/90 transition-colors shadow-lg"
+            >
+              {t.midCta1.cta}
+            </button>
+          </FadeInSection>
+        </div>
       </section>
 
       {/* ═══ VOORZIENINGEN ═══ */}
       <section id="amenities" className="py-20 px-4 sm:px-6 lg:px-8 bg-accent/30">
         <div className="max-w-7xl mx-auto">
           <FadeInSection>
-            <h2 className="font-serif text-3xl sm:text-4xl text-center mb-12">{t.amenities.title}</h2>
+            <h2 className="font-serif text-3xl sm:text-4xl text-center mb-3">{t.amenities.title}</h2>
+            <p className="text-center font-serif italic text-lg text-muted-foreground mb-12">{t.amenities.intro}</p>
           </FadeInSection>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {t.amenities.items.map((item, i) => {
-              const Icon = amenityIcons[i];
+
+          {/* Main amenities */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {t.amenities.main.map((item, i) => {
+              const Icon = mainAmenityIcons[i] || Bath;
               return (
                 <FadeInSection key={i}>
                   <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm">
-                    <Icon size={20} className="text-primary shrink-0" />
-                    <span className="text-sm">{item}</span>
+                    <Icon size={22} className="text-primary shrink-0" />
+                    <span className="text-sm font-medium">{item}</span>
                   </div>
                 </FadeInSection>
               );
             })}
           </div>
+
+          {/* Practical amenities — subtler */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
+            {t.amenities.practical.map((item, i) => {
+              const Icon = practicalAmenityIcons[i] || Bed;
+              return (
+                <FadeInSection key={i}>
+                  <div className="flex items-center gap-3 rounded-lg p-3 border border-border/50">
+                    <Icon size={16} className="text-muted-foreground shrink-0" />
+                    <span className="text-sm text-muted-foreground">{item}</span>
+                  </div>
+                </FadeInSection>
+              );
+            })}
+          </div>
+
+          {/* Local tips block */}
+          <FadeInSection>
+            <div className="bg-card rounded-xl p-6 shadow-sm max-w-2xl mx-auto flex items-start gap-4">
+              <BookOpen size={28} className="text-primary shrink-0 mt-1" />
+              <div>
+                <h3 className="font-serif text-lg mb-1">{t.amenities.localTips.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t.amenities.localTips.subtitle}</p>
+              </div>
+            </div>
+          </FadeInSection>
         </div>
       </section>
 
@@ -663,7 +750,7 @@ export default function Index() {
             <div className="rounded-xl overflow-hidden shadow-md aspect-[4/3] bg-muted">
               <iframe
                 title="Google Maps - Torrent, Valencia"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d49568.44976518!2d-0.4936!3d39.4367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd6045f86b3b3b3b%3A0x1!2sTorrent%2C+Valencia!5e0!3m2!1sen!2ses!4v1"
+                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d49568.44976518!2d-0.4936!3d39.4367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2ses!4v1"
                 className="w-full h-full border-0"
                 allowFullScreen
                 loading="lazy"
@@ -676,6 +763,7 @@ export default function Index() {
               { ...t.location.valencia, icon: MapPin },
               { ...t.location.beach, icon: Waves },
               { ...t.location.shops, icon: ShoppingBag },
+              { ...t.location.airport, icon: Plane },
             ].map((item, i) => (
               <FadeInSection key={i}>
                 <div className="bg-card rounded-xl p-6 shadow-sm">
@@ -690,10 +778,27 @@ export default function Index() {
           </div>
         </div>
         <FadeInSection>
-          <p className="text-center text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-center text-foreground text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed py-6">
             {t.location.desc}
           </p>
         </FadeInSection>
+      </section>
+
+      {/* ═══ TUSSENTIJDSE CTA 2 ═══ */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden grain-overlay">
+        <img src={heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        <div className="absolute inset-0 bg-foreground/50" />
+        <div className="relative z-10 text-center max-w-2xl mx-auto">
+          <FadeInSection>
+            <h2 className="font-serif text-3xl sm:text-4xl text-background mb-6">{t.midCta2.headline}</h2>
+            <button
+              onClick={() => scrollTo("pricing")}
+              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg text-base font-medium hover:bg-primary/90 transition-colors shadow-lg"
+            >
+              {t.midCta2.cta}
+            </button>
+          </FadeInSection>
+        </div>
       </section>
 
       {/* ═══ PRIJZEN & BOEKEN ═══ */}
@@ -701,6 +806,19 @@ export default function Index() {
         <div className="max-w-5xl mx-auto">
           <FadeInSection>
             <h2 className="font-serif text-3xl sm:text-4xl text-center mb-4">{t.pricing.title}</h2>
+            {/* From-price indicator */}
+            <p className="text-center text-lg mb-2">
+              <span className="font-semibold">Vanaf €{pricingConfig.defaultPricePerNight}</span>{" "}
+              <span className="text-muted-foreground">{t.pricing.fromPrice.replace("{min}", String(pricingConfig.minimumStay))}</span>
+            </p>
+            {/* Season price summary */}
+            {seasonPriceSummary && seasonPriceSummary.seasons.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-6">
+                {seasonPriceSummary.seasons.map((s, i) => (
+                  <span key={i}>{lang === "nl" ? s.label : s.labelEn}: €{s.pricePerNight}/{lang === "nl" ? "nacht" : "night"}</span>
+                ))}
+              </div>
+            )}
             <p className="text-center text-muted-foreground mb-10">{t.pricing.selectDates}</p>
           </FadeInSection>
 
@@ -940,13 +1058,13 @@ export default function Index() {
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <span>{r.country}</span>
                   <span>{r.name}</span>
-                  <span className="text-muted-foreground ml-auto">{r.date}</span>
+                  <span className="text-muted-foreground ml-auto">{formatReviewDate(r.date, lang)}</span>
                 </div>
               </div>
             </FadeInSection>
           ))}
         </div>
-        <p className="text-center text-xs text-muted-foreground">{t.reviews.note}</p>
+        <p className="text-center text-sm text-muted-foreground font-medium">{t.reviews.note}</p>
       </section>
 
       {/* ═══ FAQ ═══ */}
@@ -1007,7 +1125,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ═══ CONTACT & FOOTER ═══ */}
+      {/* ═══ CONTACT ═══ */}
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-accent/30">
         <div className="max-w-3xl mx-auto text-center">
           <FadeInSection>
@@ -1039,8 +1157,38 @@ export default function Index() {
         </div>
       </section>
 
-      <footer className="py-6 text-center text-xs text-muted-foreground border-t border-border">
-        <p>© {new Date().getFullYear()} Casa Valencia · {t.contact.footer}</p>
+      {/* ═══ FOOTER ═══ */}
+      <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border bg-background">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid sm:grid-cols-3 gap-8 mb-8">
+            {/* Left: Brand */}
+            <div>
+              <p className="font-serif text-xl mb-1">Casa Valencia</p>
+              <p className="text-sm text-muted-foreground">{t.footer.tagline}</p>
+            </div>
+            {/* Middle: Section links */}
+            <div className="flex flex-wrap gap-x-6 gap-y-2 sm:justify-center">
+              {navSections.map(s => (
+                <button key={s.id} onClick={() => scrollTo(s.id)} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {s.label}
+                </button>
+              ))}
+            </div>
+            {/* Right: Contact icons */}
+            <div className="flex items-start gap-4 sm:justify-end">
+              <a href="mailto:hola@casavalencia.es" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email">
+                <Mail size={18} />
+              </a>
+              <a href="https://wa.me/34600000000" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="WhatsApp">
+                <MessageCircle size={18} />
+              </a>
+              <a href="https://instagram.com/casavalencia" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
+                <Instagram size={18} />
+              </a>
+            </div>
+          </div>
+          <p className="text-center text-xs text-muted-foreground">{t.footer.copyright}</p>
+        </div>
       </footer>
 
       {/* ═══ LIGHTBOX ═══ */}
