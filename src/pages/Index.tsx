@@ -381,7 +381,7 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
 
-const mainAmenityIcons = [Bath, ChefHat, Waves, Sun, Wifi, Car, DoorOpen, TreePalm];
+const mainAmenityIcons = [Bath, ChefHat, Waves, Sun, Wifi, Car, DoorOpen, TreePalm, Bed, Moon];
 const practicalAmenityIcons = [Bed, WashingMachine];
 
 const ruleIcons: Record<string, React.ElementType> = {
