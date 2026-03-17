@@ -181,7 +181,7 @@ const getTranslations = (minimumStay: number) => ({
     },
     space: {
       title: "The Space",
-      room: { title: "The Room", desc: "Wake up to Spanish light through the shutters. Double bed, airco, and just the right silence." },
+      room: { title: "The Room", desc: "Wake up to Spanish light through the shutters. Double bed and just the right silence." },
       bathroom: { title: "The Bathroom", desc: "Walk-in shower, fresh towels and a morning that's all yours." },
       kitchen: { title: "The Outdoor Kitchen", desc: "Cooking under the terrace with a view of the pool. Gas stove, fridge and everything at hand." },
       vibe: "This isn't a hotel and not an Airbnb factory. This is a place with soul. Where you wake up with sunlight through the shutters, make coffee in your own kitchen and start the day at your own pace.",
