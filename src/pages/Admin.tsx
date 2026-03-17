@@ -603,3 +603,111 @@ function PricingTab() {
     </div>
   );
 }
+
+// ═══════════════════════════════════════
+// BOOKINGS TAB
+// ═══════════════════════════════════════
+
+function BookingsTab() {
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchBookings = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("bookings").select("*").order("created_at", { ascending: false });
+    if (data) setBookings(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchBookings(); }, [fetchBookings]);
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("bookings").update({ status }).eq("id", id);
+    fetchBookings();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Weet je zeker dat je deze boeking wilt verwijderen?")) return;
+    await supabase.from("bookings").delete().eq("id", id);
+    fetchBookings();
+  };
+
+  const statusColors: Record<string, string> = {
+    pending: "bg-yellow-100 text-yellow-800",
+    confirmed: "bg-green-100 text-green-800",
+    cancelled: "bg-red-100 text-red-800",
+  };
+
+  const statusLabels: Record<string, string> = {
+    pending: "In afwachting",
+    confirmed: "Bevestigd",
+    cancelled: "Geannuleerd",
+  };
+
+  if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Laden...</p>;
+
+  return (
+    <div>
+      <h3 className="font-serif text-lg mb-4">Boekingsaanvragen</h3>
+      {bookings.length === 0 ? (
+        <p className="text-muted-foreground text-sm text-center py-12">Nog geen boekingen ontvangen.</p>
+      ) : (
+        <div className="space-y-4">
+          {bookings.map(b => (
+            <div key={b.id} className="bg-card rounded-xl p-5 shadow-sm">
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                <div>
+                  <h4 className="font-medium text-base">{b.first_name} {b.last_name}</h4>
+                  <p className="text-sm text-muted-foreground">{b.email} · {b.phone}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[b.status] || "bg-muted text-muted-foreground"}`}>
+                    {statusLabels[b.status] || b.status}
+                  </span>
+                  <select
+                    value={b.status}
+                    onChange={e => updateStatus(b.id, e.target.value)}
+                    className="rounded border border-input bg-background px-2 py-1 text-xs"
+                  >
+                    <option value="pending">In afwachting</option>
+                    <option value="confirmed">Bevestigd</option>
+                    <option value="cancelled">Geannuleerd</option>
+                  </select>
+                  <button onClick={() => handleDelete(b.id)} className="text-destructive hover:text-destructive/80 transition-colors ml-1">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                <div>
+                  <span className="text-muted-foreground text-xs">Check-in</span>
+                  <p className="font-medium">{b.check_in}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-xs">Check-out</span>
+                  <p className="font-medium">{b.check_out}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-xs">Gasten</span>
+                  <p className="font-medium">{b.guests}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-xs">Totaalprijs</span>
+                  <p className="font-medium">{b.total_price ? `€${b.total_price}` : "—"}</p>
+                </div>
+              </div>
+              {b.message && (
+                <div className="mt-3 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
+                  <span className="text-xs font-medium text-foreground">Bericht:</span> {b.message}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground mt-3">
+                Ontvangen: {new Date(b.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
