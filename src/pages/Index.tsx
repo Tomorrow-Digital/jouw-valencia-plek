@@ -671,6 +671,34 @@ export default function Index() {
 
     setBookingSubmitted(true);
 
+// --- Stuur data naar n8n Webhook ---
+    try {
+      // Vervang dit met jouw echte n8n Test URL
+      const n8nWebhookUrl = "https://tomorrowdigital.app.n8n.cloud/webhook-test/e53bbf92-d6cf-46cf-aefd-52eb8b45136c"; 
+      
+      await fetch(n8nWebhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phone,
+          guests,
+          checkIn: checkIn ? format(checkIn, "yyyy-MM-dd") : "",
+          checkOut: checkOut ? format(checkOut, "yyyy-MM-dd") : "",
+          totalPrice: pricing?.total ?? null,
+          message: message || "Geen bericht",
+        }),
+      });
+      console.log("Boeking succesvol doorgestuurd naar n8n!");
+    } catch (webhookError) {
+      console.error("Fout bij sturen naar n8n:", webhookError);
+    }
+    // ------------------------------------------
+
     // Send confirmation email (best-effort, don't block on failure)
     try {
       await supabase.functions.invoke("send-booking-confirmation", {
