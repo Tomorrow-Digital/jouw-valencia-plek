@@ -128,7 +128,7 @@ const getTranslations = (minimumStay: number) => ({
     faq: {
       title: "Veelgestelde vragen",
       items: [
-        { q: "Hoe boek ik?", a: "Kies je dates in de kalender hierboven en stuur een bericht via WhatsApp of e-mail. Je krijgt binnen 24 uur een bevestiging met betaalinstructies." },
+        { q: "Hoe boek ik?", a: "Kies je dates in de kalender hierboven en vul het boekingsformulier in. Je ontvangt direct een bevestigingsmail en binnen 24 uur de betaalinstructies." },
         { q: "Wat is de minimale verblijfsduur?", a: "Minimaal 3 nachten. In het hoogseizoen (juli-augustus) hanteren we een minimum van 5 nachten." },
         { q: "Hoe kom ik er vanaf het vliegveld?", a: "Vliegveld Valencia ligt op 25 minuten rijden. Met de metro ben je in 40 minuten in Torrent. We sturen je een routebeschrijving bij de boeking." },
         { q: "Is er parkeergelegenheid?", a: "Ja, er is een eigen parkeerplaats op het terrein. Gratis en direct bij het guesthouse." },
@@ -231,7 +231,7 @@ const getTranslations = (minimumStay: number) => ({
     faq: {
       title: "Frequently asked questions",
       items: [
-        { q: "How do I book?", a: "Choose your dates in the calendar above and send a message via WhatsApp or email. You'll receive a confirmation with payment instructions within 24 hours." },
+        { q: "How do I book?", a: "Choose your dates in the calendar above and fill in the booking form. You'll receive an instant confirmation email and payment instructions within 24 hours." },
         { q: "What is the minimum stay?", a: "Minimum 3 nights. In high season (July-August) we require a minimum of 5 nights." },
         { q: "How do I get there from the airport?", a: "Valencia Airport is 25 minutes by car. By metro you're in Torrent in 40 minutes. We'll send you directions with your booking." },
         { q: "Is there parking?", a: "Yes, there's a private parking spot on the premises. Free and right next to the guesthouse." },
@@ -561,20 +561,24 @@ export default function Index() {
 
     setBookingSubmitted(true);
 
-    // Open WhatsApp with pre-filled message
-    const checkInStr = checkIn ? format(checkIn, "d MMM yyyy") : "?";
-    const checkOutStr = checkOut ? format(checkOut, "d MMM yyyy") : "?";
-    const priceStr = pricing?.total ? `€${pricing.total}` : "";
-    const waText = encodeURIComponent(
-      `Hola! Ik wil graag boeken bij Casa Valencia.\n\n` +
-      `Naam: ${firstName} ${lastName}\n` +
-      `Check-in: ${checkInStr}\n` +
-      `Check-out: ${checkOutStr}\n` +
-      `Gasten: ${guests}\n` +
-      (priceStr ? `Totaalprijs: ${priceStr}\n` : "") +
-      (message ? `Bericht: ${message}\n` : "")
-    );
-    window.open(`https://wa.me/31630093776?text=${waText}`, "_blank");
+    // Send confirmation email (best-effort, don't block on failure)
+    try {
+      await supabase.functions.invoke("send-booking-confirmation", {
+        body: {
+          firstName,
+          lastName,
+          email,
+          checkIn: checkIn ? format(checkIn, "yyyy-MM-dd") : "",
+          checkOut: checkOut ? format(checkOut, "yyyy-MM-dd") : "",
+          guests,
+          totalPrice: pricing?.total ?? null,
+          arrivalTime: arrivalTime || null,
+          message: message || null,
+        },
+      });
+    } catch (emailErr) {
+      console.error("Confirmation email error:", emailErr);
+    }
   };
 
   const navSections = [
