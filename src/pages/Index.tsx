@@ -128,7 +128,7 @@ const getTranslations = (minimumStay: number) => ({
     faq: {
       title: "Veelgestelde vragen",
       items: [
-        { q: "Hoe boek ik?", a: "Kies je dates in de kalender hierboven en stuur een bericht via WhatsApp of e-mail. Je krijgt binnen 24 uur een bevestiging met betaalinstructies." },
+        { q: "Hoe boek ik?", a: "Kies je dates in de kalender hierboven en vul het boekingsformulier in. Je ontvangt direct een bevestigingsmail en binnen 24 uur de betaalinstructies." },
         { q: "Wat is de minimale verblijfsduur?", a: "Minimaal 3 nachten. In het hoogseizoen (juli-augustus) hanteren we een minimum van 5 nachten." },
         { q: "Hoe kom ik er vanaf het vliegveld?", a: "Vliegveld Valencia ligt op 25 minuten rijden. Met de metro ben je in 40 minuten in Torrent. We sturen je een routebeschrijving bij de boeking." },
         { q: "Is er parkeergelegenheid?", a: "Ja, er is een eigen parkeerplaats op het terrein. Gratis en direct bij het guesthouse." },
