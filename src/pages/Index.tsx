@@ -901,15 +901,15 @@ export default function Index() {
             })}
           </div>
 
-          {/* Practical amenities — subtler */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
+          {/* Practical amenities */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             {t.amenities.practical.map((item, i) => {
               const Icon = practicalAmenityIcons[i] || Bed;
               return (
                 <FadeInSection key={i}>
-                  <div className="flex items-center gap-3 rounded-lg p-3 border border-border/50">
-                    <Icon size={16} className="text-muted-foreground shrink-0" />
-                    <span className="text-sm text-muted-foreground">{item}</span>
+                  <div className="flex items-center gap-3 bg-card rounded-lg p-4 shadow-sm">
+                    <Icon size={22} className="text-primary shrink-0" />
+                    <span className="text-sm font-medium">{item}</span>
                   </div>
                 </FadeInSection>
               );
