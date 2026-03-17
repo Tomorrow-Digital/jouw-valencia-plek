@@ -50,7 +50,7 @@ const REVIEWS = [
 const getTranslations = (minimumStay: number) => ({
   nl: {
     nav: { space: "De Ruimte", amenities: "Voorzieningen", location: "Omgeving", pricing: "Prijzen & Boeken", reviews: "Reviews", contact: "Contact" },
-    hero: { headline: "Tapas in de stad. En relaxen bij het zwembad.", subtitle: "Eigen guesthouse met tuin en zwembad, een kwartiertje van Valencia.", cta: "Bekijk beschikbaarheid" },
+    hero: { headline1: "Tapas in de stad.", headline2: "En relaxen bij het zwembad.", subtitle: "Eigen guesthouse met tuin en zwembad, een kwartiertje van Valencia.", cta: "Bekijk beschikbaarheid" },
     space: {
       title: "De Ruimte",
       room: { title: "De Kamer", desc: "Een rustige, lichte slaapkamer met comfortabel tweepersoonsbed, airconditioning en authentieke Spaanse sfeer." },
@@ -137,7 +137,7 @@ const getTranslations = (minimumStay: number) => ({
   },
   en: {
     nav: { space: "The Space", amenities: "Amenities", location: "Location", pricing: "Pricing & Booking", reviews: "Reviews", contact: "Contact" },
-    hero: { headline: "Tapas in the city. And relaxing by the pool.", subtitle: "Private guesthouse with garden and pool, fifteen minutes from Valencia.", cta: "Check availability" },
+    hero: { headline1: "Tapas in the city.", headline2: "And relaxing by the pool.", subtitle: "Private guesthouse with garden and pool, fifteen minutes from Valencia.", cta: "Check availability" },
     space: {
       title: "The Space",
       room: { title: "The Room", desc: "A quiet, bright bedroom with comfortable double bed, air conditioning and authentic Spanish atmosphere." },
@@ -582,7 +582,7 @@ export default function Index() {
           className="relative z-10 text-center px-4 max-w-3xl mx-auto"
         >
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-background mb-6 drop-shadow-lg leading-tight">
-            {t.hero.headline}
+            {t.hero.headline1}<br />{t.hero.headline2}
           </h1>
           <p className="text-lg sm:text-xl text-background/90 mb-8 max-w-2xl mx-auto leading-relaxed">
             {t.hero.subtitle}
