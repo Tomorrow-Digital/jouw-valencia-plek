@@ -981,19 +981,6 @@ export default function Index() {
         <div className="max-w-5xl mx-auto">
           <FadeInSection>
             <h2 className="font-serif text-3xl sm:text-4xl text-center mb-4">{t.pricing.title}</h2>
-            {/* From-price indicator */}
-            <p className="text-center text-lg mb-2">
-              <span className="font-semibold">Vanaf €{pricingConfig.defaultPricePerNight}</span>{" "}
-              <span className="text-muted-foreground">{t.pricing.fromPrice.replace("{min}", String(pricingConfig.minimumStay))}</span>
-            </p>
-            {/* Season price summary */}
-            {seasonPriceSummary && seasonPriceSummary.seasons.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-6">
-                {seasonPriceSummary.seasons.map((s, i) => (
-                  <span key={i}>{lang === "nl" ? s.label : s.labelEn}: €{s.pricePerNight}/{lang === "nl" ? "nacht" : "night"}</span>
-                ))}
-              </div>
-            )}
             <p className="text-center text-muted-foreground mb-10">{t.pricing.selectDates}</p>
           </FadeInSection>
 
