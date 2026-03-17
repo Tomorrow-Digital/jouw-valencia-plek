@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, Plus, Upload, LogOut, Save, Image, Calendar, Euro, X, Pencil, Check, ClipboardList } from "lucide-react";
+import { Trash2, Plus, Upload, LogOut, Save, Image, Calendar, Euro, X, Pencil, Check, ClipboardList, MessageSquare } from "lucide-react";
 
 type Tab = "photos" | "calendar" | "pricing" | "bookings";
 
