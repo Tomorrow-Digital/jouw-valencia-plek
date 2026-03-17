@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, Plus, Upload, LogOut, Save, Image, Calendar, Euro, X } from "lucide-react";
+import { Trash2, Plus, Upload, LogOut, Save, Image, Calendar, Euro, X, Pencil, Check } from "lucide-react";
 
 type Tab = "photos" | "calendar" | "pricing";
 
@@ -303,6 +303,10 @@ function PricingTab() {
   const [saving, setSaving] = useState(false);
   const [newSeasonal, setNewSeasonal] = useState({ label: "", label_en: "", start_date: "", end_date: "", price_per_night: "" });
   const [newCustom, setNewCustom] = useState({ label: "", start_date: "", end_date: "", price_per_night: "" });
+  const [editingSeasonalId, setEditingSeasonalId] = useState<string | null>(null);
+  const [editingSeasonal, setEditingSeasonal] = useState<any>(null);
+  const [editingCustomId, setEditingCustomId] = useState<string | null>(null);
+  const [editingCustom, setEditingCustom] = useState<any>(null);
 
   const fetchAll = useCallback(async () => {
     const [{ data: cfg }, { data: sea }, { data: cus }] = await Promise.all([
@@ -349,6 +353,25 @@ function PricingTab() {
     fetchAll();
   };
 
+  const handleEditSeasonal = (s: any) => {
+    setEditingSeasonalId(s.id);
+    setEditingSeasonal({ label: s.label, label_en: s.label_en || "", start_date: s.start_date, end_date: s.end_date, price_per_night: s.price_per_night });
+  };
+
+  const handleSaveSeasonal = async () => {
+    if (!editingSeasonalId || !editingSeasonal) return;
+    await supabase.from("seasonal_pricing").update({
+      label: editingSeasonal.label,
+      label_en: editingSeasonal.label_en,
+      start_date: editingSeasonal.start_date,
+      end_date: editingSeasonal.end_date,
+      price_per_night: Number(editingSeasonal.price_per_night),
+    }).eq("id", editingSeasonalId);
+    setEditingSeasonalId(null);
+    setEditingSeasonal(null);
+    fetchAll();
+  };
+
   const handleAddCustom = async (e: React.FormEvent) => {
     e.preventDefault();
     await supabase.from("custom_pricing").insert({
@@ -363,6 +386,24 @@ function PricingTab() {
 
   const handleDeleteCustom = async (id: string) => {
     await supabase.from("custom_pricing").delete().eq("id", id);
+    fetchAll();
+  };
+
+  const handleEditCustom = (c: any) => {
+    setEditingCustomId(c.id);
+    setEditingCustom({ label: c.label, start_date: c.start_date, end_date: c.end_date, price_per_night: c.price_per_night });
+  };
+
+  const handleSaveCustom = async () => {
+    if (!editingCustomId || !editingCustom) return;
+    await supabase.from("custom_pricing").update({
+      label: editingCustom.label,
+      start_date: editingCustom.start_date,
+      end_date: editingCustom.end_date,
+      price_per_night: Number(editingCustom.price_per_night),
+    }).eq("id", editingCustomId);
+    setEditingCustomId(null);
+    setEditingCustom(null);
     fetchAll();
   };
 
@@ -403,13 +444,37 @@ function PricingTab() {
         <h3 className="font-serif text-lg mb-4">Seizoensprijzen</h3>
         <div className="space-y-2 mb-4">
           {seasonal.map(s => (
-            <div key={s.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3">
-              <div className="text-sm">
-                <span className="font-medium">{s.label}</span>
-                <span className="text-muted-foreground ml-2">{s.start_date} → {s.end_date}</span>
-                <span className="ml-2 font-medium">€{s.price_per_night}/nacht</span>
-              </div>
-              <button onClick={() => handleDeleteSeasonal(s.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
+            <div key={s.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3 gap-2">
+              {editingSeasonalId === s.id ? (
+                <>
+                  <div className="flex flex-wrap gap-2 flex-1 items-center text-sm">
+                    <input value={editingSeasonal.label} onChange={e => setEditingSeasonal({ ...editingSeasonal, label: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-32" />
+                    <input value={editingSeasonal.label_en} onChange={e => setEditingSeasonal({ ...editingSeasonal, label_en: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-32" placeholder="EN" />
+                    <input type="date" value={editingSeasonal.start_date} onChange={e => setEditingSeasonal({ ...editingSeasonal, start_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                    <input type="date" value={editingSeasonal.end_date} onChange={e => setEditingSeasonal({ ...editingSeasonal, end_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs">€</span>
+                      <input type="number" value={editingSeasonal.price_per_night} onChange={e => setEditingSeasonal({ ...editingSeasonal, price_per_night: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-20" />
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={handleSaveSeasonal} className="text-primary hover:text-primary/80"><Check size={16} /></button>
+                    <button onClick={() => setEditingSeasonalId(null)} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-sm">
+                    <span className="font-medium">{s.label}</span>
+                    <span className="text-muted-foreground ml-2">{s.start_date} → {s.end_date}</span>
+                    <span className="ml-2 font-medium">€{s.price_per_night}/nacht</span>
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={() => handleEditSeasonal(s)} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
+                    <button onClick={() => handleDeleteSeasonal(s.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -443,13 +508,36 @@ function PricingTab() {
         <h3 className="font-serif text-lg mb-4">Speciale periodes</h3>
         <div className="space-y-2 mb-4">
           {custom.map(c => (
-            <div key={c.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3">
-              <div className="text-sm">
-                <span className="font-medium">{c.label}</span>
-                <span className="text-muted-foreground ml-2">{c.start_date} → {c.end_date}</span>
-                <span className="ml-2 font-medium">€{c.price_per_night}/nacht</span>
-              </div>
-              <button onClick={() => handleDeleteCustom(c.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
+            <div key={c.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3 gap-2">
+              {editingCustomId === c.id ? (
+                <>
+                  <div className="flex flex-wrap gap-2 flex-1 items-center text-sm">
+                    <input value={editingCustom.label} onChange={e => setEditingCustom({ ...editingCustom, label: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-32" />
+                    <input type="date" value={editingCustom.start_date} onChange={e => setEditingCustom({ ...editingCustom, start_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                    <input type="date" value={editingCustom.end_date} onChange={e => setEditingCustom({ ...editingCustom, end_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs">€</span>
+                      <input type="number" value={editingCustom.price_per_night} onChange={e => setEditingCustom({ ...editingCustom, price_per_night: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-20" />
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={handleSaveCustom} className="text-primary hover:text-primary/80"><Check size={16} /></button>
+                    <button onClick={() => setEditingCustomId(null)} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-sm">
+                    <span className="font-medium">{c.label}</span>
+                    <span className="text-muted-foreground ml-2">{c.start_date} → {c.end_date}</span>
+                    <span className="ml-2 font-medium">€{c.price_per_night}/nacht</span>
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={() => handleEditCustom(c)} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
+                    <button onClick={() => handleDeleteCustom(c.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
