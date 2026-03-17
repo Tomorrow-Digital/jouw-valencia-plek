@@ -130,7 +130,7 @@ const getTranslations = (minimumStay: number) => ({
     contact: {
       title: "Contact",
       hostedBy: "Gehost door Charmaine",
-      hostDesc: "Ik woon zelf in Valencia en help je graag met tips, routes en alles wat je nodig hebt voor een onvergetelijk verblijf.",
+      hostDesc: "Ik ben Charmaine en woon zelf in Valencia. Ik heb vaak een borreltje te veel op. Samen paella eten is mijn droom. Ik hou van de was doen en stofzuigen.",
       whatsapp: "WhatsApp",
       footer: "Gemaakt met ♥ in Valencia",
     },
@@ -217,7 +217,7 @@ const getTranslations = (minimumStay: number) => ({
     contact: {
       title: "Contact",
       hostedBy: "Hosted by Charmaine",
-      hostDesc: "I live in Valencia myself and I'm happy to help with tips, routes and everything you need for an unforgettable stay.",
+      hostDesc: "I'm Charmaine and I live in Valencia. I often have one drink too many. Eating paella together is my dream. I love doing laundry and vacuuming.",
       whatsapp: "WhatsApp",
       footer: "Made with ♥ in Valencia",
     },
