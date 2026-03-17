@@ -70,7 +70,7 @@ const getTranslations = (minimumStay: number) => ({
     },
     space: {
       title: "De Ruimte",
-      room: { title: "De Kamer", desc: "Wakker worden met Spaans licht door de luiken. Tweepersoonsbed, airco, en precies de juiste stilte." },
+      room: { title: "De Kamer", desc: "Wakker worden met Spaans licht door de luiken. Tweepersoonsbed en precies de juiste stilte." },
       bathroom: { title: "De Badkamer", desc: "Inloopdouche, verse handdoeken en een ochtend die helemaal van jou is." },
       kitchen: { title: "De Buitenkeuken", desc: "Koken onder het terras met uitzicht op het zwembad. Gasfornuis, koelkast en alles bij de hand." },
       vibe: "Dit is geen hotel en geen Airbnb-fabriek. Dit is een plek met ziel. Waar je 's ochtends wakker wordt met zonlicht door de luiken, koffie zet in je eigen keuken en de dag begint op jouw tempo.",
