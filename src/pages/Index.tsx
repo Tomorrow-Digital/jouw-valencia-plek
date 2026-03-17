@@ -79,8 +79,8 @@ const getTranslations = (minimumStay: number) => ({
     amenities: {
       title: "Voorzieningen",
       intro: "Alles wat je nodig hebt. Niets wat je niet nodig hebt.",
-      main: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Airconditioning", "Gratis WiFi", "Eigen ingang", "Parkeerplaats op het terrein", "Buitenterras met tuinmeubelen"],
-      practical: ["Verse handdoeken & beddengoed", "Wasmachine (gedeeld)", "Strijkijzer", "Haardroger"],
+      main: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Zwembad", "Ligbedden", "Gratis WiFi", "Gratis parkeren", "Eigen ingang", "Buitenterras met tuinmeubelen"],
+      practical: ["Handdoeken & beddengoed", "Wasmachine (gedeeld)"],
       localTips: { title: "Lokale tips van Charmaine", subtitle: "Een persoonlijke gids met de beste restaurants, markten, stranden en verborgen plekjes in de regio. Je krijgt hem bij aankomst." },
     },
     location: {
