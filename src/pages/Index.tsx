@@ -79,7 +79,7 @@ const getTranslations = (minimumStay: number) => ({
     amenities: {
       title: "Voorzieningen",
       intro: "Alles wat je nodig hebt. Niets wat je niet nodig hebt.",
-      main: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Zwembad", "Ligbedden", "Gratis WiFi", "Gratis parkeren", "Eigen ingang", "Buitenterras met tuinmeubelen"],
+      main: ["Privé badkamer", "Buitenkeuken met gasfornuis, koelkast, gootsteen", "Zwembad", "Ligbedden", "Gratis WiFi", "Gratis parkeren", "Eigen ingang", "Buitenterras met tuinmeubelen", "Kingsize bed", "Hangmat"],
       practical: ["Handdoeken & beddengoed", "Wasmachine (gedeeld)"],
       localTips: { title: "Lokale tips van Charmaine", subtitle: "Een persoonlijke gids met de beste restaurants, markten, stranden en verborgen plekjes in de regio. Je krijgt hem bij aankomst." },
     },
@@ -190,7 +190,7 @@ const getTranslations = (minimumStay: number) => ({
     amenities: {
       title: "Amenities",
       intro: "Everything you need. Nothing you don't.",
-      main: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Swimming pool", "Sun loungers", "Free WiFi", "Free parking", "Private entrance", "Outdoor terrace with garden furniture"],
+      main: ["Private bathroom", "Outdoor kitchen with gas stove, fridge, sink", "Swimming pool", "Sun loungers", "Free WiFi", "Free parking", "Private entrance", "Outdoor terrace with garden furniture", "King-size bed", "Hammock"],
       practical: ["Towels & linens", "Washing machine (shared)"],
       localTips: { title: "Local tips from Charmaine", subtitle: "A personal guide with the best restaurants, markets, beaches and hidden gems in the area. You'll receive it upon arrival." },
     },
@@ -381,7 +381,7 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
 
-const mainAmenityIcons = [Bath, ChefHat, Waves, Sun, Wifi, Car, DoorOpen, TreePalm];
+const mainAmenityIcons = [Bath, ChefHat, Waves, Sun, Wifi, Car, DoorOpen, TreePalm, Bed, Moon];
 const practicalAmenityIcons = [Bed, WashingMachine];
 
 const ruleIcons: Record<string, React.ElementType> = {
