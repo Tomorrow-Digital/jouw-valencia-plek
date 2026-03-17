@@ -1013,7 +1013,7 @@ export default function Index() {
           <FadeInSection>
             <h2 className="font-serif text-3xl sm:text-4xl mb-8">{t.contact.title}</h2>
             <div className="flex items-center justify-center gap-4 mb-8">
-              <img src={hostImg} alt="Host" className="w-20 h-20 rounded-full object-cover shadow-md" loading="lazy" />
+              <img src={hostImg} alt="Host" className="w-32 h-32 rounded-full object-cover shadow-md" loading="lazy" />
               <div className="text-left">
                 <p className="font-serif text-lg">{t.contact.hostedBy}</p>
                 <p className="text-sm text-muted-foreground">{t.contact.hostDesc}</p>
