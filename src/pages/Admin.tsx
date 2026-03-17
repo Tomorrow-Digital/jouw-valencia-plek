@@ -228,6 +228,8 @@ function CalendarTab() {
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<any>(null);
 
   const fetchBlocked = useCallback(async () => {
     const { data } = await supabase.from("blocked_dates").select("*").order("start_date");
@@ -250,6 +252,23 @@ function CalendarTab() {
 
   const handleDelete = async (id: string) => {
     await supabase.from("blocked_dates").delete().eq("id", id);
+    fetchBlocked();
+  };
+
+  const handleEdit = (b: any) => {
+    setEditingId(b.id);
+    setEditing({ start_date: b.start_date, end_date: b.end_date, reason: b.reason || "" });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingId || !editing) return;
+    await supabase.from("blocked_dates").update({
+      start_date: editing.start_date,
+      end_date: editing.end_date,
+      reason: editing.reason,
+    }).eq("id", editingId);
+    setEditingId(null);
+    setEditing(null);
     fetchBlocked();
   };
 
@@ -276,14 +295,32 @@ function CalendarTab() {
 
       <div className="space-y-2">
         {blockedDates.map(b => (
-          <div key={b.id} className="bg-card rounded-xl p-4 shadow-sm flex items-center justify-between">
-            <div>
-              <span className="text-sm font-medium">{b.start_date} → {b.end_date}</span>
-              {b.reason && <span className="text-sm text-muted-foreground ml-3">{b.reason}</span>}
-            </div>
-            <button onClick={() => handleDelete(b.id)} className="text-destructive hover:text-destructive/80 transition-colors">
-              <Trash2 size={16} />
-            </button>
+          <div key={b.id} className="bg-card rounded-xl p-4 shadow-sm flex items-center justify-between gap-2">
+            {editingId === b.id ? (
+              <>
+                <div className="flex flex-wrap gap-2 flex-1 items-center text-sm">
+                  <input type="date" value={editing.start_date} onChange={e => setEditing({ ...editing, start_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                  <span>→</span>
+                  <input type="date" value={editing.end_date} onChange={e => setEditing({ ...editing, end_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
+                  <input type="text" value={editing.reason} onChange={e => setEditing({ ...editing, reason: e.target.value })} placeholder="Reden" className="rounded border border-input bg-background px-2 py-1 text-sm w-32" />
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={handleSaveEdit} className="text-primary hover:text-primary/80"><Check size={16} /></button>
+                  <button onClick={() => setEditingId(null)} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <span className="text-sm font-medium">{b.start_date} → {b.end_date}</span>
+                  {b.reason && <span className="text-sm text-muted-foreground ml-3">{b.reason}</span>}
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => handleEdit(b)} className="text-muted-foreground hover:text-foreground transition-colors"><Pencil size={14} /></button>
+                  <button onClick={() => handleDelete(b.id)} className="text-destructive hover:text-destructive/80 transition-colors"><Trash2 size={16} /></button>
+                </div>
+              </>
+            )}
           </div>
         ))}
         {blockedDates.length === 0 && <p className="text-muted-foreground text-sm text-center py-8">Geen geblokkeerde periodes.</p>}
