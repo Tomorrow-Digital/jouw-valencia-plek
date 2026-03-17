@@ -574,7 +574,7 @@ export default function Index() {
       (priceStr ? `Totaalprijs: ${priceStr}\n` : "") +
       (message ? `Bericht: ${message}\n` : "")
     );
-    window.open(`https://wa.me/34600000000?text=${waText}`, "_blank");
+    window.open(`https://wa.me/31630093776?text=${waText}`, "_blank");
   };
 
   const navSections = [
