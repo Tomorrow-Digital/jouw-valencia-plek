@@ -293,7 +293,8 @@ type Lang = "nl" | "en";
 
 function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [countryCode, setCountryCode] = useState("+31");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(false);
