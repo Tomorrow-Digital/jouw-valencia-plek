@@ -989,19 +989,23 @@ export default function Index() {
         </FadeInSection>
       </section>
 
-      {/* ═══ TUSSENTIJDSE CTA 2 ═══ */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden grain-overlay">
-        <img src={heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-        <div className="absolute inset-0 bg-foreground/50" />
-        <div className="relative z-10 text-center max-w-2xl mx-auto">
+      {/* ═══ FOTO BLOK ═══ */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           <FadeInSection>
-            <h2 className="font-serif text-3xl sm:text-4xl text-background mb-6">{t.midCta2.headline}</h2>
-            <button
-              onClick={() => scrollTo("pricing")}
-              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg text-base font-medium hover:bg-primary/90 transition-colors shadow-lg"
-            >
-              {t.midCta2.cta}
-            </button>
+            <div className="rounded-xl overflow-hidden shadow-md aspect-[3/4] md:row-span-2 md:aspect-auto md:h-full">
+              <img src={heroImg} alt="Villa exterior" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          </FadeInSection>
+          <FadeInSection>
+            <div className="rounded-xl overflow-hidden shadow-md aspect-square">
+              <img src={kitchenImg} alt="Kitchen" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          </FadeInSection>
+          <FadeInSection>
+            <div className="rounded-xl overflow-hidden shadow-md aspect-square">
+              <img src={bathroomImg} alt="Bathroom" className="w-full h-full object-cover" loading="lazy" />
+            </div>
           </FadeInSection>
         </div>
       </section>
