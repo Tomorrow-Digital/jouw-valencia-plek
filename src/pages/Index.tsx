@@ -977,9 +977,9 @@ export default function Index() {
         <FadeInSection>
           <h2 className="font-serif text-3xl sm:text-4xl text-center mb-12">{t.location.title}</h2>
         </FadeInSection>
-        <div className="grid lg:grid-cols-2 gap-8 mb-10">
-          <FadeInSection>
-            <div className="rounded-xl overflow-hidden shadow-md aspect-video bg-muted max-h-[350px]">
+        <div className="flex flex-col items-center gap-10 mb-10">
+          <FadeInSection className="w-full max-w-2xl">
+            <div className="rounded-xl overflow-hidden shadow-lg aspect-video bg-muted max-h-[350px] border-2 border-border ring-1 ring-primary/10">
               <iframe
                 title="Google Maps - Torrent, Valencia"
                 src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d49568.44976518!2d-0.4936!3d39.4367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2ses!4v1"
