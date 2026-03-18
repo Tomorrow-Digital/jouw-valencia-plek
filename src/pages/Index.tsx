@@ -332,7 +332,7 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
         body: JSON.stringify({
           formType: "contact_vraag",
           name: name.trim(),
-          email: email.trim(),
+          phone: fullPhone,
           message: message.trim(),
           timestamp: new Date().toISOString()
         }),
