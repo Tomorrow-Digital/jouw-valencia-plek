@@ -348,7 +348,8 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
     setSending(false);
     setSuccess(true);
     setName("");
-    setEmail("");
+    setCountryCode("+31");
+    setPhone("");
     setMessage("");
   };
 
