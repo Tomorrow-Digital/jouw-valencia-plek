@@ -1,0 +1,1 @@
+ALTER TABLE public.contact_messages RENAME COLUMN email TO phone;

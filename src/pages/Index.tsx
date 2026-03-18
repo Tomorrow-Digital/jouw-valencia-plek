@@ -158,7 +158,8 @@ const getTranslations = (minimumStay: number) => ({
       footer: "Gemaakt met ♥ in Valencia",
       formTitle: "Stuur een bericht",
       formName: "Naam",
-      formEmail: "E-mailadres",
+      formPhone: "Telefoonnummer",
+      formCountryCode: "Landcode",
       formMessage: "Bericht",
       formSend: "Verstuur bericht",
       formSending: "Versturen...",
@@ -269,7 +270,8 @@ const getTranslations = (minimumStay: number) => ({
       footer: "Made with ♥ in Valencia",
       formTitle: "Send a message",
       formName: "Name",
-      formEmail: "Email address",
+      formPhone: "Phone number",
+      formCountryCode: "Country code",
       formMessage: "Message",
       formSend: "Send message",
       formSending: "Sending...",
@@ -291,7 +293,8 @@ type Lang = "nl" | "en";
 
 function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [countryCode, setCountryCode] = useState("+31");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -304,9 +307,10 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
     setSuccess(false);
 
     // 1. Eerst opslaan in Supabase
+    const fullPhone = `${countryCode}${phone.trim().replace(/^0+/, '')}`;
     const { error: dbError } = await supabase
       .from("contact_messages")
-      .insert({ name: name.trim(), email: email.trim(), message: message.trim() });
+      .insert({ name: name.trim(), phone: fullPhone, message: message.trim() });
 
     if (dbError) {
       console.error("Database error:", dbError);
@@ -328,7 +332,7 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
         body: JSON.stringify({
           formType: "contact_vraag",
           name: name.trim(),
-          email: email.trim(),
+          phone: fullPhone,
           message: message.trim(),
           timestamp: new Date().toISOString()
         }),
@@ -344,7 +348,8 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
     setSending(false);
     setSuccess(true);
     setName("");
-    setEmail("");
+    setCountryCode("+31");
+    setPhone("");
     setMessage("");
   };
 
@@ -373,15 +378,37 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
         />
       </div>
       <div>
-        <label className="text-sm font-medium mb-1 block">{t.contact.formEmail}</label>
-        <input
-          type="email"
-          required
-          maxLength={255}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        />
+        <label className="text-sm font-medium mb-1 block">{t.contact.formPhone}</label>
+        <div className="flex gap-2">
+          <select
+            value={countryCode}
+            onChange={(e) => setCountryCode(e.target.value)}
+            className="flex h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-24"
+          >
+            <option value="+31">🇳🇱 +31</option>
+            <option value="+32">🇧🇪 +32</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+39">🇮🇹 +39</option>
+            <option value="+43">🇦🇹 +43</option>
+            <option value="+41">🇨🇭 +41</option>
+            <option value="+45">🇩🇰 +45</option>
+            <option value="+46">🇸🇪 +46</option>
+            <option value="+47">🇳🇴 +47</option>
+            <option value="+1">🇺🇸 +1</option>
+          </select>
+          <input
+            type="tel"
+            required
+            maxLength={15}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            placeholder="6 12345678"
+          />
+        </div>
       </div>
       <div>
         <label className="text-sm font-medium mb-1 block">{t.contact.formMessage}</label>
