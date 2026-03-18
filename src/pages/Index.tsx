@@ -307,9 +307,10 @@ function ContactForm({ t }: { t: ReturnType<typeof getTranslations>[Lang] }) {
     setSuccess(false);
 
     // 1. Eerst opslaan in Supabase
+    const fullPhone = `${countryCode}${phone.trim().replace(/^0+/, '')}`;
     const { error: dbError } = await supabase
       .from("contact_messages")
-      .insert({ name: name.trim(), email: email.trim(), message: message.trim() });
+      .insert({ name: name.trim(), phone: fullPhone, message: message.trim() });
 
     if (dbError) {
       console.error("Database error:", dbError);
