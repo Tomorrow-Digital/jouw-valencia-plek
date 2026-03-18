@@ -990,7 +990,7 @@ export default function Index() {
               />
             </div>
           </FadeInSection>
-          <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-4 w-full max-w-2xl">
             {[
               { ...t.location.valencia, icon: MapPin },
               { ...t.location.beach, icon: Waves },
@@ -998,7 +998,7 @@ export default function Index() {
               { ...t.location.airport, icon: Plane },
             ].map((item, i) => (
               <FadeInSection key={i}>
-                <div className="bg-card rounded-xl p-6 shadow-sm">
+                <div className="bg-card rounded-xl p-6 shadow-sm h-full">
                   <div className="flex items-center gap-3 mb-2">
                     <item.icon size={20} className="text-primary" />
                     <h3 className="font-serif text-lg">{item.title}</h3>
