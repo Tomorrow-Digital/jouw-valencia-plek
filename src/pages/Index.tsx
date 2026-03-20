@@ -22,6 +22,8 @@ import roomImgFallback from "@/assets/room.jpg";
 import bathroomImgFallback from "@/assets/bathroom.jpg";
 import kitchenImgFallback from "@/assets/kitchen.jpg";
 import hostImgFallback from "@/assets/host.jpg";
+import logoWhite from "@/assets/logo-white.png";
+import logoColor from "@/assets/logo-color.png";
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -811,8 +813,12 @@ export default function Index() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <button onClick={() => scrollTo("hero")} className={`font-serif text-xl tracking-wide transition-colors duration-300 ${scrolled ? "text-foreground" : "text-white"}`}>
-            Casa Valencia
+          <button onClick={() => scrollTo("hero")} className="transition-opacity duration-300 hover:opacity-80 active:scale-[0.97]">
+            <img
+              src={scrolled ? logoColor : logoWhite}
+              alt="Casita Valencia"
+              className="h-8 w-auto"
+            />
           </button>
 
           {/* Desktop links */}
