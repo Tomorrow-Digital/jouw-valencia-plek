@@ -43,6 +43,7 @@ export default function Admin() {
     { id: "photos", label: "Foto's", icon: Image },
     { id: "calendar", label: "Kalender", icon: Calendar },
     { id: "pricing", label: "Prijzen", icon: Euro },
+    { id: "deletion", label: "Verwijderverzoeken", icon: ShieldAlert },
   ];
 
   return (
