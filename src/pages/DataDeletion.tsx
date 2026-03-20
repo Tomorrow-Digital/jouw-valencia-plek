@@ -44,7 +44,6 @@ const fadeUp = {
 };
 
 const N8N_WEBHOOK_URL = import.meta.env.VITE_DELETION_WEBHOOK_URL || "[N8N_WEBHOOK_URL]";
-const N8N_STATUS_URL = import.meta.env.VITE_DELETION_STATUS_URL || "[N8N_STATUS_WEBHOOK_URL]";
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
