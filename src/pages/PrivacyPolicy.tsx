@@ -23,6 +23,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LegalFooter } from "@/components/LegalFooter";
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES & DATA
