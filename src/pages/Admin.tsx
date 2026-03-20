@@ -745,3 +745,103 @@ function DeletionRequestsSection() {
     </div>
   );
 }
+
+// ═══════════════════════════════════════
+// USERS MANAGEMENT
+// ═══════════════════════════════════════
+
+interface AuthUser {
+  id: string;
+  email: string;
+  created_at: string;
+  last_sign_in_at: string | null;
+  email_confirmed_at: string | null;
+}
+
+function UsersSection() {
+  const [users, setUsers] = useState<AuthUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setCurrentUserId(session.user.id);
+      const response = await supabase.functions.invoke("manage-users", {
+        method: "GET",
+      });
+      if (response.data?.users) setUsers(response.data.users);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  const handleDelete = async (userId: string, email: string) => {
+    if (!confirm(`Weet je zeker dat je het account van ${email} wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return;
+    setDeleting(userId);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-users", {
+        method: "DELETE",
+        body: { userId },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        alert(data.error);
+      } else {
+        setUsers(prev => prev.filter(u => u.id !== userId));
+      }
+    } catch {
+      alert("Er is een fout opgetreden bij het verwijderen.");
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Laden...</p>;
+
+  return (
+    <div>
+      <SectionHeader title="Gebruikers" subtitle={`${users.length} geregistreerde admin-gebruiker(s).`} />
+      {users.length === 0 ? (
+        <p className="text-muted-foreground text-sm text-center py-12">Geen gebruikers gevonden.</p>
+      ) : (
+        <div className="space-y-3">
+          {users.map(u => (
+            <div key={u.id} className="bg-background border border-border rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="font-medium text-foreground truncate">{u.email}</p>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-1">
+                  <span>Aangemaakt: {new Date(u.created_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
+                  {u.last_sign_in_at && (
+                    <span>Laatst ingelogd: {new Date(u.last_sign_in_at).toLocaleString("nl-NL", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                  )}
+                  {u.email_confirmed_at ? (
+                    <span className="text-green-600">✓ E-mail bevestigd</span>
+                  ) : (
+                    <span className="text-yellow-600">⚠ Niet bevestigd</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {u.id === currentUserId ? (
+                  <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">Jij</span>
+                ) : (
+                  <button
+                    onClick={() => handleDelete(u.id, u.email || "")}
+                    disabled={deleting === u.id}
+                    className="flex items-center gap-1 text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:opacity-50 active:scale-[0.97]"
+                  >
+                    <Trash2 size={14} /> {deleting === u.id ? "Verwijderen..." : "Verwijderen"}
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
