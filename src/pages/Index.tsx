@@ -22,6 +22,8 @@ import roomImgFallback from "@/assets/room.jpg";
 import bathroomImgFallback from "@/assets/bathroom.jpg";
 import kitchenImgFallback from "@/assets/kitchen.jpg";
 import hostImgFallback from "@/assets/host.jpg";
+import logoWhite from "@/assets/logo-white.png";
+import logoColor from "@/assets/logo-color.png";
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
