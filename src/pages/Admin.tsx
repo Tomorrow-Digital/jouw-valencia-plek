@@ -80,6 +80,7 @@ export default function Admin() {
         {tab === "photos" && <PhotosTab />}
         {tab === "calendar" && <CalendarTab />}
         {tab === "pricing" && <PricingTab />}
+        {tab === "deletion" && <DeletionRequestsTab />}
       </div>
     </div>
   );
