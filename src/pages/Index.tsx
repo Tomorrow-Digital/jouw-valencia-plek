@@ -1018,20 +1018,30 @@ export default function Index() {
 
       {/* ═══ FOTO BLOK ═══ */}
       <section className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-          <FadeInSection>
-            <div className="rounded-xl overflow-hidden shadow-md aspect-[3/4] md:row-span-2 md:aspect-auto md:h-full">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 md:grid-rows-2 gap-3 sm:gap-4">
+          <FadeInSection className="md:row-span-2">
+            <div className="rounded-xl overflow-hidden shadow-md h-full">
               <img src={heroImg} alt="Villa exterior" className="w-full h-full object-cover" loading="lazy" />
             </div>
           </FadeInSection>
           <FadeInSection>
-            <div className="rounded-xl overflow-hidden shadow-md aspect-square">
+            <div className="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
               <img src={kitchenImg} alt="Kitchen" className="w-full h-full object-cover" loading="lazy" />
             </div>
           </FadeInSection>
           <FadeInSection>
-            <div className="rounded-xl overflow-hidden shadow-md aspect-square">
+            <div className="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
               <img src={bathroomImg} alt="Bathroom" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          </FadeInSection>
+          <FadeInSection>
+            <div className="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
+              <img src={roomImg} alt="Room" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          </FadeInSection>
+          <FadeInSection>
+            <div className="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
+              <img src={hostImgFallback} alt="Host" className="w-full h-full object-cover" loading="lazy" />
             </div>
           </FadeInSection>
         </div>
