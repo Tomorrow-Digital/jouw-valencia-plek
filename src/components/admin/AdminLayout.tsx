@@ -26,6 +26,7 @@ import {
   LogOut,
   ExternalLink,
   LayoutDashboard,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
