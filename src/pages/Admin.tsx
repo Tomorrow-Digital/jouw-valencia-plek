@@ -751,6 +751,16 @@ function DeletionRequestsSection() {
                 </p>
                 <div className="flex gap-2">
                   {r.status !== "completed" && (
+                    <button onClick={() => updateStatus(r.id, "completed")} className="flex items-center gap-1 text-xs bg-green-100 text-green-800 hover:bg-green-200 rounded-lg px-3 py-1.5 font-medium transition-colors active:scale-[0.97]">
+                      <Check size={14} /> Markeer als afgerond
+                    </button>
+                  )}
+                  {(r.status === "pending" || r.status === "email_sent") && (
+                    <button onClick={() => updateStatus(r.id, "rejected")} className="flex items-center gap-1 text-xs bg-red-100 text-red-800 hover:bg-red-200 rounded-lg px-3 py-1.5 font-medium transition-colors active:scale-[0.97]">
+                      <X size={14} /> Wijs af
+                    </button>
+                  )}
+                  {r.status !== "completed" && (
                     <button onClick={() => handleDeletePersonData(r)} disabled={processing === r.id} className="flex items-center gap-1 text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:opacity-50 active:scale-[0.97]">
                       <UserX size={14} /> {processing === r.id ? "Bezig..." : "Data verwijderen"}
                     </button>
