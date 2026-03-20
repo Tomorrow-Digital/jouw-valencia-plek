@@ -1421,7 +1421,11 @@ export default function Index() {
               </a>
             </div>
           </div>
-          <p className="text-center text-xs text-muted-foreground">{t.footer.copyright}</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs text-muted-foreground">
+            <p>{t.footer.copyright}</p>
+            <span className="hidden sm:inline">·</span>
+            <a href="/privacy-policy" className="hover:text-primary transition-colors">Privacybeleid</a>
+          </div>
         </div>
       </footer>
 
