@@ -1,24 +1,30 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, Plus, Upload, LogOut, Save, Image, Calendar, Euro, X, Pencil, Check, ClipboardList, MessageSquare, ShieldAlert, Eye, UserX } from "lucide-react";
-
-type Tab = "photos" | "calendar" | "pricing" | "bookings" | "messages" | "deletion";
+import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
+import { DashboardSection } from "@/components/admin/DashboardSection";
+import {
+  Trash2, Plus, Upload, Save, X, Pencil, Check, UserX,
+} from "lucide-react";
 
 export default function Admin() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<Tab>("photos");
 
-  // Auth check
+  const sectionParam = (searchParams.get("section") as AdminSection) || "dashboard";
+  const [section, setSection] = useState<AdminSection>(sectionParam);
+
+  const handleSectionChange = (s: AdminSection) => {
+    setSection(s);
+    setSearchParams({ section: s });
+  };
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (!session) {
-        navigate("/login");
-      } else {
-        setUser(session.user);
-      }
+      if (!session) navigate("/login");
+      else setUser(session.user);
       setLoading(false);
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -29,65 +35,37 @@ export default function Admin() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
-  };
-
-  if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><p>Laden...</p></div>;
+  if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><p className="text-muted-foreground">Laden...</p></div>;
   if (!user) return null;
 
-  const tabs: { id: Tab; label: string; icon: any }[] = [
-    { id: "bookings", label: "Boekingen", icon: ClipboardList },
-    { id: "messages", label: "Berichten", icon: MessageSquare },
-    { id: "photos", label: "Foto's", icon: Image },
-    { id: "calendar", label: "Kalender", icon: Calendar },
-    { id: "pricing", label: "Prijzen", icon: Euro },
-    { id: "deletion", label: "Verwijderverzoeken", icon: ShieldAlert },
-  ];
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="font-serif text-xl">Casa Valencia Admin</h1>
-          <a href="/" className="text-xs text-muted-foreground hover:text-primary">← Website</a>
-        </div>
-        <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <LogOut size={16} /> Uitloggen
-        </button>
-      </header>
+    <AdminLayout section={section} onSectionChange={handleSectionChange}>
+      {section === "dashboard" && <DashboardSection onNavigate={handleSectionChange} />}
+      {section === "bookings" && <BookingsSection />}
+      {section === "messages" && <MessagesSection />}
+      {section === "photos" && <PhotosSection />}
+      {section === "calendar" && <CalendarSection />}
+      {section === "pricing" && <PricingSection />}
+      {section === "deletion" && <DeletionRequestsSection />}
+    </AdminLayout>
+  );
+}
 
-      {/* Tabs */}
-      <div className="max-w-5xl mx-auto px-4 py-6">
-        <div className="flex gap-2 mb-6">
-          {tabs.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                tab === t.id ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent"
-              }`}
-            >
-              <t.icon size={16} /> {t.label}
-            </button>
-          ))}
-        </div>
+// ═══════════════════════════════════════
+// SECTION WRAPPER
+// ═══════════════════════════════════════
 
-        {tab === "bookings" && <BookingsTab />}
-        {tab === "messages" && <MessagesTab />}
-        {tab === "photos" && <PhotosTab />}
-        {tab === "calendar" && <CalendarTab />}
-        {tab === "pricing" && <PricingTab />}
-        {tab === "deletion" && <DeletionRequestsTab />}
-      </div>
+function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="mb-6">
+      <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+      {subtitle && <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>}
     </div>
   );
 }
 
 // ═══════════════════════════════════════
-// PHOTOS TAB
+// PHOTOS
 // ═══════════════════════════════════════
 
 const CATEGORIES = [
@@ -98,7 +76,7 @@ const CATEGORIES = [
   { id: "host", label: "Host foto" },
 ];
 
-function PhotosTab() {
+function PhotosSection() {
   const [photos, setPhotos] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("hero");
@@ -118,12 +96,10 @@ function PhotosTab() {
     for (const file of Array.from(files)) {
       const ext = file.name.split(".").pop();
       const path = `${selectedCategory}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      
       const { error: uploadError } = await supabase.storage.from("photos").upload(path, file);
-      if (uploadError) { console.error(uploadError); continue; }
+      if (uploadError) continue;
 
       const { data: { publicUrl } } = supabase.storage.from("photos").getPublicUrl(path);
-      
       const existingForCategory = photos.filter(p => p.category === selectedCategory);
       const isPrimary = existingForCategory.length === 0;
 
@@ -141,18 +117,14 @@ function PhotosTab() {
   };
 
   const handleDelete = async (photo: any) => {
-    // Extract path from URL
     const url = new URL(photo.url);
     const pathParts = url.pathname.split("/storage/v1/object/public/photos/");
-    if (pathParts[1]) {
-      await supabase.storage.from("photos").remove([pathParts[1]]);
-    }
+    if (pathParts[1]) await supabase.storage.from("photos").remove([pathParts[1]]);
     await supabase.from("site_photos").delete().eq("id", photo.id);
     fetchPhotos();
   };
 
   const handleSetPrimary = async (photo: any) => {
-    // Unset all primary for this category
     await supabase.from("site_photos").update({ is_primary: false }).eq("category", photo.category);
     await supabase.from("site_photos").update({ is_primary: true }).eq("id", photo.id);
     fetchPhotos();
@@ -160,17 +132,12 @@ function PhotosTab() {
 
   return (
     <div>
+      <SectionHeader title="Foto's" subtitle="Beheer de foto's op de website per categorie." />
       <div className="flex items-center gap-4 mb-6">
-        <select
-          value={selectedCategory}
-          onChange={e => setSelectedCategory(e.target.value)}
-          className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
-        >
-          {CATEGORIES.map(c => (
-            <option key={c.id} value={c.id}>{c.label}</option>
-          ))}
+        <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
+          {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
         </select>
-        <label className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium cursor-pointer hover:bg-primary/90 transition-colors">
+        <label className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium cursor-pointer hover:bg-primary/90 transition-colors active:scale-[0.97]">
           <Upload size={16} />
           {uploading ? "Uploaden..." : "Foto's uploaden"}
           <input type="file" accept="image/*" multiple onChange={handleUpload} className="hidden" disabled={uploading} />
@@ -182,32 +149,18 @@ function PhotosTab() {
         if (catPhotos.length === 0) return null;
         return (
           <div key={cat.id} className="mb-8">
-            <h3 className="font-serif text-lg mb-3">{cat.label}</h3>
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-3">{cat.label}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {catPhotos.map(photo => (
                 <div key={photo.id} className="relative group rounded-xl overflow-hidden bg-muted aspect-[4/3]">
                   <img src={photo.url} alt="" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                     {!photo.is_primary && (
-                      <button
-                        onClick={() => handleSetPrimary(photo)}
-                        className="bg-background/90 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-background transition-colors"
-                      >
-                        Hoofdfoto
-                      </button>
+                      <button onClick={() => handleSetPrimary(photo)} className="bg-background/90 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-background transition-colors">Hoofdfoto</button>
                     )}
-                    <button
-                      onClick={() => handleDelete(photo)}
-                      className="bg-destructive/90 text-destructive-foreground rounded-lg p-2 hover:bg-destructive transition-colors"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    <button onClick={() => handleDelete(photo)} className="bg-destructive/90 text-destructive-foreground rounded-lg p-2 hover:bg-destructive transition-colors"><Trash2 size={14} /></button>
                   </div>
-                  {photo.is_primary && (
-                    <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-md">
-                      Hoofdfoto
-                    </span>
-                  )}
+                  {photo.is_primary && <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-md">Hoofdfoto</span>}
                 </div>
               ))}
             </div>
@@ -215,20 +168,16 @@ function PhotosTab() {
         );
       })}
 
-      {photos.length === 0 && (
-        <p className="text-muted-foreground text-sm text-center py-12">
-          Nog geen foto's geüpload. Kies een categorie en upload je eerste foto.
-        </p>
-      )}
+      {photos.length === 0 && <p className="text-muted-foreground text-sm text-center py-12">Nog geen foto's geüpload.</p>}
     </div>
   );
 }
 
 // ═══════════════════════════════════════
-// CALENDAR TAB
+// CALENDAR
 // ═══════════════════════════════════════
 
-function CalendarTab() {
+function CalendarSection() {
   const [blockedDates, setBlockedDates] = useState<any[]>([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -249,9 +198,7 @@ function CalendarTab() {
     if (!startDate || !endDate) return;
     setSaving(true);
     await supabase.from("blocked_dates").insert({ start_date: startDate, end_date: endDate, reason });
-    setStartDate("");
-    setEndDate("");
-    setReason("");
+    setStartDate(""); setEndDate(""); setReason("");
     setSaving(false);
     fetchBlocked();
   };
@@ -268,20 +215,15 @@ function CalendarTab() {
 
   const handleSaveEdit = async () => {
     if (!editingId || !editing) return;
-    await supabase.from("blocked_dates").update({
-      start_date: editing.start_date,
-      end_date: editing.end_date,
-      reason: editing.reason,
-    }).eq("id", editingId);
-    setEditingId(null);
-    setEditing(null);
+    await supabase.from("blocked_dates").update({ start_date: editing.start_date, end_date: editing.end_date, reason: editing.reason }).eq("id", editingId);
+    setEditingId(null); setEditing(null);
     fetchBlocked();
   };
 
   return (
     <div>
-      <h3 className="font-serif text-lg mb-4">Geblokkeerde periodes</h3>
-      <form onSubmit={handleAdd} className="bg-card rounded-xl p-4 shadow-sm mb-6 flex flex-wrap gap-3 items-end">
+      <SectionHeader title="Kalender" subtitle="Blokkeer periodes waarin de woning niet beschikbaar is." />
+      <form onSubmit={handleAdd} className="bg-background rounded-xl border border-border p-4 mb-6 flex flex-wrap gap-3 items-end">
         <div>
           <label className="block text-xs font-medium mb-1">Startdatum</label>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
@@ -294,14 +236,14 @@ function CalendarTab() {
           <label className="block text-xs font-medium mb-1">Reden (optioneel)</label>
           <input type="text" value={reason} onChange={e => setReason(e.target.value)} placeholder="bijv. Bezet, Privé" className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
         </div>
-        <button type="submit" disabled={saving} className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
+        <button type="submit" disabled={saving} className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97]">
           <Plus size={16} /> Toevoegen
         </button>
       </form>
 
       <div className="space-y-2">
         {blockedDates.map(b => (
-          <div key={b.id} className="bg-card rounded-xl p-4 shadow-sm flex items-center justify-between gap-2">
+          <div key={b.id} className="bg-background border border-border rounded-xl p-4 flex items-center justify-between gap-2">
             {editingId === b.id ? (
               <>
                 <div className="flex flex-wrap gap-2 flex-1 items-center text-sm">
@@ -336,10 +278,10 @@ function CalendarTab() {
 }
 
 // ═══════════════════════════════════════
-// PRICING TAB
+// PRICING
 // ═══════════════════════════════════════
 
-function PricingTab() {
+function PricingSection() {
   const [config, setConfig] = useState<any>(null);
   const [seasonal, setSeasonal] = useState<any[]>([]);
   const [custom, setCustom] = useState<any[]>([]);
@@ -380,21 +322,12 @@ function PricingTab() {
 
   const handleAddSeasonal = async (e: React.FormEvent) => {
     e.preventDefault();
-    await supabase.from("seasonal_pricing").insert({
-      label: newSeasonal.label,
-      label_en: newSeasonal.label_en,
-      start_date: newSeasonal.start_date,
-      end_date: newSeasonal.end_date,
-      price_per_night: Number(newSeasonal.price_per_night),
-    });
+    await supabase.from("seasonal_pricing").insert({ label: newSeasonal.label, label_en: newSeasonal.label_en, start_date: newSeasonal.start_date, end_date: newSeasonal.end_date, price_per_night: Number(newSeasonal.price_per_night) });
     setNewSeasonal({ label: "", label_en: "", start_date: "", end_date: "", price_per_night: "" });
     fetchAll();
   };
 
-  const handleDeleteSeasonal = async (id: string) => {
-    await supabase.from("seasonal_pricing").delete().eq("id", id);
-    fetchAll();
-  };
+  const handleDeleteSeasonal = async (id: string) => { await supabase.from("seasonal_pricing").delete().eq("id", id); fetchAll(); };
 
   const handleEditSeasonal = (s: any) => {
     setEditingSeasonalId(s.id);
@@ -403,34 +336,19 @@ function PricingTab() {
 
   const handleSaveSeasonal = async () => {
     if (!editingSeasonalId || !editingSeasonal) return;
-    await supabase.from("seasonal_pricing").update({
-      label: editingSeasonal.label,
-      label_en: editingSeasonal.label_en,
-      start_date: editingSeasonal.start_date,
-      end_date: editingSeasonal.end_date,
-      price_per_night: Number(editingSeasonal.price_per_night),
-    }).eq("id", editingSeasonalId);
-    setEditingSeasonalId(null);
-    setEditingSeasonal(null);
+    await supabase.from("seasonal_pricing").update({ label: editingSeasonal.label, label_en: editingSeasonal.label_en, start_date: editingSeasonal.start_date, end_date: editingSeasonal.end_date, price_per_night: Number(editingSeasonal.price_per_night) }).eq("id", editingSeasonalId);
+    setEditingSeasonalId(null); setEditingSeasonal(null);
     fetchAll();
   };
 
   const handleAddCustom = async (e: React.FormEvent) => {
     e.preventDefault();
-    await supabase.from("custom_pricing").insert({
-      label: newCustom.label,
-      start_date: newCustom.start_date,
-      end_date: newCustom.end_date,
-      price_per_night: Number(newCustom.price_per_night),
-    });
+    await supabase.from("custom_pricing").insert({ label: newCustom.label, start_date: newCustom.start_date, end_date: newCustom.end_date, price_per_night: Number(newCustom.price_per_night) });
     setNewCustom({ label: "", start_date: "", end_date: "", price_per_night: "" });
     fetchAll();
   };
 
-  const handleDeleteCustom = async (id: string) => {
-    await supabase.from("custom_pricing").delete().eq("id", id);
-    fetchAll();
-  };
+  const handleDeleteCustom = async (id: string) => { await supabase.from("custom_pricing").delete().eq("id", id); fetchAll(); };
 
   const handleEditCustom = (c: any) => {
     setEditingCustomId(c.id);
@@ -439,14 +357,8 @@ function PricingTab() {
 
   const handleSaveCustom = async () => {
     if (!editingCustomId || !editingCustom) return;
-    await supabase.from("custom_pricing").update({
-      label: editingCustom.label,
-      start_date: editingCustom.start_date,
-      end_date: editingCustom.end_date,
-      price_per_night: Number(editingCustom.price_per_night),
-    }).eq("id", editingCustomId);
-    setEditingCustomId(null);
-    setEditingCustom(null);
+    await supabase.from("custom_pricing").update({ label: editingCustom.label, start_date: editingCustom.start_date, end_date: editingCustom.end_date, price_per_night: Number(editingCustom.price_per_night) }).eq("id", editingCustomId);
+    setEditingCustomId(null); setEditingCustom(null);
     fetchAll();
   };
 
@@ -454,9 +366,11 @@ function PricingTab() {
 
   return (
     <div className="space-y-8">
+      <SectionHeader title="Prijzen" subtitle="Beheer standaardprijzen, seizoensprijzen en speciale periodes." />
+
       {/* General config */}
-      <div className="bg-card rounded-xl p-6 shadow-sm">
-        <h3 className="font-serif text-lg mb-4">Algemene instellingen</h3>
+      <div className="bg-background rounded-xl border border-border p-6">
+        <h3 className="font-semibold text-foreground mb-4">Algemene instellingen</h3>
         <div className="grid sm:grid-cols-3 gap-4 mb-4">
           {[
             { key: "default_price_per_night", label: "Standaardprijs per nacht (€)" },
@@ -468,26 +382,21 @@ function PricingTab() {
           ].map(field => (
             <div key={field.key}>
               <label className="block text-xs font-medium mb-1">{field.label}</label>
-              <input
-                type="number"
-                value={config[field.key]}
-                onChange={e => setConfig({ ...config, [field.key]: Number(e.target.value) })}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
-              />
+              <input type="number" value={config[field.key]} onChange={e => setConfig({ ...config, [field.key]: Number(e.target.value) })} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
             </div>
           ))}
         </div>
-        <button onClick={handleSaveConfig} disabled={saving} className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
+        <button onClick={handleSaveConfig} disabled={saving} className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97]">
           <Save size={16} /> {saving ? "Opslaan..." : "Opslaan"}
         </button>
       </div>
 
       {/* Seasonal pricing */}
-      <div className="bg-card rounded-xl p-6 shadow-sm">
-        <h3 className="font-serif text-lg mb-4">Seizoensprijzen</h3>
+      <div className="bg-background rounded-xl border border-border p-6">
+        <h3 className="font-semibold text-foreground mb-4">Seizoensprijzen</h3>
         <div className="space-y-2 mb-4">
           {seasonal.map(s => (
-            <div key={s.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3 gap-2">
+            <div key={s.id} className="flex items-center justify-between bg-muted/40 rounded-lg p-3 gap-2">
               {editingSeasonalId === s.id ? (
                 <>
                   <div className="flex flex-wrap gap-2 flex-1 items-center text-sm">
@@ -495,10 +404,7 @@ function PricingTab() {
                     <input value={editingSeasonal.label_en} onChange={e => setEditingSeasonal({ ...editingSeasonal, label_en: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-32" placeholder="EN" />
                     <input type="date" value={editingSeasonal.start_date} onChange={e => setEditingSeasonal({ ...editingSeasonal, start_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
                     <input type="date" value={editingSeasonal.end_date} onChange={e => setEditingSeasonal({ ...editingSeasonal, end_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs">€</span>
-                      <input type="number" value={editingSeasonal.price_per_night} onChange={e => setEditingSeasonal({ ...editingSeasonal, price_per_night: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-20" />
-                    </div>
+                    <div className="flex items-center gap-1"><span className="text-xs">€</span><input type="number" value={editingSeasonal.price_per_night} onChange={e => setEditingSeasonal({ ...editingSeasonal, price_per_night: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-20" /></div>
                   </div>
                   <div className="flex gap-1">
                     <button onClick={handleSaveSeasonal} className="text-primary hover:text-primary/80"><Check size={16} /></button>
@@ -507,11 +413,7 @@ function PricingTab() {
                 </>
               ) : (
                 <>
-                  <div className="text-sm">
-                    <span className="font-medium">{s.label}</span>
-                    <span className="text-muted-foreground ml-2">{s.start_date} → {s.end_date}</span>
-                    <span className="ml-2 font-medium">€{s.price_per_night}/nacht</span>
-                  </div>
+                  <div className="text-sm"><span className="font-medium">{s.label}</span><span className="text-muted-foreground ml-2">{s.start_date} → {s.end_date}</span><span className="ml-2 font-medium">€{s.price_per_night}/nacht</span></div>
                   <div className="flex gap-1">
                     <button onClick={() => handleEditSeasonal(s)} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
                     <button onClick={() => handleDeleteSeasonal(s.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
@@ -522,46 +424,28 @@ function PricingTab() {
           ))}
         </div>
         <form onSubmit={handleAddSeasonal} className="flex flex-wrap gap-2 items-end">
-          <div>
-            <label className="block text-xs font-medium mb-1">Label (NL)</label>
-            <input type="text" value={newSeasonal.label} onChange={e => setNewSeasonal({ ...newSeasonal, label: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Label (EN)</label>
-            <input type="text" value={newSeasonal.label_en} onChange={e => setNewSeasonal({ ...newSeasonal, label_en: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Start</label>
-            <input type="date" value={newSeasonal.start_date} onChange={e => setNewSeasonal({ ...newSeasonal, start_date: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Eind</label>
-            <input type="date" value={newSeasonal.end_date} onChange={e => setNewSeasonal({ ...newSeasonal, end_date: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">€/nacht</label>
-            <input type="number" value={newSeasonal.price_per_night} onChange={e => setNewSeasonal({ ...newSeasonal, price_per_night: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm w-24" required />
-          </div>
-          <button type="submit" className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm font-medium hover:bg-primary/90"><Plus size={14} /> Toevoegen</button>
+          <div><label className="block text-xs font-medium mb-1">Label (NL)</label><input type="text" value={newSeasonal.label} onChange={e => setNewSeasonal({ ...newSeasonal, label: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required /></div>
+          <div><label className="block text-xs font-medium mb-1">Label (EN)</label><input type="text" value={newSeasonal.label_en} onChange={e => setNewSeasonal({ ...newSeasonal, label_en: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" /></div>
+          <div><label className="block text-xs font-medium mb-1">Start</label><input type="date" value={newSeasonal.start_date} onChange={e => setNewSeasonal({ ...newSeasonal, start_date: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required /></div>
+          <div><label className="block text-xs font-medium mb-1">Eind</label><input type="date" value={newSeasonal.end_date} onChange={e => setNewSeasonal({ ...newSeasonal, end_date: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required /></div>
+          <div><label className="block text-xs font-medium mb-1">€/nacht</label><input type="number" value={newSeasonal.price_per_night} onChange={e => setNewSeasonal({ ...newSeasonal, price_per_night: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm w-24" required /></div>
+          <button type="submit" className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm font-medium hover:bg-primary/90 active:scale-[0.97]"><Plus size={14} /> Toevoegen</button>
         </form>
       </div>
 
       {/* Custom pricing */}
-      <div className="bg-card rounded-xl p-6 shadow-sm">
-        <h3 className="font-serif text-lg mb-4">Speciale periodes</h3>
+      <div className="bg-background rounded-xl border border-border p-6">
+        <h3 className="font-semibold text-foreground mb-4">Speciale periodes</h3>
         <div className="space-y-2 mb-4">
           {custom.map(c => (
-            <div key={c.id} className="flex items-center justify-between bg-accent/30 rounded-lg p-3 gap-2">
+            <div key={c.id} className="flex items-center justify-between bg-muted/40 rounded-lg p-3 gap-2">
               {editingCustomId === c.id ? (
                 <>
                   <div className="flex flex-wrap gap-2 flex-1 items-center text-sm">
                     <input value={editingCustom.label} onChange={e => setEditingCustom({ ...editingCustom, label: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-32" />
                     <input type="date" value={editingCustom.start_date} onChange={e => setEditingCustom({ ...editingCustom, start_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
                     <input type="date" value={editingCustom.end_date} onChange={e => setEditingCustom({ ...editingCustom, end_date: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm" />
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs">€</span>
-                      <input type="number" value={editingCustom.price_per_night} onChange={e => setEditingCustom({ ...editingCustom, price_per_night: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-20" />
-                    </div>
+                    <div className="flex items-center gap-1"><span className="text-xs">€</span><input type="number" value={editingCustom.price_per_night} onChange={e => setEditingCustom({ ...editingCustom, price_per_night: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm w-20" /></div>
                   </div>
                   <div className="flex gap-1">
                     <button onClick={handleSaveCustom} className="text-primary hover:text-primary/80"><Check size={16} /></button>
@@ -570,11 +454,7 @@ function PricingTab() {
                 </>
               ) : (
                 <>
-                  <div className="text-sm">
-                    <span className="font-medium">{c.label}</span>
-                    <span className="text-muted-foreground ml-2">{c.start_date} → {c.end_date}</span>
-                    <span className="ml-2 font-medium">€{c.price_per_night}/nacht</span>
-                  </div>
+                  <div className="text-sm"><span className="font-medium">{c.label}</span><span className="text-muted-foreground ml-2">{c.start_date} → {c.end_date}</span><span className="ml-2 font-medium">€{c.price_per_night}/nacht</span></div>
                   <div className="flex gap-1">
                     <button onClick={() => handleEditCustom(c)} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
                     <button onClick={() => handleDeleteCustom(c.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
@@ -585,23 +465,11 @@ function PricingTab() {
           ))}
         </div>
         <form onSubmit={handleAddCustom} className="flex flex-wrap gap-2 items-end">
-          <div>
-            <label className="block text-xs font-medium mb-1">Label</label>
-            <input type="text" value={newCustom.label} onChange={e => setNewCustom({ ...newCustom, label: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Start</label>
-            <input type="date" value={newCustom.start_date} onChange={e => setNewCustom({ ...newCustom, start_date: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Eind</label>
-            <input type="date" value={newCustom.end_date} onChange={e => setNewCustom({ ...newCustom, end_date: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">€/nacht</label>
-            <input type="number" value={newCustom.price_per_night} onChange={e => setNewCustom({ ...newCustom, price_per_night: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm w-24" required />
-          </div>
-          <button type="submit" className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm font-medium hover:bg-primary/90"><Plus size={14} /> Toevoegen</button>
+          <div><label className="block text-xs font-medium mb-1">Label</label><input type="text" value={newCustom.label} onChange={e => setNewCustom({ ...newCustom, label: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required /></div>
+          <div><label className="block text-xs font-medium mb-1">Start</label><input type="date" value={newCustom.start_date} onChange={e => setNewCustom({ ...newCustom, start_date: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required /></div>
+          <div><label className="block text-xs font-medium mb-1">Eind</label><input type="date" value={newCustom.end_date} onChange={e => setNewCustom({ ...newCustom, end_date: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required /></div>
+          <div><label className="block text-xs font-medium mb-1">€/nacht</label><input type="number" value={newCustom.price_per_night} onChange={e => setNewCustom({ ...newCustom, price_per_night: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm w-24" required /></div>
+          <button type="submit" className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm font-medium hover:bg-primary/90 active:scale-[0.97]"><Plus size={14} /> Toevoegen</button>
         </form>
       </div>
     </div>
@@ -609,10 +477,10 @@ function PricingTab() {
 }
 
 // ═══════════════════════════════════════
-// BOOKINGS TAB
+// BOOKINGS
 // ═══════════════════════════════════════
 
-function BookingsTab() {
+function BookingsSection() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -652,62 +520,36 @@ function BookingsTab() {
 
   return (
     <div>
-      <h3 className="font-serif text-lg mb-4">Boekingsaanvragen</h3>
+      <SectionHeader title="Boekingen" subtitle={`${bookings.length} boekingsaanvragen ontvangen.`} />
       {bookings.length === 0 ? (
         <p className="text-muted-foreground text-sm text-center py-12">Nog geen boekingen ontvangen.</p>
       ) : (
         <div className="space-y-4">
           {bookings.map(b => (
-            <div key={b.id} className="bg-card rounded-xl p-5 shadow-sm">
+            <div key={b.id} className="bg-background border border-border rounded-xl p-5">
               <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
                   <h4 className="font-medium text-base">{b.first_name} {b.last_name}</h4>
                   <p className="text-sm text-muted-foreground">{b.email} · {b.phone}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[b.status] || "bg-muted text-muted-foreground"}`}>
-                    {statusLabels[b.status] || b.status}
-                  </span>
-                  <select
-                    value={b.status}
-                    onChange={e => updateStatus(b.id, e.target.value)}
-                    className="rounded border border-input bg-background px-2 py-1 text-xs"
-                  >
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[b.status] || "bg-muted text-muted-foreground"}`}>{statusLabels[b.status] || b.status}</span>
+                  <select value={b.status} onChange={e => updateStatus(b.id, e.target.value)} className="rounded border border-input bg-background px-2 py-1 text-xs">
                     <option value="pending">In afwachting</option>
                     <option value="confirmed">Bevestigd</option>
                     <option value="cancelled">Geannuleerd</option>
                   </select>
-                  <button onClick={() => handleDelete(b.id)} className="text-destructive hover:text-destructive/80 transition-colors ml-1">
-                    <Trash2 size={14} />
-                  </button>
+                  <button onClick={() => handleDelete(b.id)} className="text-destructive hover:text-destructive/80 transition-colors ml-1"><Trash2 size={14} /></button>
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                <div>
-                  <span className="text-muted-foreground text-xs">Check-in</span>
-                  <p className="font-medium">{b.check_in}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-xs">Check-out</span>
-                  <p className="font-medium">{b.check_out}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-xs">Gasten</span>
-                  <p className="font-medium">{b.guests}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-xs">Totaalprijs</span>
-                  <p className="font-medium">{b.total_price ? `€${b.total_price}` : "—"}</p>
-                </div>
+                <div><span className="text-muted-foreground text-xs">Check-in</span><p className="font-medium">{b.check_in}</p></div>
+                <div><span className="text-muted-foreground text-xs">Check-out</span><p className="font-medium">{b.check_out}</p></div>
+                <div><span className="text-muted-foreground text-xs">Gasten</span><p className="font-medium">{b.guests}</p></div>
+                <div><span className="text-muted-foreground text-xs">Totaalprijs</span><p className="font-medium">{b.total_price ? `€${b.total_price}` : "—"}</p></div>
               </div>
-              {b.message && (
-                <div className="mt-3 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
-                  <span className="text-xs font-medium text-foreground">Bericht:</span> {b.message}
-                </div>
-              )}
-              <p className="text-xs text-muted-foreground mt-3">
-                Ontvangen: {new Date(b.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-              </p>
+              {b.message && <div className="mt-3 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3"><span className="text-xs font-medium text-foreground">Bericht:</span> {b.message}</div>}
+              <p className="text-xs text-muted-foreground mt-3">Ontvangen: {new Date(b.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
             </div>
           ))}
         </div>
@@ -717,18 +559,15 @@ function BookingsTab() {
 }
 
 // ═══════════════════════════════════════
-// MESSAGES TAB
+// MESSAGES
 // ═══════════════════════════════════════
 
-function MessagesTab() {
+function MessagesSection() {
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchMessages = useCallback(async () => {
-    const { data } = await supabase
-      .from("contact_messages")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data } = await supabase.from("contact_messages").select("*").order("created_at", { ascending: false });
     setMessages(data || []);
     setLoading(false);
   }, []);
@@ -744,26 +583,22 @@ function MessagesTab() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Contactberichten ({messages.length})</h2>
+      <SectionHeader title="Berichten" subtitle={`${messages.length} contactberichten ontvangen.`} />
       {messages.length === 0 ? (
-        <p className="text-muted-foreground text-sm">Nog geen berichten ontvangen.</p>
+        <p className="text-muted-foreground text-sm text-center py-12">Nog geen berichten ontvangen.</p>
       ) : (
         <div className="space-y-3">
           {messages.map(m => (
-            <div key={m.id} className="bg-card border border-border rounded-xl p-4">
+            <div key={m.id} className="bg-background border border-border rounded-xl p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-medium">{m.name}</p>
-                  <a href={`mailto:${m.email}`} className="text-sm text-primary hover:underline">{m.email}</a>
+                  <p className="text-sm text-muted-foreground">{m.phone}</p>
                 </div>
-                <button onClick={() => handleDelete(m.id)} className="text-muted-foreground hover:text-destructive transition-colors p-1">
-                  <Trash2 size={16} />
-                </button>
+                <button onClick={() => handleDelete(m.id)} className="text-muted-foreground hover:text-destructive transition-colors p-1"><Trash2 size={16} /></button>
               </div>
               <p className="mt-3 text-sm text-foreground whitespace-pre-wrap">{m.message}</p>
-              <p className="text-xs text-muted-foreground mt-3">
-                {new Date(m.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-              </p>
+              <p className="text-xs text-muted-foreground mt-3">{new Date(m.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
             </div>
           ))}
         </div>
@@ -773,19 +608,16 @@ function MessagesTab() {
 }
 
 // ═══════════════════════════════════════
-// DELETION REQUESTS TAB
+// DELETION REQUESTS
 // ═══════════════════════════════════════
 
-function DeletionRequestsTab() {
+function DeletionRequestsSection() {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
 
   const fetchRequests = useCallback(async () => {
-    const { data } = await supabase
-      .from("deletion_requests")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data } = await supabase.from("deletion_requests").select("*").order("created_at", { ascending: false });
     setRequests(data || []);
     setLoading(false);
   }, []);
@@ -804,51 +636,23 @@ function DeletionRequestsTab() {
   };
 
   const handleDeletePersonData = async (request: any) => {
-    if (!confirm(
-      `Dit verwijdert/anonimiseert alle persoonsgegevens van ${request.email || request.name || "deze persoon"} uit boekingen en contactberichten. Financiële gegevens (totaalprijs) worden bewaard. Doorgaan?`
-    )) return;
-
+    if (!confirm(`Dit verwijdert/anonimiseert alle persoonsgegevens van ${request.email || request.name || "deze persoon"} uit boekingen en contactberichten. Financiële gegevens (totaalprijs) worden bewaard. Doorgaan?`)) return;
     setProcessing(request.id);
-
     try {
-      // Anonymize bookings by email
       if (request.email) {
-        const { data: bookings } = await supabase
-          .from("bookings")
-          .select("id")
-          .eq("email", request.email);
-
+        const { data: bookings } = await supabase.from("bookings").select("id").eq("email", request.email);
         if (bookings && bookings.length > 0) {
           for (const b of bookings) {
-            await supabase.from("bookings").update({
-              first_name: "Verwijderd",
-              last_name: "Verwijderd",
-              email: `deleted-${b.id.slice(0, 8)}@verwijderd.nl`,
-              phone: null,
-              message: null,
-              arrival_time: null,
-            }).eq("id", b.id);
+            await supabase.from("bookings").update({ first_name: "Verwijderd", last_name: "Verwijderd", email: `deleted-${b.id.slice(0, 8)}@verwijderd.nl`, phone: null, message: null, arrival_time: null }).eq("id", b.id);
           }
         }
-
-        // Delete contact messages by matching phone or name
-        await supabase.from("contact_messages").delete().eq("phone", request.phone || "");
       }
-
-      // If phone provided, also check contact messages
       if (request.phone) {
         await supabase.from("contact_messages").delete().eq("phone", request.phone);
       }
-
-      // Mark request as completed
-      await supabase.from("deletion_requests").update({
-        status: "completed",
-        completed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }).eq("id", request.id);
-
+      await supabase.from("deletion_requests").update({ status: "completed", completed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq("id", request.id);
       fetchRequests();
-    } catch (err) {
+    } catch {
       alert("Er is een fout opgetreden bij het verwijderen van de gegevens.");
     } finally {
       setProcessing(null);
@@ -884,32 +688,22 @@ function DeletionRequestsTab() {
 
   return (
     <div>
-      <h3 className="font-serif text-lg mb-4">Verwijderverzoeken ({requests.length})</h3>
+      <SectionHeader title="Verwijderverzoeken" subtitle={`${requests.length} verzoeken — beheer AVG/GDPR data deletion requests.`} />
       {requests.length === 0 ? (
         <p className="text-muted-foreground text-sm text-center py-12">Geen verwijderverzoeken ontvangen.</p>
       ) : (
         <div className="space-y-4">
           {requests.map(r => (
-            <div key={r.id} className="bg-card rounded-xl p-5 shadow-sm">
+            <div key={r.id} className="bg-background border border-border rounded-xl p-5">
               <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
                   <h4 className="font-medium text-base">{r.name || "(Geen naam)"}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {r.email || "(Geen e-mail)"}{r.phone ? ` · ${r.phone}` : ""}
-                  </p>
-                  {r.meta_user_id && (
-                    <p className="text-xs text-muted-foreground mt-0.5">Meta ID: {r.meta_user_id}</p>
-                  )}
+                  <p className="text-sm text-muted-foreground">{r.email || "(Geen e-mail)"}{r.phone ? ` · ${r.phone}` : ""}</p>
+                  {r.meta_user_id && <p className="text-xs text-muted-foreground mt-0.5">Meta ID: {r.meta_user_id}</p>}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[r.status] || "bg-muted text-muted-foreground"}`}>
-                    {statusLabels[r.status] || r.status}
-                  </span>
-                  <select
-                    value={r.status}
-                    onChange={e => updateStatus(r.id, e.target.value)}
-                    className="rounded border border-input bg-background px-2 py-1 text-xs"
-                  >
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[r.status] || "bg-muted text-muted-foreground"}`}>{statusLabels[r.status] || r.status}</span>
+                  <select value={r.status} onChange={e => updateStatus(r.id, e.target.value)} className="rounded border border-input bg-background px-2 py-1 text-xs">
                     <option value="pending">In afwachting</option>
                     <option value="email_sent">E-mail verstuurd</option>
                     <option value="verified">Geverifieerd</option>
@@ -921,29 +715,13 @@ function DeletionRequestsTab() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-3">
-                <div>
-                  <span className="text-muted-foreground text-xs">Type</span>
-                  <p className="font-medium">{typeLabels[r.request_type] || r.request_type}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-xs">Bron</span>
-                  <p className="font-medium">{r.source === "meta_callback" ? "Meta" : "Website"}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-xs">Taal</span>
-                  <p className="font-medium">{r.language?.toUpperCase() || "NL"}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-xs">Bevestigingscode</span>
-                  <p className="font-medium font-mono text-xs">{r.confirmation_code || "—"}</p>
-                </div>
+                <div><span className="text-muted-foreground text-xs">Type</span><p className="font-medium">{typeLabels[r.request_type] || r.request_type}</p></div>
+                <div><span className="text-muted-foreground text-xs">Bron</span><p className="font-medium">{r.source === "meta_callback" ? "Meta" : "Website"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Taal</span><p className="font-medium">{r.language?.toUpperCase() || "NL"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Bevestigingscode</span><p className="font-medium font-mono text-xs">{r.confirmation_code || "—"}</p></div>
               </div>
 
-              {r.details && (
-                <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 mb-3">
-                  <span className="text-xs font-medium text-foreground">Toelichting:</span> {r.details}
-                </div>
-              )}
+              {r.details && <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 mb-3"><span className="text-xs font-medium text-foreground">Toelichting:</span> {r.details}</div>}
 
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">
@@ -952,22 +730,11 @@ function DeletionRequestsTab() {
                 </p>
                 <div className="flex gap-2">
                   {r.status !== "completed" && (
-                    <button
-                      onClick={() => handleDeletePersonData(r)}
-                      disabled={processing === r.id}
-                      className="flex items-center gap-1 text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:opacity-50"
-                    >
-                      <UserX size={14} />
-                      {processing === r.id ? "Bezig..." : "Data verwijderen"}
+                    <button onClick={() => handleDeletePersonData(r)} disabled={processing === r.id} className="flex items-center gap-1 text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:opacity-50 active:scale-[0.97]">
+                      <UserX size={14} /> {processing === r.id ? "Bezig..." : "Data verwijderen"}
                     </button>
                   )}
-                  <button
-                    onClick={() => handleDeleteRequest(r.id)}
-                    className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                    title="Verzoek verwijderen"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  <button onClick={() => handleDeleteRequest(r.id)} className="text-muted-foreground hover:text-destructive transition-colors p-1" title="Verzoek verwijderen"><Trash2 size={14} /></button>
                 </div>
               </div>
             </div>
