@@ -37,7 +37,8 @@ export type AdminSection =
   | "photos"
   | "calendar"
   | "pricing"
-  | "deletion";
+  | "deletion"
+  | "users";
 
 interface NavItem {
   id: AdminSection;
