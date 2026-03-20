@@ -47,6 +47,7 @@ export default function Admin() {
       {section === "calendar" && <CalendarSection />}
       {section === "pricing" && <PricingSection />}
       {section === "deletion" && <DeletionRequestsSection />}
+      {section === "users" && <UsersSection />}
     </AdminLayout>
   );
 }
