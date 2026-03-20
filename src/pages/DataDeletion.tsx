@@ -252,7 +252,7 @@ const DataDeletion = () => {
       <PageShell showBackToTop={showBackToTop} scrollToTop={scrollToTop}>
         <div className="max-w-[720px] mx-auto py-16 px-4">
           <StatusCard
-            icon={<CheckCircle2 className="w-10 h-10 text-green-600" />}
+            icon={<CheckCircle2 className="w-10 h-10 text-secondary" />}
             title="Uw gegevens zijn verwijderd"
             description="Uw verwijderingsverzoek is verwerkt. Alle persoonsgegevens die niet onder een wettelijke bewaarplicht vallen, zijn verwijderd uit onze systemen. U ontvangt hiervan ook een bevestiging per e-mail."
           />
