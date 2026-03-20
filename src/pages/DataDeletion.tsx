@@ -228,7 +228,7 @@ const DataDeletion = () => {
 
           {statusData && statusData.status === "completed" && (
             <StatusCard
-              icon={<CheckCircle2 className="w-10 h-10 text-green-600" />}
+              icon={<CheckCircle2 className="w-10 h-10 text-secondary" />}
               title="Uw gegevens zijn verwijderd"
               description={`Uw verwijderingsverzoek is volledig verwerkt${statusData.completed_at ? ` op ${new Date(statusData.completed_at).toLocaleDateString("nl-NL", { year: "numeric", month: "long", day: "numeric" })}` : ""}. Alle persoonsgegevens die niet onder een wettelijke bewaarplicht vallen, zijn verwijderd.`}
             >
