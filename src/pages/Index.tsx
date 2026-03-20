@@ -1403,7 +1403,7 @@ export default function Index() {
           <div className="grid sm:grid-cols-3 gap-8 mb-8">
             {/* Left: Brand */}
             <div>
-              <p className="font-serif text-xl mb-1">Casa Valencia</p>
+              <img src="/logos/logo-color.png" alt="Casita Valencia" className="h-12 w-auto mb-1" />
               <p className="text-sm text-muted-foreground">{t.footer.tagline}</p>
             </div>
             {/* Middle: Section links */}
