@@ -811,22 +811,22 @@ export default function Index() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <button onClick={() => scrollTo("hero")} className="font-serif text-xl tracking-wide">
+          <button onClick={() => scrollTo("hero")} className={`font-serif text-xl tracking-wide transition-colors duration-300 ${scrolled ? "text-foreground" : "text-white"}`}>
             Casa Valencia
           </button>
 
-          {/* Desktop links — no language toggle */}
+          {/* Desktop links */}
           <div className="hidden md:flex items-center gap-6">
             {navSections.map(s => (
-              <button key={s.id} onClick={() => scrollTo(s.id)} className="text-sm font-medium hover:text-primary transition-colors">
+              <button key={s.id} onClick={() => scrollTo(s.id)} className={`text-sm font-medium transition-colors duration-300 ${scrolled ? "text-foreground hover:text-primary" : "text-white/90 hover:text-white"}`}>
                 {s.label}
               </button>
             ))}
           </div>
 
-          {/* Mobile menu button — no language toggle */}
+          {/* Mobile menu button */}
           <div className="flex items-center gap-3 md:hidden">
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu">
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu" className={`transition-colors duration-300 ${scrolled ? "text-foreground" : "text-white"}`}>
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
