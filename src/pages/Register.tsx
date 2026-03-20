@@ -20,31 +20,6 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!token) {
-      setValidating(false);
-      return;
-    }
-    supabase.functions
-      .invoke("validate-invite", { method: "GET", body: undefined, headers: { "Content-Type": "application/json" } })
-      .then(() => {
-        // Use fetch directly for GET with query params
-        fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/validate-invite?action=validate&token=${token}`,
-          { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
-        )
-          .then((r) => r.json())
-          .then((data) => {
-            setValid(data.valid === true);
-            if (data.expires_at) setExpiresAt(data.expires_at);
-            setValidating(false);
-          })
-          .catch(() => setValidating(false));
-      })
-      .catch(() => setValidating(false));
-  }, [token]);
-
-  // Simpler: just use fetch directly
-  useEffect(() => {
     if (!token) { setValidating(false); return; }
     fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/validate-invite?action=validate&token=${token}`,
