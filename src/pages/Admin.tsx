@@ -732,9 +732,14 @@ function DeletionRequestsSection() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-3">
                 <div><span className="text-muted-foreground text-xs">Type</span><p className="font-medium">{typeLabels[r.request_type] || r.request_type}</p></div>
-                <div><span className="text-muted-foreground text-xs">Bron</span><p className="font-medium">{r.source === "meta_callback" ? "Meta" : "Website"}</p></div>
-                <div><span className="text-muted-foreground text-xs">Taal</span><p className="font-medium">{r.language?.toUpperCase() || "NL"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Bron</span><p className="font-medium">{r.source === "meta_callback" ? "Meta/Facebook" : "Website"}</p></div>
                 <div><span className="text-muted-foreground text-xs">Bevestigingscode</span><p className="font-medium font-mono text-xs">{r.confirmation_code || "—"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Meta User ID</span><p className="font-medium font-mono text-xs">{r.meta_user_id || "—"}</p></div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-3">
+                <div><span className="text-muted-foreground text-xs">Taal</span><p className="font-medium">{r.language?.toUpperCase() || "NL"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Geverifieerd op</span><p className="font-medium">{r.verified_at ? new Date(r.verified_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "—"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Afgerond op</span><p className="font-medium">{r.completed_at ? new Date(r.completed_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "—"}</p></div>
               </div>
 
               {r.details && <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 mb-3"><span className="text-xs font-medium text-foreground">Toelichting:</span> {r.details}</div>}
