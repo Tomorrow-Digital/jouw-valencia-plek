@@ -215,7 +215,7 @@ const DataDeletion = () => {
 
           {statusData && (statusData.status === "pending" || statusData.status === "processing" || statusData.status === "email_sent" || statusData.status === "verified") && (
             <StatusCard
-              icon={<Clock className="w-10 h-10 text-amber-500" />}
+              icon={<Clock className="w-10 h-10 text-primary" />}
               title="Uw verwijderingsverzoek wordt verwerkt"
               description="Wij hebben uw verzoek ontvangen en zijn bezig met het verwijderen van uw gegevens. Dit kan tot 30 dagen duren."
             >
