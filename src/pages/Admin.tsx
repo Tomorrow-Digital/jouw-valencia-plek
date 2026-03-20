@@ -691,11 +691,25 @@ function DeletionRequestsSection() {
   return (
     <div>
       <SectionHeader title="Verwijderverzoeken" subtitle={`${requests.length} verzoeken — beheer AVG/GDPR data deletion requests.`} />
-      {requests.length === 0 ? (
-        <p className="text-muted-foreground text-sm text-center py-12">Geen verwijderverzoeken ontvangen.</p>
+
+      {/* Status filter */}
+      <div className="mb-4 flex items-center gap-3">
+        <label className="text-sm font-medium text-muted-foreground">Filter:</label>
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
+          <option value="all">Alle</option>
+          <option value="pending">In afwachting</option>
+          <option value="verified">Geverifieerd</option>
+          <option value="processing">In verwerking</option>
+          <option value="completed">Afgerond</option>
+          <option value="rejected">Afgewezen</option>
+        </select>
+      </div>
+
+      {requests.filter(r => statusFilter === "all" || r.status === statusFilter).length === 0 ? (
+        <p className="text-muted-foreground text-sm text-center py-12">Geen verwijderverzoeken gevonden.</p>
       ) : (
         <div className="space-y-4">
-          {requests.map(r => (
+          {requests.filter(r => statusFilter === "all" || r.status === statusFilter).map(r => (
             <div key={r.id} className="bg-background border border-border rounded-xl p-5">
               <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
