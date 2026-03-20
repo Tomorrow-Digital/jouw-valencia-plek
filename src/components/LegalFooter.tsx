@@ -13,7 +13,7 @@ export function LegalFooter() {
   return (
     <footer className="border-t border-border bg-muted/30 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Casita Valencia / easyworx zzp B.V.</p>
+        <p>© {new Date().getFullYear()} Casita Valencia</p>
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
           {links.map((link) =>
             pathname === link.to ? (
