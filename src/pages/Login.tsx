@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,13 +38,35 @@ export default function Login() {
     }
 
     if (mode === "register") {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        setError(error.message);
-      } else {
-        setSuccess("Account aangemaakt! Je kunt nu inloggen.");
-        setMode("login");
+      if (!phone || phone.length < 8) {
+        setError("Vul een geldig telefoonnummer in (inclusief landcode, bijv. +31612345678).");
+        setLoading(false);
+        return;
       }
+      if (!displayName.trim()) {
+        setError("Vul je volledige naam in.");
+        setLoading(false);
+        return;
+      }
+
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+      if (signUpError) {
+        setError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+
+      // Save profile data (phone + name)
+      if (signUpData.user) {
+        await supabase.from("profiles").upsert({
+          id: signUpData.user.id,
+          phone: phone.trim(),
+          display_name: displayName.trim(),
+        });
+      }
+
+      setSuccess("Account aangemaakt! Je kunt nu inloggen.");
+      setMode("login");
       setLoading(false);
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -53,6 +77,12 @@ export default function Login() {
         navigate("/admin");
       }
     }
+  };
+
+  const switchMode = (newMode: "login" | "register" | "forgot") => {
+    setMode(newMode);
+    setError("");
+    setSuccess("");
   };
 
   return (
@@ -69,9 +99,24 @@ export default function Login() {
             </p>
           )}
           {error && <p className="text-destructive text-sm">{error}</p>}
-          {success && <p className="text-sm" style={{ color: "hsl(var(--primary))" }}>{success}</p>}
+          {success && <p className="text-sm text-primary">{success}</p>}
+
+          {mode === "register" && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Volledige naam *</label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={e => setDisplayName(e.target.value)}
+                placeholder="Jan de Vries"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+            </div>
+          )}
+
           <div>
-            <label className="block text-sm font-medium mb-1">E-mail</label>
+            <label className="block text-sm font-medium mb-1">E-mail *</label>
             <input
               type="email"
               value={email}
@@ -80,9 +125,25 @@ export default function Login() {
               required
             />
           </div>
+
+          {mode === "register" && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Telefoonnummer (WhatsApp) *</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                placeholder="+31612345678"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+              <p className="text-xs text-muted-foreground mt-1">Inclusief landcode. Wordt gebruikt voor wachtwoordreset via WhatsApp.</p>
+            </div>
+          )}
+
           {mode !== "forgot" && (
             <div>
-              <label className="block text-sm font-medium mb-1">Wachtwoord</label>
+              <label className="block text-sm font-medium mb-1">Wachtwoord *</label>
               <input
                 type="password"
                 value={password}
@@ -91,8 +152,12 @@ export default function Login() {
                 required
                 minLength={6}
               />
+              {mode === "register" && (
+                <p className="text-xs text-muted-foreground mt-1">Minimaal 6 tekens.</p>
+              )}
             </div>
           )}
+
           <button
             type="submit"
             disabled={loading}
@@ -110,7 +175,7 @@ export default function Login() {
           {mode === "login" && (
             <button
               type="button"
-              onClick={() => { setMode("forgot"); setError(""); setSuccess(""); }}
+              onClick={() => switchMode("forgot")}
               className="w-full text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Wachtwoord vergeten?
@@ -119,9 +184,9 @@ export default function Login() {
 
           <p className="text-center text-sm text-muted-foreground">
             {mode === "login" ? (
-              <>Nog geen account? <button type="button" onClick={() => { setMode("register"); setError(""); setSuccess(""); }} className="text-primary hover:underline">Registreren</button></>
+              <>Nog geen account? <button type="button" onClick={() => switchMode("register")} className="text-primary hover:underline">Registreren</button></>
             ) : (
-              <button type="button" onClick={() => { setMode("login"); setError(""); setSuccess(""); }} className="text-primary hover:underline">
+              <button type="button" onClick={() => switchMode("login")} className="text-primary hover:underline">
                 ← Terug naar inloggen
               </button>
             )}
