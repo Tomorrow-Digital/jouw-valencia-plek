@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { DashboardSection } from "@/components/admin/DashboardSection";
 import {
-  Trash2, Plus, Upload, Save, X, Pencil, Check, UserX,
+  Trash2, Plus, Upload, Save, X, Pencil, Check, UserX, Link2, Copy, Clock,
 } from "lucide-react";
 
 export default function Admin() {
@@ -774,15 +774,20 @@ function UsersSection() {
   const [editPhone, setEditPhone] = useState("");
   const [editName, setEditName] = useState("");
   const [saving, setSaving] = useState(false);
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteCopied, setInviteCopied] = useState(false);
+  const [invites, setInvites] = useState<any[]>([]);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       setCurrentUserId(session.user.id);
-      const [usersResponse, { data: profilesData }] = await Promise.all([
+      const [usersResponse, { data: profilesData }, { data: invitesData }] = await Promise.all([
         supabase.functions.invoke("manage-users", { method: "GET" }),
         supabase.from("profiles").select("*"),
+        supabase.from("invite_tokens").select("*").order("created_at", { ascending: false }).limit(10),
       ]);
       if (usersResponse.data?.users) setUsers(usersResponse.data.users);
       if (profilesData) {
@@ -790,11 +795,42 @@ function UsersSection() {
         profilesData.forEach((p: Profile) => { map[p.id] = p; });
         setProfiles(map);
       }
+      if (invitesData) setInvites(invitesData);
     }
     setLoading(false);
   }, []);
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  const handleGenerateInvite = async () => {
+    setInviteLoading(true);
+    setInviteCopied(false);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { data, error } = await supabase.from("invite_tokens").insert({
+      created_by: session.user.id,
+    }).select().single();
+
+    if (data && !error) {
+      const url = `${window.location.origin}/register?token=${data.token}`;
+      setInviteUrl(url);
+      fetchUsers();
+    }
+    setInviteLoading(false);
+  };
+
+  const handleCopyInvite = async () => {
+    if (!inviteUrl) return;
+    await navigator.clipboard.writeText(inviteUrl);
+    setInviteCopied(true);
+    setTimeout(() => setInviteCopied(false), 3000);
+  };
+
+  const handleDeleteInvite = async (id: string) => {
+    await supabase.from("invite_tokens").delete().eq("id", id);
+    fetchUsers();
+  };
 
   const handleDelete = async (userId: string, email: string) => {
     if (!confirm(`Weet je zeker dat je het account van ${email} wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return;
@@ -849,8 +885,64 @@ function UsersSection() {
   if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Laden...</p>;
 
   return (
-    <div>
-      <SectionHeader title="Gebruikers" subtitle={`${users.length} geregistreerde admin-gebruiker(s). Koppel een telefoonnummer voor wachtwoordreset via WhatsApp.`} />
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <SectionHeader title="Gebruikers" subtitle={`${users.length} admin-gebruiker(s). Registratie is alleen mogelijk via uitnodiging.`} />
+        <button
+          onClick={handleGenerateInvite}
+          disabled={inviteLoading}
+          className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97] flex-shrink-0"
+        >
+          <Link2 size={16} /> {inviteLoading ? "Genereren..." : "Uitnodigingslink genereren"}
+        </button>
+      </div>
+
+      {/* Generated invite URL */}
+      {inviteUrl && (
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex flex-wrap items-center gap-3">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-primary mb-1">Uitnodigingslink (48 uur geldig)</p>
+            <p className="text-sm text-foreground font-mono truncate">{inviteUrl}</p>
+          </div>
+          <button
+            onClick={handleCopyInvite}
+            className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-primary/90 transition-colors active:scale-[0.97]"
+          >
+            <Copy size={14} /> {inviteCopied ? "Gekopieerd!" : "Kopiëren"}
+          </button>
+        </div>
+      )}
+
+      {/* Active invites */}
+      {invites.length > 0 && (
+        <div className="bg-background border border-border rounded-xl p-4">
+          <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2"><Clock size={14} /> Uitnodigingen</h3>
+          <div className="space-y-2">
+            {invites.map(inv => {
+              const isExpired = new Date(inv.expires_at) < new Date();
+              const isUsed = !!inv.used_at;
+              return (
+                <div key={inv.id} className="flex items-center justify-between text-sm gap-2 py-1.5 border-b border-border last:border-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isUsed ? "bg-primary/10 text-primary" : isExpired ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"}`}>
+                      {isUsed ? "Gebruikt" : isExpired ? "Verlopen" : "Actief"}
+                    </span>
+                    <span className="text-muted-foreground text-xs truncate font-mono">{inv.token.slice(0, 8)}...</span>
+                    <span className="text-xs text-muted-foreground">
+                      Verloopt: {new Date(inv.expires_at).toLocaleString("nl-NL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                  {!isUsed && (
+                    <button onClick={() => handleDeleteInvite(inv.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Users list */}
       {users.length === 0 ? (
         <p className="text-muted-foreground text-sm text-center py-12">Geen gebruikers gevonden.</p>
       ) : (
