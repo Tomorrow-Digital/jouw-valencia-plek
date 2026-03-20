@@ -616,6 +616,7 @@ function DeletionRequestsSection() {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const fetchRequests = useCallback(async () => {
     const { data } = await supabase.from("deletion_requests").select("*").order("created_at", { ascending: false });
