@@ -773,16 +773,20 @@ function UsersSection() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState("");
   const [editName, setEditName] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteCopied, setInviteCopied] = useState(false);
+  const [invites, setInvites] = useState<any[]>([]);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       setCurrentUserId(session.user.id);
-      const [usersResponse, { data: profilesData }] = await Promise.all([
+      const [usersResponse, { data: profilesData }, { data: invitesData }] = await Promise.all([
         supabase.functions.invoke("manage-users", { method: "GET" }),
         supabase.from("profiles").select("*"),
+        supabase.from("invite_tokens").select("*").order("created_at", { ascending: false }).limit(10),
       ]);
       if (usersResponse.data?.users) setUsers(usersResponse.data.users);
       if (profilesData) {
@@ -790,11 +794,42 @@ function UsersSection() {
         profilesData.forEach((p: Profile) => { map[p.id] = p; });
         setProfiles(map);
       }
+      if (invitesData) setInvites(invitesData);
     }
     setLoading(false);
   }, []);
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  const handleGenerateInvite = async () => {
+    setInviteLoading(true);
+    setInviteCopied(false);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { data, error } = await supabase.from("invite_tokens").insert({
+      created_by: session.user.id,
+    }).select().single();
+
+    if (data && !error) {
+      const url = `${window.location.origin}/register?token=${data.token}`;
+      setInviteUrl(url);
+      fetchUsers();
+    }
+    setInviteLoading(false);
+  };
+
+  const handleCopyInvite = async () => {
+    if (!inviteUrl) return;
+    await navigator.clipboard.writeText(inviteUrl);
+    setInviteCopied(true);
+    setTimeout(() => setInviteCopied(false), 3000);
+  };
+
+  const handleDeleteInvite = async (id: string) => {
+    await supabase.from("invite_tokens").delete().eq("id", id);
+    fetchUsers();
+  };
 
   const handleDelete = async (userId: string, email: string) => {
     if (!confirm(`Weet je zeker dat je het account van ${email} wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return;
