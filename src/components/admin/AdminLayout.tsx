@@ -55,6 +55,7 @@ const navItems: NavItem[] = [
   { id: "calendar", label: "Kalender", icon: Calendar, group: "content" },
   { id: "pricing", label: "Prijzen", icon: Euro, group: "content" },
   { id: "deletion", label: "Verwijderverzoeken", icon: ShieldAlert, group: "privacy" },
+  { id: "users", label: "Gebruikers", icon: Users, group: "privacy" },
 ];
 
 const groupLabels: Record<string, string> = {
