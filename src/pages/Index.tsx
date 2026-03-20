@@ -1431,6 +1431,8 @@ export default function Index() {
             <p>{t.footer.copyright}</p>
             <span className="hidden sm:inline">·</span>
             <a href="/privacy-policy" className="hover:text-primary transition-colors">Privacybeleid</a>
+            <span className="hidden sm:inline">·</span>
+            <a href="/terms-of-service" className="hover:text-primary transition-colors">Algemene Voorwaarden</a>
           </div>
         </div>
       </footer>
