@@ -997,21 +997,7 @@ const TermsOfService = () => {
         </div>
       </div>
 
-      {/* ─── FOOTER ─── */}
-      <footer className="border-t border-border bg-muted/30 py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Casita Valencia / easyworx zzp B.V.</p>
-          <div className="flex gap-6">
-            <Link to="/" className="hover:text-primary transition-colors">
-              Home
-            </Link>
-            <Link to="/privacy-policy" className="hover:text-primary transition-colors">
-              Privacybeleid
-            </Link>
-            <span className="text-primary font-medium">Algemene Voorwaarden</span>
-          </div>
-        </div>
-      </footer>
+      <LegalFooter />
 
       {/* ─── BACK TO TOP ─── */}
       {showBackToTop && (
