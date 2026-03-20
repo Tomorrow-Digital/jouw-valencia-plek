@@ -817,7 +817,7 @@ export default function Index() {
             <img
               src={scrolled ? logoColor : logoWhite}
               alt="Casita Valencia"
-              className="h-8 w-auto"
+              className="h-11 w-auto"
             />
           </button>
 
