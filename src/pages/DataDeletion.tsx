@@ -618,6 +618,8 @@ const PageShell = ({ children, showBackToTop, scrollToTop }: { children: React.R
 
     {children}
 
+    <LegalFooter />
+
     {/* Back to top */}
     {showBackToTop && (
       <motion.button
