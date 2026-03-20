@@ -758,21 +758,38 @@ interface AuthUser {
   email_confirmed_at: string | null;
 }
 
+interface Profile {
+  id: string;
+  phone: string | null;
+  display_name: string | null;
+}
+
 function UsersSection() {
   const [users, setUsers] = useState<AuthUser[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editPhone, setEditPhone] = useState("");
+  const [editName, setEditName] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       setCurrentUserId(session.user.id);
-      const response = await supabase.functions.invoke("manage-users", {
-        method: "GET",
-      });
-      if (response.data?.users) setUsers(response.data.users);
+      const [usersResponse, { data: profilesData }] = await Promise.all([
+        supabase.functions.invoke("manage-users", { method: "GET" }),
+        supabase.from("profiles").select("*"),
+      ]);
+      if (usersResponse.data?.users) setUsers(usersResponse.data.users);
+      if (profilesData) {
+        const map: Record<string, Profile> = {};
+        profilesData.forEach((p: Profile) => { map[p.id] = p; });
+        setProfiles(map);
+      }
     }
     setLoading(false);
   }, []);
@@ -800,46 +817,129 @@ function UsersSection() {
     }
   };
 
+  const handleEdit = (userId: string) => {
+    const profile = profiles[userId];
+    setEditingId(userId);
+    setEditPhone(profile?.phone || "");
+    setEditName(profile?.display_name || "");
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editingId) return;
+    setSaving(true);
+    const existing = profiles[editingId];
+    if (existing) {
+      await supabase.from("profiles").update({
+        phone: editPhone || null,
+        display_name: editName || null,
+        updated_at: new Date().toISOString(),
+      }).eq("id", editingId);
+    } else {
+      await supabase.from("profiles").insert({
+        id: editingId,
+        phone: editPhone || null,
+        display_name: editName || null,
+      });
+    }
+    setEditingId(null);
+    setSaving(false);
+    fetchUsers();
+  };
+
   if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Laden...</p>;
 
   return (
     <div>
-      <SectionHeader title="Gebruikers" subtitle={`${users.length} geregistreerde admin-gebruiker(s).`} />
+      <SectionHeader title="Gebruikers" subtitle={`${users.length} geregistreerde admin-gebruiker(s). Koppel een telefoonnummer voor wachtwoordreset via WhatsApp.`} />
       {users.length === 0 ? (
         <p className="text-muted-foreground text-sm text-center py-12">Geen gebruikers gevonden.</p>
       ) : (
         <div className="space-y-3">
-          {users.map(u => (
-            <div key={u.id} className="bg-background border border-border rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
-              <div className="min-w-0">
-                <p className="font-medium text-foreground truncate">{u.email}</p>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-1">
-                  <span>Aangemaakt: {new Date(u.created_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
-                  {u.last_sign_in_at && (
-                    <span>Laatst ingelogd: {new Date(u.last_sign_in_at).toLocaleString("nl-NL", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
-                  )}
-                  {u.email_confirmed_at ? (
-                    <span className="text-green-600">✓ E-mail bevestigd</span>
-                  ) : (
-                    <span className="text-yellow-600">⚠ Niet bevestigd</span>
-                  )}
+          {users.map(u => {
+            const profile = profiles[u.id];
+            const isEditing = editingId === u.id;
+
+            return (
+              <div key={u.id} className="bg-background border border-border rounded-xl p-5 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-medium text-foreground truncate">
+                      {profile?.display_name ? `${profile.display_name} · ` : ""}{u.email}
+                    </p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-1">
+                      <span>Aangemaakt: {new Date(u.created_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</span>
+                      {u.last_sign_in_at && (
+                        <span>Laatst ingelogd: {new Date(u.last_sign_in_at).toLocaleString("nl-NL", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                      )}
+                      {profile?.phone ? (
+                        <span className="text-primary">📱 {profile.phone}</span>
+                      ) : (
+                        <span className="text-muted-foreground/60">Geen telefoonnummer</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {u.id === currentUserId ? (
+                      <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">Jij</span>
+                    ) : null}
+                    <button
+                      onClick={() => isEditing ? setEditingId(null) : handleEdit(u.id)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    {u.id !== currentUserId && (
+                      <button
+                        onClick={() => handleDelete(u.id, u.email || "")}
+                        disabled={deleting === u.id}
+                        className="flex items-center gap-1 text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:opacity-50 active:scale-[0.97]"
+                      >
+                        <Trash2 size={14} /> {deleting === u.id ? "Verwijderen..." : "Verwijderen"}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {u.id === currentUserId ? (
-                  <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">Jij</span>
-                ) : (
-                  <button
-                    onClick={() => handleDelete(u.id, u.email || "")}
-                    disabled={deleting === u.id}
-                    className="flex items-center gap-1 text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:opacity-50 active:scale-[0.97]"
-                  >
-                    <Trash2 size={14} /> {deleting === u.id ? "Verwijderen..." : "Verwijderen"}
-                  </button>
+
+                {isEditing && (
+                  <div className="flex flex-wrap gap-3 items-end pt-2 border-t border-border">
+                    <div>
+                      <label className="block text-xs font-medium mb-1">Naam</label>
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        placeholder="Weergavenaam"
+                        className="rounded-lg border border-input bg-background px-3 py-2 text-sm w-40"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-1">Telefoonnummer (WhatsApp)</label>
+                      <input
+                        type="tel"
+                        value={editPhone}
+                        onChange={(e) => setEditPhone(e.target.value)}
+                        placeholder="+31612345678"
+                        className="rounded-lg border border-input bg-background px-3 py-2 text-sm w-44"
+                      />
+                    </div>
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={saving}
+                      className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97]"
+                    >
+                      <Check size={14} /> {saving ? "Opslaan..." : "Opslaan"}
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="text-muted-foreground hover:text-foreground transition-colors p-2"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
                 )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
