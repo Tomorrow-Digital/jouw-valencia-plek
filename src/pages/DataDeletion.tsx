@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import {
   Trash2,
@@ -43,7 +44,6 @@ const fadeUp = {
 };
 
 const N8N_WEBHOOK_URL = import.meta.env.VITE_DELETION_WEBHOOK_URL || "[N8N_WEBHOOK_URL]";
-const N8N_STATUS_URL = import.meta.env.VITE_DELETION_STATUS_URL || "[N8N_STATUS_WEBHOOK_URL]";
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -123,21 +123,21 @@ const DataDeletion = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Status check for Meta callback
+  // Status check via Supabase RPC
   useEffect(() => {
     if (idParam && codeParam) {
       setStatusLoading(true);
-      fetch(`${N8N_STATUS_URL}?id=${encodeURIComponent(idParam)}&code=${encodeURIComponent(codeParam)}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Not found");
-          return res.json();
+      supabase
+        .rpc("check_deletion_status", {
+          request_id: idParam,
+          request_code: codeParam,
         })
-        .then((data) => {
-          setStatusData(data);
-          setStatusLoading(false);
-        })
-        .catch(() => {
-          setStatusError(true);
+        .then(({ data, error }) => {
+          if (error || !data || data.length === 0) {
+            setStatusError(true);
+          } else {
+            setStatusData(data[0] as StatusResponse);
+          }
           setStatusLoading(false);
         });
     }

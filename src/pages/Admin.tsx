@@ -616,6 +616,7 @@ function DeletionRequestsSection() {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const fetchRequests = useCallback(async () => {
     const { data } = await supabase.from("deletion_requests").select("*").order("created_at", { ascending: false });
@@ -690,11 +691,25 @@ function DeletionRequestsSection() {
   return (
     <div>
       <SectionHeader title="Verwijderverzoeken" subtitle={`${requests.length} verzoeken — beheer AVG/GDPR data deletion requests.`} />
-      {requests.length === 0 ? (
-        <p className="text-muted-foreground text-sm text-center py-12">Geen verwijderverzoeken ontvangen.</p>
+
+      {/* Status filter */}
+      <div className="mb-4 flex items-center gap-3">
+        <label className="text-sm font-medium text-muted-foreground">Filter:</label>
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
+          <option value="all">Alle</option>
+          <option value="pending">In afwachting</option>
+          <option value="verified">Geverifieerd</option>
+          <option value="processing">In verwerking</option>
+          <option value="completed">Afgerond</option>
+          <option value="rejected">Afgewezen</option>
+        </select>
+      </div>
+
+      {requests.filter(r => statusFilter === "all" || r.status === statusFilter).length === 0 ? (
+        <p className="text-muted-foreground text-sm text-center py-12">Geen verwijderverzoeken gevonden.</p>
       ) : (
         <div className="space-y-4">
-          {requests.map(r => (
+          {requests.filter(r => statusFilter === "all" || r.status === statusFilter).map(r => (
             <div key={r.id} className="bg-background border border-border rounded-xl p-5">
               <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
@@ -717,9 +732,14 @@ function DeletionRequestsSection() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-3">
                 <div><span className="text-muted-foreground text-xs">Type</span><p className="font-medium">{typeLabels[r.request_type] || r.request_type}</p></div>
-                <div><span className="text-muted-foreground text-xs">Bron</span><p className="font-medium">{r.source === "meta_callback" ? "Meta" : "Website"}</p></div>
-                <div><span className="text-muted-foreground text-xs">Taal</span><p className="font-medium">{r.language?.toUpperCase() || "NL"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Bron</span><p className="font-medium">{r.source === "meta_callback" ? "Meta/Facebook" : "Website"}</p></div>
                 <div><span className="text-muted-foreground text-xs">Bevestigingscode</span><p className="font-medium font-mono text-xs">{r.confirmation_code || "—"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Meta User ID</span><p className="font-medium font-mono text-xs">{r.meta_user_id || "—"}</p></div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-3">
+                <div><span className="text-muted-foreground text-xs">Taal</span><p className="font-medium">{r.language?.toUpperCase() || "NL"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Geverifieerd op</span><p className="font-medium">{r.verified_at ? new Date(r.verified_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "—"}</p></div>
+                <div><span className="text-muted-foreground text-xs">Afgerond op</span><p className="font-medium">{r.completed_at ? new Date(r.completed_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "—"}</p></div>
               </div>
 
               {r.details && <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 mb-3"><span className="text-xs font-medium text-foreground">Toelichting:</span> {r.details}</div>}
@@ -730,6 +750,16 @@ function DeletionRequestsSection() {
                   {r.completed_at && <> · Afgerond: {new Date(r.completed_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</>}
                 </p>
                 <div className="flex gap-2">
+                  {r.status !== "completed" && (
+                    <button onClick={() => updateStatus(r.id, "completed")} className="flex items-center gap-1 text-xs bg-green-100 text-green-800 hover:bg-green-200 rounded-lg px-3 py-1.5 font-medium transition-colors active:scale-[0.97]">
+                      <Check size={14} /> Markeer als afgerond
+                    </button>
+                  )}
+                  {(r.status === "pending" || r.status === "email_sent") && (
+                    <button onClick={() => updateStatus(r.id, "rejected")} className="flex items-center gap-1 text-xs bg-red-100 text-red-800 hover:bg-red-200 rounded-lg px-3 py-1.5 font-medium transition-colors active:scale-[0.97]">
+                      <X size={14} /> Wijs af
+                    </button>
+                  )}
                   {r.status !== "completed" && (
                     <button onClick={() => handleDeletePersonData(r)} disabled={processing === r.id} className="flex items-center gap-1 text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:opacity-50 active:scale-[0.97]">
                       <UserX size={14} /> {processing === r.id ? "Bezig..." : "Data verwijderen"}

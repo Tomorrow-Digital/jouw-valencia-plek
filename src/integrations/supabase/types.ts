@@ -343,7 +343,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_deletion_status: {
+        Args: { request_code: string; request_id: string }
+        Returns: {
+          completed_at: string
+          confirmation_code: string
+          created_at: string
+          status: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
