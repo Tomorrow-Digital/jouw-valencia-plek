@@ -363,7 +363,7 @@ const DataDeletion = () => {
 
           {submitted ? (
             <div ref={confirmRef} tabIndex={-1} className="bg-secondary/10 border border-secondary/30 rounded-xl p-8 text-center outline-none">
-              <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-4" />
+              <CheckCircle2 className="w-12 h-12 text-secondary mx-auto mb-4" />
               <h3 className="text-xl font-serif text-foreground mb-2">Uw verzoek is ontvangen</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 Wij hebben uw verwijderingsverzoek ontvangen. U ontvangt binnen enkele minuten een verificatie-e-mail op{" "}
