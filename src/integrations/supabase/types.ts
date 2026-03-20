@@ -137,6 +137,63 @@ export type Database = {
         }
         Relationships: []
       }
+      deletion_requests: {
+        Row: {
+          completed_at: string | null
+          confirmation_code: string | null
+          created_at: string | null
+          details: string | null
+          email: string | null
+          id: string
+          language: string | null
+          meta_user_id: string | null
+          name: string | null
+          phone: string | null
+          request_type: string
+          source: string
+          status: string
+          updated_at: string | null
+          verification_token: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          confirmation_code?: string | null
+          created_at?: string | null
+          details?: string | null
+          email?: string | null
+          id?: string
+          language?: string | null
+          meta_user_id?: string | null
+          name?: string | null
+          phone?: string | null
+          request_type?: string
+          source?: string
+          status?: string
+          updated_at?: string | null
+          verification_token?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          confirmation_code?: string | null
+          created_at?: string | null
+          details?: string | null
+          email?: string | null
+          id?: string
+          language?: string | null
+          meta_user_id?: string | null
+          name?: string | null
+          phone?: string | null
+          request_type?: string
+          source?: string
+          status?: string
+          updated_at?: string | null
+          verification_token?: string | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       pricing_config: {
         Row: {
           cleaning_fee: number
