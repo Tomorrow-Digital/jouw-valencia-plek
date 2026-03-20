@@ -46,6 +46,17 @@ const PrivacyPolicy = () => {
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
+    document.title = "Privacybeleid | Casita Valencia";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const originalDesc = metaDesc?.getAttribute("content") || "";
+    if (metaDesc) metaDesc.setAttribute("content", "Lees het privacybeleid van Casita Valencia. Informatie over gegevensverwerking, WhatsApp Business API, cookies en uw rechten onder de AVG/GDPR.");
+    return () => {
+      document.title = "Casa Valencia — Jouw eigen plek in Valencia";
+      if (metaDesc) metaDesc.setAttribute("content", originalDesc);
+    };
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 400);
 
