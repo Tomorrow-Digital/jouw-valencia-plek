@@ -771,3 +771,209 @@ function MessagesTab() {
     </div>
   );
 }
+
+// ═══════════════════════════════════════
+// DELETION REQUESTS TAB
+// ═══════════════════════════════════════
+
+function DeletionRequestsTab() {
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState<string | null>(null);
+
+  const fetchRequests = useCallback(async () => {
+    const { data } = await supabase
+      .from("deletion_requests")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setRequests(data || []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchRequests(); }, [fetchRequests]);
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("deletion_requests").update({ status, updated_at: new Date().toISOString(), ...(status === "completed" ? { completed_at: new Date().toISOString() } : {}) }).eq("id", id);
+    fetchRequests();
+  };
+
+  const handleDeleteRequest = async (id: string) => {
+    if (!confirm("Weet je zeker dat je dit verwijderverzoek wilt verwijderen?")) return;
+    await supabase.from("deletion_requests").delete().eq("id", id);
+    setRequests(prev => prev.filter(r => r.id !== id));
+  };
+
+  const handleDeletePersonData = async (request: any) => {
+    if (!confirm(
+      `Dit verwijdert/anonimiseert alle persoonsgegevens van ${request.email || request.name || "deze persoon"} uit boekingen en contactberichten. Financiële gegevens (totaalprijs) worden bewaard. Doorgaan?`
+    )) return;
+
+    setProcessing(request.id);
+
+    try {
+      // Anonymize bookings by email
+      if (request.email) {
+        const { data: bookings } = await supabase
+          .from("bookings")
+          .select("id")
+          .eq("email", request.email);
+
+        if (bookings && bookings.length > 0) {
+          for (const b of bookings) {
+            await supabase.from("bookings").update({
+              first_name: "Verwijderd",
+              last_name: "Verwijderd",
+              email: `deleted-${b.id.slice(0, 8)}@verwijderd.nl`,
+              phone: null,
+              message: null,
+              arrival_time: null,
+            }).eq("id", b.id);
+          }
+        }
+
+        // Delete contact messages by matching phone or name
+        await supabase.from("contact_messages").delete().eq("phone", request.phone || "");
+      }
+
+      // If phone provided, also check contact messages
+      if (request.phone) {
+        await supabase.from("contact_messages").delete().eq("phone", request.phone);
+      }
+
+      // Mark request as completed
+      await supabase.from("deletion_requests").update({
+        status: "completed",
+        completed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }).eq("id", request.id);
+
+      fetchRequests();
+    } catch (err) {
+      alert("Er is een fout opgetreden bij het verwijderen van de gegevens.");
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const statusColors: Record<string, string> = {
+    pending: "bg-yellow-100 text-yellow-800",
+    email_sent: "bg-blue-100 text-blue-800",
+    verified: "bg-purple-100 text-purple-800",
+    processing: "bg-orange-100 text-orange-800",
+    completed: "bg-green-100 text-green-800",
+    rejected: "bg-red-100 text-red-800",
+  };
+
+  const statusLabels: Record<string, string> = {
+    pending: "In afwachting",
+    email_sent: "E-mail verstuurd",
+    verified: "Geverifieerd",
+    processing: "In verwerking",
+    completed: "Afgerond",
+    rejected: "Afgewezen",
+  };
+
+  const typeLabels: Record<string, string> = {
+    delete_all: "Alles verwijderen",
+    delete_specific: "Specifiek verwijderen",
+    data_access: "Inzageverzoek",
+    meta_callback: "Meta callback",
+  };
+
+  if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Laden...</p>;
+
+  return (
+    <div>
+      <h3 className="font-serif text-lg mb-4">Verwijderverzoeken ({requests.length})</h3>
+      {requests.length === 0 ? (
+        <p className="text-muted-foreground text-sm text-center py-12">Geen verwijderverzoeken ontvangen.</p>
+      ) : (
+        <div className="space-y-4">
+          {requests.map(r => (
+            <div key={r.id} className="bg-card rounded-xl p-5 shadow-sm">
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                <div>
+                  <h4 className="font-medium text-base">{r.name || "(Geen naam)"}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {r.email || "(Geen e-mail)"}{r.phone ? ` · ${r.phone}` : ""}
+                  </p>
+                  {r.meta_user_id && (
+                    <p className="text-xs text-muted-foreground mt-0.5">Meta ID: {r.meta_user_id}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[r.status] || "bg-muted text-muted-foreground"}`}>
+                    {statusLabels[r.status] || r.status}
+                  </span>
+                  <select
+                    value={r.status}
+                    onChange={e => updateStatus(r.id, e.target.value)}
+                    className="rounded border border-input bg-background px-2 py-1 text-xs"
+                  >
+                    <option value="pending">In afwachting</option>
+                    <option value="email_sent">E-mail verstuurd</option>
+                    <option value="verified">Geverifieerd</option>
+                    <option value="processing">In verwerking</option>
+                    <option value="completed">Afgerond</option>
+                    <option value="rejected">Afgewezen</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-3">
+                <div>
+                  <span className="text-muted-foreground text-xs">Type</span>
+                  <p className="font-medium">{typeLabels[r.request_type] || r.request_type}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-xs">Bron</span>
+                  <p className="font-medium">{r.source === "meta_callback" ? "Meta" : "Website"}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-xs">Taal</span>
+                  <p className="font-medium">{r.language?.toUpperCase() || "NL"}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-xs">Bevestigingscode</span>
+                  <p className="font-medium font-mono text-xs">{r.confirmation_code || "—"}</p>
+                </div>
+              </div>
+
+              {r.details && (
+                <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 mb-3">
+                  <span className="text-xs font-medium text-foreground">Toelichting:</span> {r.details}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  Ontvangen: {new Date(r.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                  {r.completed_at && <> · Afgerond: {new Date(r.completed_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</>}
+                </p>
+                <div className="flex gap-2">
+                  {r.status !== "completed" && (
+                    <button
+                      onClick={() => handleDeletePersonData(r)}
+                      disabled={processing === r.id}
+                      className="flex items-center gap-1 text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:opacity-50"
+                    >
+                      <UserX size={14} />
+                      {processing === r.id ? "Bezig..." : "Data verwijderen"}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeleteRequest(r.id)}
+                    className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                    title="Verzoek verwijderen"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
