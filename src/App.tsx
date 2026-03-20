@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import Login from "./pages/Login.tsx";
 import Admin from "./pages/Admin.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
+import Register from "./pages/Register.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import TermsOfService from "./pages/TermsOfService.tsx";
 import DataDeletion from "./pages/DataDeletion.tsx";
