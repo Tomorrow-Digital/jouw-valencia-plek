@@ -12,6 +12,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import TermsOfService from "./pages/TermsOfService.tsx";
 import DataDeletion from "./pages/DataDeletion.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import DynamicPage from "./pages/DynamicPage.tsx";
 import HomePage from "./pages/redesign/HomePage.tsx";
 import RoomsPage from "./pages/redesign/RoomsPage.tsx";
 import SurroundingsPage from "./pages/redesign/SurroundingsPage.tsx";
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/data-deletion" element={<DataDeletion />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/p/:slug" element={<DynamicPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

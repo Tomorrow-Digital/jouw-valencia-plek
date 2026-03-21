@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+
 import { supabase } from "@/integrations/supabase/client";
 import { getLanguage, setLanguage, t, LANGUAGE_LABELS, type Language } from "@/lib/i18n";
 import {
@@ -35,6 +36,7 @@ import {
   CreditCard,
   CalendarDays,
   Globe,
+  PanelLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -43,7 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export type AdminSection =
-  | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "deletion" | "users"
+  | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "pages" | "deletion" | "users"
   | "crm-inbox" | "crm-guests" | "crm-templates"
   | "integrations-whatsapp" | "integrations-n8n" | "integrations-email" | "integrations-payments" | "integrations-calendar";
 
@@ -62,6 +64,7 @@ const getNavItems = (): NavItem[] => [
   { id: "photos", label: t('nav.photos'), icon: Image, group: "content" },
   { id: "calendar", label: t('nav.calendar'), icon: Calendar, group: "content" },
   { id: "pricing", label: t('nav.pricing'), icon: Euro, group: "content" },
+  { id: "pages", label: t('nav.pages'), icon: PanelLeft, group: "content" },
   { id: "crm-inbox", label: t('nav.inbox'), icon: MessageCircle, group: "crm" },
   { id: "crm-guests", label: t('nav.guests'), icon: Users, group: "crm" },
   { id: "crm-templates", label: t('nav.templates'), icon: FileText, group: "crm" },
