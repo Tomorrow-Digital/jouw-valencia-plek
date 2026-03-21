@@ -1222,7 +1222,7 @@ export default function Index() {
                   const monthEnd = endOfMonth(month);
                   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
                   const startPad = getDay(monthStart) === 0 ? 6 : getDay(monthStart) - 1;
-                  const dayLabels = lang === "nl" ? ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"] : ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+                  const dayLabels = lang === "nl" ? ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"] : lang === "es" ? ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"] : ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
                   return (
                     <div key={offset} className={offset === 1 ? "hidden sm:block" : ""}>
