@@ -18,7 +18,7 @@ const langs: SiteLang[] = ["nl", "en", "es"];
 const langLabels: Record<SiteLang, string> = { nl: "Nederlands", en: "English", es: "Español" };
 const flagMap: Record<SiteLang, string> = { nl: flagNl, en: flagEn, es: flagEs };
 
-export function Navbar({ lang, onLangChange }: NavbarProps) {
+export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
