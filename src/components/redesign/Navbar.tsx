@@ -134,7 +134,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
               key={item.to}
               to={item.to}
               onClick={() => setMobileOpen(false)}
-              className={`block font-serif text-lg ${
+              className={`block font-sans text-lg ${
                 isActive(item.to) ? "text-primary-container font-semibold" : "text-foreground"
               }`}
             >
