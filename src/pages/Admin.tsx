@@ -10,6 +10,7 @@ import { CrmInbox } from "@/components/admin/crm/CrmInbox";
 import { CrmGuests } from "@/components/admin/crm/CrmGuests";
 import { CrmTemplates } from "@/components/admin/crm/CrmTemplates";
 import { PagesSection } from "@/components/admin/PagesSection";
+import { PageEditor } from "@/components/admin/PageEditor";
 import { t } from "@/lib/i18n";
 import {
   Trash2, Plus, Upload, Save, X, Pencil, Check, UserX, Link2, Copy, Clock,
@@ -23,10 +24,18 @@ export default function Admin() {
 
   const sectionParam = (searchParams.get("section") as AdminSection) || "dashboard";
   const [section, setSection] = useState<AdminSection>(sectionParam);
+  const [editingPageId, setEditingPageId] = useState<string | null>(searchParams.get("pageId") || null);
 
   const handleSectionChange = (s: AdminSection) => {
     setSection(s);
-    setSearchParams({ section: s });
+    if (s !== "page-editor") setEditingPageId(null);
+    setSearchParams(s === "page-editor" && editingPageId ? { section: s, pageId: editingPageId } : { section: s });
+  };
+
+  const handleEditBlocks = (pageId: string) => {
+    setEditingPageId(pageId);
+    setSection("page-editor");
+    setSearchParams({ section: "page-editor", pageId });
   };
 
   useEffect(() => {
@@ -54,7 +63,10 @@ export default function Admin() {
       {section === "photos" && <PhotosSection />}
       {section === "calendar" && <CalendarSection />}
       {section === "pricing" && <PricingSection />}
-      {section === "pages" && <PagesSection />}
+      {section === "pages" && <PagesSection onEditBlocks={handleEditBlocks} />}
+      {section === "page-editor" && editingPageId && (
+        <PageEditor pageId={editingPageId} onBack={() => handleSectionChange("pages")} />
+      )}
       {section === "deletion" && <DeletionRequestsSection />}
       {section === "users" && <UsersSection />}
       {section === "crm-inbox" && <CrmInbox />}

@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { t } from "@/lib/i18n";
-import { Plus, Pencil, Trash2, Globe, FileText, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, FileText, ExternalLink, LayoutTemplate } from "lucide-react";
 import type { Page } from "@/components/blocks/types";
 
-export function PagesSection() {
+interface Props {
+  onEditBlocks?: (pageId: string) => void;
+}
+
+export function PagesSection({ onEditBlocks }: Props) {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -158,6 +162,15 @@ export function PagesSection() {
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
+                  {onEditBlocks && (
+                    <button
+                      onClick={() => onEditBlocks(page.id)}
+                      className="p-2 text-primary hover:text-primary/80 transition-colors"
+                      title="Blokken bewerken"
+                    >
+                      <LayoutTemplate size={14} />
+                    </button>
+                  )}
                   <a
                     href={`/p/${page.slug}`}
                     target="_blank"

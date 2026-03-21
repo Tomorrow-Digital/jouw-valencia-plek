@@ -45,7 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export type AdminSection =
-  | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "pages" | "deletion" | "users"
+  | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "pages" | "page-editor" | "deletion" | "users"
   | "crm-inbox" | "crm-guests" | "crm-templates"
   | "integrations-whatsapp" | "integrations-n8n" | "integrations-email" | "integrations-payments" | "integrations-calendar";
 
@@ -113,7 +113,7 @@ export function AdminLayout({ section, onSectionChange, children }: AdminLayoutP
           </header>
           <main className={cn(
             "flex-1",
-            section === "crm-inbox" ? "" : "p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto"
+            section === "crm-inbox" || section === "page-editor" ? "" : "p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto"
           )}>{children}</main>
         </div>
       </div>
