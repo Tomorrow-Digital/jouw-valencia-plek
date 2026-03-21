@@ -12,19 +12,22 @@ interface NavbarProps {
   lang: SiteLang;
   onLangChange: (lang: SiteLang) => void;
   static?: boolean;
+  previewViewport?: "desktop" | "tablet" | "mobile";
 }
 
 const langs: SiteLang[] = ["nl", "en", "es"];
 const langLabels: Record<SiteLang, string> = { nl: "Nederlands", en: "English", es: "Español" };
 const flagMap: Record<SiteLang, string> = { nl: flagNl, en: flagEn, es: flagEs };
 
-export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
+export function Navbar({ lang, onLangChange, static: isStatic, previewViewport }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
   const isHome = location.pathname === "/" || location.pathname === "/home";
+  const isForcedViewport = Boolean(previewViewport);
+  const isSmallViewport = previewViewport === "tablet" || previewViewport === "mobile";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -32,6 +35,11 @@ export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setLangOpen(false);
+  }, [previewViewport]);
 
   const navItems = [
     { to: "/p/kamers", label: st("nav.rooms", lang) },
@@ -50,11 +58,28 @@ export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
 
   const showWhiteLogo = isHome && !scrolled && !mobileOpen;
 
+  const desktopNavClass = isForcedViewport
+    ? `${isSmallViewport ? "hidden" : "flex"} items-center gap-10`
+    : "hidden md:flex items-center gap-10";
+
+  const desktopActionsClass = isForcedViewport
+    ? `${isSmallViewport ? "hidden" : "flex"} items-center gap-4`
+    : "hidden md:flex items-center gap-4";
+
+  const mobileButtonClass = isForcedViewport
+    ? `${isSmallViewport ? "block" : "hidden"} p-2`
+    : "md:hidden p-2";
+
+  const mobileMenuVisible = mobileOpen && (!isForcedViewport || isSmallViewport);
+  const mobileMenuClass = isForcedViewport
+    ? "bg-white border-t border-outline-variant/20 px-6 py-6 space-y-4"
+    : "md:hidden bg-white border-t border-outline-variant/20 px-6 py-6 space-y-4";
+
   return (
     <nav className={`${isStatic ? "relative" : "fixed top-0"} w-full z-50 transition-all duration-300 ${
       isStatic || scrolled || !isHome ? "bg-white/80 backdrop-blur-xl shadow-sm" : "bg-transparent"
     }`}>
-      <div className="flex justify-between items-center px-6 md:px-8 py-3 max-w-screen-2xl mx-auto">
+      <div className={`flex justify-between items-center py-3 max-w-screen-2xl mx-auto ${isForcedViewport && isSmallViewport ? "px-4" : "px-6 md:px-8"}`}>
         <Link to="/">
           <img
             src={showWhiteLogo ? logoWhite : logoColor}
@@ -63,8 +88,7 @@ export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
           />
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-10">
+        <div className={desktopNavClass}>
           {navItems.map((item) => (
             <Link
               key={item.to}
@@ -82,8 +106,7 @@ export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-4">
-          {/* Flag language switcher */}
+        <div className={desktopActionsClass}>
           <div className="relative">
             <button
               onClick={() => setLangOpen(!langOpen)}
@@ -117,8 +140,7 @@ export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
           </Link>
         </div>
 
-        {/* Mobile hamburger */}
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2">
+        <button onClick={() => setMobileOpen(!mobileOpen)} className={mobileButtonClass}>
           {mobileOpen ? (
             <X className={`w-6 h-6 ${showWhiteLogo ? "text-white" : ""}`} />
           ) : (
@@ -127,9 +149,8 @@ export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
         </button>
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-outline-variant/20 px-6 py-6 space-y-4">
+      {mobileMenuVisible && (
+        <div className={mobileMenuClass}>
           {navItems.map((item) => (
             <Link
               key={item.to}

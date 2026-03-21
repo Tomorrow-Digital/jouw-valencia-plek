@@ -330,7 +330,7 @@ export function PageEditor({ pageId, onBack }: Props) {
               }`}
               style={previewMode !== "desktop" ? { width: activePreviewMode.width, maxWidth: "100%" } : undefined}
             >
-              <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} static />
+              <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} static previewViewport={previewMode} />
               <BlockRenderer blocks={blocks} lang={previewLang} />
               {blocks.length === 0 && (
                 <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
