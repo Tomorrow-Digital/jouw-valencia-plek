@@ -8,6 +8,9 @@ interface Props {
   onEditBlocks?: (pageId: string) => void;
 }
 
+const LANGS = ["nl", "en", "es"] as const;
+const LANG_LABELS: Record<string, string> = { nl: "🇳🇱 NL", en: "🇬🇧 EN", es: "🇪🇸 ES" };
+
 export function PagesSection({ onEditBlocks }: Props) {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +18,12 @@ export function PagesSection({ onEditBlocks }: Props) {
   const [newTitle, setNewTitle] = useState("");
   const [newSlug, setNewSlug] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState<{ title: string; slug: string; meta_description: string }>({ title: "", slug: "", meta_description: "" });
+  const [editData, setEditData] = useState<{
+    title: string; title_en: string; title_es: string;
+    slug: string; slug_en: string; slug_es: string;
+    meta_description: string; meta_description_en: string; meta_description_es: string;
+  }>({ title: "", title_en: "", title_es: "", slug: "", slug_en: "", slug_es: "", meta_description: "", meta_description_en: "", meta_description_es: "" });
+  const [editLang, setEditLang] = useState<"nl" | "en" | "es">("nl");
 
   const fetchPages = useCallback(async () => {
     const { data } = await supabase
@@ -59,8 +67,14 @@ export function PagesSection({ onEditBlocks }: Props) {
     if (!editingId) return;
     await supabase.from("pages").update({
       title: editData.title,
+      title_en: editData.title_en,
+      title_es: editData.title_es,
       slug: editData.slug,
+      slug_en: editData.slug_en,
+      slug_es: editData.slug_es,
       meta_description: editData.meta_description,
+      meta_description_en: editData.meta_description_en,
+      meta_description_es: editData.meta_description_es,
     } as any).eq("id", editingId);
     setEditingId(null);
     fetchPages();
@@ -118,26 +132,72 @@ export function PagesSection({ onEditBlocks }: Props) {
           <div key={page.id} className="bg-background border border-border rounded-xl p-4">
             {editingId === page.id ? (
               <div className="space-y-3">
+                {/* Language tabs */}
+                <div className="flex gap-1 mb-2">
+                  {LANGS.map((l) => (
+                    <button
+                      key={l}
+                      type="button"
+                      onClick={() => setEditLang(l)}
+                      className={`text-xs px-2.5 py-1 rounded-md transition-colors font-medium ${
+                        editLang === l
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      }`}
+                    >
+                      {LANG_LABELS[l]}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Title + slug for selected language */}
                 <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="block text-[10px] font-medium text-muted-foreground mb-1">
+                      Titel ({editLang.toUpperCase()})
+                    </label>
+                    <input
+                      value={editLang === "nl" ? editData.title : editLang === "en" ? editData.title_en : editData.title_es}
+                      onChange={(e) => {
+                        const key = editLang === "nl" ? "title" : `title_${editLang}`;
+                        setEditData({ ...editData, [key]: e.target.value });
+                      }}
+                      className="rounded border border-input bg-background px-2 py-1 text-sm w-full"
+                      placeholder="Titel"
+                    />
+                  </div>
+                  <div className="w-48">
+                    <label className="block text-[10px] font-medium text-muted-foreground mb-1">
+                      Slug ({editLang.toUpperCase()})
+                    </label>
+                    <input
+                      value={editLang === "nl" ? editData.slug : editLang === "en" ? editData.slug_en : editData.slug_es}
+                      onChange={(e) => {
+                        const key = editLang === "nl" ? "slug" : `slug_${editLang}`;
+                        setEditData({ ...editData, [key]: slugify(e.target.value) });
+                      }}
+                      className="rounded border border-input bg-background px-2 py-1 text-sm w-full"
+                      placeholder="slug"
+                    />
+                  </div>
+                </div>
+
+                {/* Meta description for selected language */}
+                <div>
+                  <label className="block text-[10px] font-medium text-muted-foreground mb-1">
+                    Meta description ({editLang.toUpperCase()})
+                  </label>
                   <input
-                    value={editData.title}
-                    onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                    className="rounded border border-input bg-background px-2 py-1 text-sm flex-1"
-                    placeholder="Titel"
-                  />
-                  <input
-                    value={editData.slug}
-                    onChange={(e) => setEditData({ ...editData, slug: slugify(e.target.value) })}
-                    className="rounded border border-input bg-background px-2 py-1 text-sm w-48"
-                    placeholder="slug"
+                    value={editLang === "nl" ? editData.meta_description : editLang === "en" ? editData.meta_description_en : editData.meta_description_es}
+                    onChange={(e) => {
+                      const key = editLang === "nl" ? "meta_description" : `meta_description_${editLang}`;
+                      setEditData({ ...editData, [key]: e.target.value });
+                    }}
+                    className="rounded border border-input bg-background px-2 py-1 text-sm w-full"
+                    placeholder="Meta description"
                   />
                 </div>
-                <input
-                  value={editData.meta_description}
-                  onChange={(e) => setEditData({ ...editData, meta_description: e.target.value })}
-                  className="rounded border border-input bg-background px-2 py-1 text-sm w-full"
-                  placeholder="Meta description"
-                />
+
                 <div className="flex gap-2">
                   <button onClick={handleSaveEdit} className="bg-primary text-primary-foreground rounded px-3 py-1 text-sm">{t("common.save")}</button>
                   <button onClick={() => setEditingId(null)} className="text-sm text-muted-foreground">{t("common.cancel")}</button>
@@ -190,7 +250,18 @@ export function PagesSection({ onEditBlocks }: Props) {
                   <button
                     onClick={() => {
                       setEditingId(page.id);
-                      setEditData({ title: page.title, slug: page.slug, meta_description: page.meta_description || "" });
+                      setEditData({
+                        title: page.title,
+                        title_en: page.title_en || "",
+                        title_es: page.title_es || "",
+                        slug: page.slug,
+                        slug_en: page.slug_en || "",
+                        slug_es: page.slug_es || "",
+                        meta_description: page.meta_description || "",
+                        meta_description_en: page.meta_description_en || "",
+                        meta_description_es: page.meta_description_es || "",
+                      });
+                      setEditLang("nl");
                     }}
                     className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                   >

@@ -15,6 +15,7 @@ import {
   ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown,
   Save, Check, Loader2, Globe, FileText,
   LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle,
+  Monitor, Tablet, Smartphone,
 } from "lucide-react";
 
 const BLOCK_TYPES = [
@@ -29,6 +30,18 @@ const BLOCK_TYPES = [
   { type: "faq", label: "FAQ", icon: HelpCircle },
 ];
 
+const PREVIEW_MODES = [
+  { id: "desktop", label: "Desktop", icon: Monitor, width: "100%" },
+  { id: "tablet", label: "Tablet", icon: Tablet, width: "768px" },
+  { id: "mobile", label: "Mobiel", icon: Smartphone, width: "375px" },
+] as const;
+
+const PREVIEW_LANGS = [
+  { code: "nl", label: "🇳🇱 NL" },
+  { code: "en", label: "🇬🇧 EN" },
+  { code: "es", label: "🇪🇸 ES" },
+] as const;
+
 interface Props {
   pageId: string;
   onBack: () => void;
@@ -41,6 +54,8 @@ export function PageEditor({ pageId, onBack }: Props) {
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving" | "unsaved">("saved");
+  const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [previewLang, setPreviewLang] = useState<string>("nl");
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -75,11 +90,7 @@ export function PageEditor({ pageId, onBack }: Props) {
   const handleAddBlock = async (type: string) => {
     const position = blocks.length;
     const { data, error } = await supabase.from("page_blocks").insert({
-      page_id: pageId,
-      type,
-      position,
-      data: {} as any,
-      is_visible: true,
+      page_id: pageId, type, position, data: {} as any, is_visible: true,
     } as any).select().single();
     if (data) {
       setBlocks((prev) => [...prev, data as unknown as PageBlock]);
@@ -104,13 +115,11 @@ export function PageEditor({ pageId, onBack }: Props) {
   const handleMoveBlock = async (blockId: string, direction: "up" | "down") => {
     const idx = blocks.findIndex((b) => b.id === blockId);
     if ((direction === "up" && idx === 0) || (direction === "down" && idx === blocks.length - 1)) return;
-
     const swapIdx = direction === "up" ? idx - 1 : idx + 1;
     const newBlocks = [...blocks];
     [newBlocks[idx], newBlocks[swapIdx]] = [newBlocks[swapIdx], newBlocks[idx]];
     const updated = newBlocks.map((b, i) => ({ ...b, position: i }));
     setBlocks(updated);
-
     await Promise.all(updated.map((b) => supabase.from("page_blocks").update({ position: b.position } as any).eq("id", b.id)));
   };
 
@@ -125,6 +134,7 @@ export function PageEditor({ pageId, onBack }: Props) {
   if (!page) return <p className="text-destructive p-8">Pagina niet gevonden</p>;
 
   const editingBlock = blocks.find((b) => b.id === editingBlockId);
+  const activePreviewMode = PREVIEW_MODES.find((m) => m.id === previewMode)!;
 
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col">
@@ -194,7 +204,6 @@ export function PageEditor({ pageId, onBack }: Props) {
               </div>
             )}
 
-            {/* Add block */}
             {showTypeChooser ? (
               <div className="border border-dashed border-primary/50 rounded-lg p-4">
                 <p className="text-xs font-medium text-foreground mb-3">Kies een bloktype:</p>
@@ -218,14 +227,63 @@ export function PageEditor({ pageId, onBack }: Props) {
 
         {/* Right: Live preview */}
         <div className="flex-1 overflow-y-auto bg-muted/30">
-          <div className="sticky top-0 z-10 bg-muted/80 backdrop-blur-sm px-4 py-2 border-b border-border">
+          {/* Preview toolbar */}
+          <div className="sticky top-0 z-10 bg-muted/80 backdrop-blur-sm px-4 py-2 border-b border-border flex items-center justify-between">
             <p className="text-xs text-muted-foreground font-medium">Preview</p>
+            <div className="flex items-center gap-3">
+              {/* Language toggle */}
+              <div className="flex gap-0.5 bg-background rounded-lg border border-border p-0.5">
+                {PREVIEW_LANGS.map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => setPreviewLang(l.code)}
+                    className={`text-[10px] px-2 py-1 rounded-md transition-colors font-medium ${
+                      previewLang === l.code
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+              {/* Device toggle */}
+              <div className="flex gap-0.5 bg-background rounded-lg border border-border p-0.5">
+                {PREVIEW_MODES.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setPreviewMode(m.id)}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      previewMode === m.id
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    title={m.label}
+                  >
+                    <m.icon size={14} />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="max-w-4xl mx-auto">
-            <BlockRenderer blocks={blocks} lang="nl" />
-            {blocks.length === 0 && (
-              <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
-            )}
+          {/* Preview container */}
+          <div className="flex justify-center p-4">
+            <div
+              className={`transition-all duration-300 ${
+                previewMode !== "desktop"
+                  ? "border border-border rounded-xl shadow-lg bg-background overflow-hidden"
+                  : ""
+              }`}
+              style={{
+                width: activePreviewMode.width,
+                maxWidth: "100%",
+              }}
+            >
+              <BlockRenderer blocks={blocks} lang={previewLang} />
+              {blocks.length === 0 && (
+                <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
+              )}
+            </div>
           </div>
         </div>
       </div>
