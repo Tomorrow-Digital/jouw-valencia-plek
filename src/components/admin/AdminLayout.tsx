@@ -149,6 +149,8 @@ function AdminSidebar({
 
       <SidebarContent>
         {groups.map((group) => {
+          const navItems = getNavItems();
+          const groupLabels = getGroupLabels();
           const items = navItems.filter((n) => n.group === group);
           return (
             <SidebarGroup key={group}>
