@@ -15,10 +15,53 @@ export function HeroBlock({ data, lang }: { data: Record<string, any>; lang: str
   const guestsDefault = tr(d.bookingBarGuestsDefault, lang) || (lang === "nl" ? "2 Volwassenen" : lang === "es" ? "2 Adultos" : "2 Adults");
 
   const heightClass = d.fullHeight ? "h-screen" : "min-h-[70vh]";
+  const isEditorial = (d as any).alignment === "left";
 
   const sources = getResponsiveSources(d.backgroundImage);
   const hasBackground = sources.desktop || sources.tablet || sources.mobile;
 
+  // Editorial / left-aligned hero (e.g. surroundings page)
+  if (isEditorial) {
+    return (
+      <section className="relative h-[614px] flex items-center px-8 md:px-20 overflow-hidden mb-24">
+        {hasBackground && (
+          <div className="absolute inset-0 z-0">
+            <picture>
+              {sources.mobile && <source media="(max-width: 767px)" srcSet={sources.mobile} />}
+              {sources.tablet && <source media="(max-width: 1023px)" srcSet={sources.tablet} />}
+              <img
+                src={sources.desktop || sources.tablet || sources.mobile}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </picture>
+            <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/40 to-transparent" />
+          </div>
+        )}
+        <div className="relative z-10 max-w-2xl">
+          {subtitle && (
+            <span className="text-primary font-headline italic text-xl mb-4 block">{subtitle}</span>
+          )}
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-headline font-bold text-on-surface leading-tight tracking-tight mb-6">
+            {heading}
+            {headingItalic && (
+              <>
+                <br />
+                <span className="italic">{headingItalic}</span>
+              </>
+            )}
+          </h1>
+          {(d as any).heroDescription && (
+            <p className="text-lg text-on-surface-variant max-w-lg leading-relaxed">
+              {tr((d as any).heroDescription, lang)}
+            </p>
+          )}
+        </div>
+      </section>
+    );
+  }
+
+  // Default centered hero
   return (
     <section className={`relative ${heightClass} w-full flex items-center justify-center overflow-hidden`}>
       {hasBackground && (
