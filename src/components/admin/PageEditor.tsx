@@ -281,11 +281,8 @@ export function PageEditor({ pageId, onBack }: Props) {
                 maxWidth: "100%",
               }}
             >
-              {/* Preview wrapper: contain fixed navbar within this scope */}
-              <div className="relative overflow-hidden" style={{ isolation: "isolate" }}>
-                <div className="[&_nav]:!fixed [&_nav]:!relative [&_nav]:!bg-white/80 [&_nav]:!backdrop-blur-xl [&_nav]:!shadow-sm">
-                  <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} />
-                </div>
+              <div className="relative">
+                <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} static />
                 <BlockRenderer blocks={blocks} lang={previewLang} />
                 {blocks.length === 0 && (
                   <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
