@@ -11,8 +11,13 @@ import {
   parseISO, startOfDay, addDays
 } from "date-fns";
 import { nl as nlLocale, enUS, es as esLocale } from "date-fns/locale";
+import { tr, resolveImage } from "@/components/blocks/types";
+import type { PageBlock } from "@/components/blocks/types";
+import { BookingCtaBlock } from "@/components/blocks/BookingCtaBlock";
 
-const COASTAL_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuBAh4BzcZ7eIzugN7AB2ZNNPP4FaAMXxx7_s5t3K3qag6O2Tn0AUGmeclh70iJwjEeegdQ6xU1Bd6ZMWSPrcGpsYEKQ_7kwSvOZF7dXJNiA27nFE0gJyLgyMjLDj3qutgQ-sUQ6m8lbBXf0opq-QxyoZsJ5RAu3yPUhQAZIMhrRK5lLtvOSRkANqz1MJ64rWbyr34335ks44xG6Sy4QXa2fxJdOcEcnoP0C1H_cwdkXhqGRx3NRqJUlsiobMPY-6sblmDKiGF7jQim6";
+const COASTAL_IMG_FALLBACK = "https://lh3.googleusercontent.com/aida-public/AB6AXuBAh4BzcZ7eIzugN7AB2ZNNPP4FaAMXxx7_s5t3K3qag6O2Tn0AUGmeclh70iJwjEeegdQ6xU1Bd6ZMWSPrcGpsYEKQ_7kwSvOZF7dXJNiA27nFE0gJyLgyMjLDj3qutgQ-sUQ6m8lbBXf0opq-QxyoZsJ5RAu3yPUhQAZIMhrRK5lLtvOSRkANqz1MJ64rWbyr34335ks44xG6Sy4QXa2fxJdOcEcnoP0C1H_cwdkXhqGRx3NRqJUlsiobMPY-6sblmDKiGF7jQim6";
+
+const BOOKING_PAGE_ID = "a1000000-0000-0000-0000-000000000004";
 
 const DAY_LABELS: Record<SiteLang, string[]> = {
   nl: ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"],
@@ -95,6 +100,7 @@ export default function BookingPage() {
   const [seasons, setSeasons] = useState<SeasonalPrice[]>([]);
   const [custom, setCustom] = useState<CustomPrice[]>([]);
   const [config, setConfig] = useState<PricingConfigDB | null>(null);
+  const [blocks, setBlocks] = useState<PageBlock[]>([]);
 
   const [calMonth, setCalMonth] = useState(startOfMonth(new Date()));
   const [checkIn, setCheckIn] = useState<Date | null>(null);
@@ -109,7 +115,18 @@ export default function BookingPage() {
     supabase.from("seasonal_pricing").select("*").order("start_date", { ascending: true }).then(({ data }) => { if (data) setSeasons(data); });
     supabase.from("custom_pricing").select("*").order("start_date", { ascending: true }).then(({ data }) => { if (data) setCustom(data); });
     supabase.from("pricing_config").select("*").limit(1).single().then(({ data }) => { if (data) setConfig(data); });
+    supabase.from("page_blocks").select("*").eq("page_id", BOOKING_PAGE_ID).order("position", { ascending: true }).then(({ data }) => { if (data) setBlocks(data as unknown as PageBlock[]); });
   }, []);
+
+  const heroBlock = blocks.find(b => b.type === "hero");
+  const ctaBlock = blocks.find(b => b.type === "booking_cta" && b.is_visible);
+
+  const heroData = heroBlock?.data;
+  const headerHeading = heroData ? tr(heroData.heading, lang) : st("book.title1", lang) + " " + st("book.title2", lang);
+  const headerSubtitle = heroData ? tr(heroData.subtitle, lang) : st("book.description", lang);
+  const sidebarImage = heroData ? resolveImage(heroData.backgroundImage) : COASTAL_IMG_FALLBACK;
+
+
 
   const handleDateClick = useCallback((date: Date) => {
     if (isDateBlocked(date, blocked)) return;
@@ -200,11 +217,11 @@ export default function BookingPage() {
             <div className="md:col-span-7">
               <span className="text-primary font-medium tracking-widest uppercase text-xs mb-4 block">{st("book.label", lang)}</span>
               <h1 className="text-5xl md:text-7xl font-headline leading-tight mb-6">
-                {st("book.title1", lang)} <br /><span className="italic">{st("book.title2", lang)}</span>
+                {headerHeading}
               </h1>
             </div>
             <div className="md:col-span-5 pb-2">
-              <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">{st("book.description", lang)}</p>
+              <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">{headerSubtitle}</p>
             </div>
           </div>
         </header>
@@ -349,7 +366,7 @@ export default function BookingPage() {
               </div>
             )}
             <div className="rounded-xl overflow-hidden aspect-video">
-              <img src={COASTAL_IMG} alt="Valencia coast" className="w-full h-full object-cover" />
+              <img src={sidebarImage} alt="Valencia coast" className="w-full h-full object-cover" />
             </div>
           </aside>
         </div>
@@ -418,6 +435,11 @@ export default function BookingPage() {
               </form>
             </div>
           </section>
+        )}
+
+        {/* CTA block from editor */}
+        {ctaBlock && ctaBlock.is_visible && (
+          <BookingCtaBlock data={ctaBlock.data} lang={lang} />
         )}
       </main>
 
