@@ -110,6 +110,189 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_conversations: {
+        Row: {
+          channel: string
+          created_at: string | null
+          csw_expires_at: string | null
+          guest_id: string
+          id: string
+          last_message_at: string | null
+          status: string
+          unread_count: number | null
+        }
+        Insert: {
+          channel?: string
+          created_at?: string | null
+          csw_expires_at?: string | null
+          guest_id: string
+          id?: string
+          last_message_at?: string | null
+          status?: string
+          unread_count?: number | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string | null
+          csw_expires_at?: string | null
+          guest_id?: string
+          id?: string
+          last_message_at?: string | null
+          status?: string
+          unread_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_conversations_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "crm_guests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_guests: {
+        Row: {
+          booking_id: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          language: string | null
+          name: string
+          notes: string | null
+          opted_in_at: string | null
+          opted_in_marketing: boolean | null
+          phone_e164: string
+          updated_at: string | null
+          wa_id: string | null
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          language?: string | null
+          name: string
+          notes?: string | null
+          opted_in_at?: string | null
+          opted_in_marketing?: boolean | null
+          phone_e164: string
+          updated_at?: string | null
+          wa_id?: string | null
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          language?: string | null
+          name?: string
+          notes?: string | null
+          opted_in_at?: string | null
+          opted_in_marketing?: boolean | null
+          phone_e164?: string
+          updated_at?: string | null
+          wa_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_guests_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_messages: {
+        Row: {
+          content: string | null
+          conversation_id: string
+          delivered_at: string | null
+          direction: string
+          id: string
+          message_type: string
+          metadata: Json | null
+          read_at: string | null
+          sent_at: string | null
+          status: string | null
+          wamid: string | null
+        }
+        Insert: {
+          content?: string | null
+          conversation_id: string
+          delivered_at?: string | null
+          direction: string
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          read_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          wamid?: string | null
+        }
+        Update: {
+          content?: string | null
+          conversation_id?: string
+          delivered_at?: string | null
+          direction?: string
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          read_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          wamid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "crm_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_templates: {
+        Row: {
+          body_text: string | null
+          buttons: Json | null
+          category: string
+          created_at: string | null
+          header_type: string | null
+          id: string
+          language: string
+          last_synced_at: string | null
+          status: string | null
+          template_name: string
+        }
+        Insert: {
+          body_text?: string | null
+          buttons?: Json | null
+          category: string
+          created_at?: string | null
+          header_type?: string | null
+          id?: string
+          language?: string
+          last_synced_at?: string | null
+          status?: string | null
+          template_name: string
+        }
+        Update: {
+          body_text?: string | null
+          buttons?: Json | null
+          category?: string
+          created_at?: string | null
+          header_type?: string | null
+          id?: string
+          language?: string
+          last_synced_at?: string | null
+          status?: string | null
+          template_name?: string
+        }
+        Relationships: []
+      }
       custom_pricing: {
         Row: {
           created_at: string
@@ -191,6 +374,42 @@ export type Database = {
           updated_at?: string | null
           verification_token?: string | null
           verified_at?: string | null
+        }
+        Relationships: []
+      }
+      integration_configs: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          display_name: string
+          id: string
+          integration_type: string
+          last_error: string | null
+          last_health_check: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          display_name: string
+          id?: string
+          integration_type: string
+          last_error?: string | null
+          last_health_check?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          display_name?: string
+          id?: string
+          integration_type?: string
+          last_error?: string | null
+          last_health_check?: string | null
+          status?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -352,6 +571,7 @@ export type Database = {
           status: string
         }[]
       }
+      increment_unread: { Args: { conv_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
