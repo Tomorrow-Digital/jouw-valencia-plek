@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { Navbar } from "@/components/redesign/Navbar";
 import { Footer } from "@/components/redesign/Footer";
 import { type SiteLang, detectSiteLang, st } from "@/lib/site-i18n";
 import { Clock, Ban, PartyPopper, PawPrint, ChevronRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-const HERO_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuDBaPVLrJgO1c9FsbILwfgB-WqaTJP6s_lxX72YNyNvkQvTWgKmW76_ImOCBNTvLKLzZrxF8rVzW121GJGWUN63v-VdY95lomzTdnbJgpso71RtilTPHOhqAnaKuCDkkYRyiZVrsj7Ou9ZtCfclCCeEfeq-Z6EVIwDIMaqwQEoLWDa5Th4gbx63zoZlw8zjMVtwT2hsLLyExh-mwppnWgka-I8_MCJMjVcKCOO7WTSkjMhaaa1-JGkoIPONAu4GTe6oWYv_kYOuI3Ys";
-const HOST_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuB7-BNqsd_AqCx8ESuvy6NE-dkdQ2D-7zdRK6DamA0Nz1UfyqdE4WJXZGRa1UEEArpKnuUmwMYsVYJYoC8HHoTFa1hQqoFJWZnnn2K1O9dPVULN-gKod16RIHsQ8CdTclZB1pDVVd0EukONuMWTZ7Ocno0Vn4yc8OZrgdK0sR52FjVMguY3c7Jgur5fOUylXUbjqTzyZ9d-7aqNYdZ1DxM8l3fQ0WKzufkKekLuwpYg5cLpHaDOOgIspvCnbQEz0umzNc63wvMTafDl";
+const FALLBACK_HERO = "https://lh3.googleusercontent.com/aida-public/AB6AXuDBaPVLrJgO1c9FsbILwfgB-WqaTJP6s_lxX72YNyNvkQvTWgKmW76_ImOCBNTvLKLzZrxF8rVzW121GJGWUN63v-VdY95lomzTdnbJgpso71RtilTPHOhqAnaKuCDkkYRyiZVrsj7Ou9ZtCfclCCeEfeq-Z6EVIwDIMaqwQEoLWDa5Th4gbx63zoZlw8zjMVtwT2hsLLyExh-mwppnWgka-I8_MCJMjVcKCOO7WTSkjMhaaa1-JGkoIPONAu4GTe6oWYv_kYOuI3Ys";
+const FALLBACK_HOST = "https://lh3.googleusercontent.com/aida-public/AB6AXuB7-BNqsd_AqCx8ESuvy6NE-dkdQ2D-7zdRK6DamA0Nz1UfyqdE4WJXZGRa1UEEArpKnuUmwMYsVYJYoC8HHoTFa1hQqoFJWZnnn2K1O9dPVULN-gKod16RIHsQ8CdTclZB1pDVVd0EukONuMWTZ7Ocno0Vn4yc8OZrgdK0sR52FjVMguY3c7Jgur5fOUylXUbjqTzyZ9d-7aqNYdZ1DxM8l3fQ0WKzufkKekLuwpYg5cLpHaDOOgIspvCnbQEz0umzNc63wvMTafDl";
 
 const rules = [
   { icon: Clock, titleKey: "contact.checkTimes", descKey: "contact.checkTimesDesc" },
@@ -19,6 +21,36 @@ const faqKeys = ["faq1", "faq2", "faq3", "faq4"] as const;
 export default function ContactPage() {
   const [lang, setLang] = useState<SiteLang>(detectSiteLang);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [hostImg, setHostImg] = useState(FALLBACK_HOST);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Form
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [msgText, setMsgText] = useState("");
+
+  useEffect(() => {
+    supabase.from("site_photos").select("*").eq("category", "host").order("sort_order", { ascending: true }).limit(1).then(({ data }) => {
+      if (data?.[0]) setHostImg(data[0].url);
+    });
+  }, []);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!name || !phone || !msgText) {
+      toast.error(lang === "nl" ? "Vul alle velden in" : lang === "es" ? "Completa todos los campos" : "Please fill in all fields");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("contact_messages").insert({ name, phone, message: msgText });
+    setSubmitting(false);
+    if (error) {
+      toast.error(lang === "nl" ? "Er ging iets mis" : lang === "es" ? "Algo salió mal" : "Something went wrong");
+    } else {
+      toast.success(lang === "nl" ? "Bericht verzonden!" : lang === "es" ? "¡Mensaje enviado!" : "Message sent!");
+      setName(""); setPhone(""); setMsgText("");
+    }
+  };
 
   return (
     <div className="bg-surface text-foreground font-body">
@@ -34,7 +66,7 @@ export default function ContactPage() {
                 {st("contact.title1", lang)} <span className="italic">{st("contact.title2", lang)}</span>
               </h1>
               <div className="flex items-start gap-6 bg-surface-container-low p-8 rounded-xl max-w-2xl">
-                <img src={HOST_IMG} alt="Charmaine" className="w-20 h-20 rounded-full object-cover shadow-sm" />
+                <img src={hostImg} alt="Charmaine" className="w-20 h-20 rounded-full object-cover shadow-sm" />
                 <div>
                   <h3 className="font-headline text-xl mb-2">{st("contact.hostTitle", lang)}</h3>
                   <p className="text-on-surface-variant leading-relaxed text-sm">{st("contact.hostMsg", lang)}</p>
@@ -43,7 +75,7 @@ export default function ContactPage() {
             </div>
             <div className="lg:col-span-5 relative">
               <div className="aspect-[4/5] rounded-xl overflow-hidden shadow-2xl rotate-2">
-                <img src={HERO_IMG} alt="Mediterranean villa" className="w-full h-full object-cover" />
+                <img src={FALLBACK_HERO} alt="Mediterranean villa" className="w-full h-full object-cover" />
               </div>
               <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary-container/20 rounded-full blur-3xl -z-10" />
             </div>
@@ -55,27 +87,23 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-7 bg-white p-10 rounded-xl shadow-sm border border-outline-variant/10">
               <h2 className="font-headline text-3xl mb-8">{st("contact.formTitle", lang)}</h2>
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-widest text-on-surface-variant font-medium">{st("contact.name", lang)}</label>
-                    <input className="w-full bg-transparent border-b border-outline-variant/30 focus:border-secondary focus:ring-0 px-0 py-2 transition-colors outline-none" />
+                    <label className="text-xs uppercase tracking-widest text-on-surface-variant font-medium">{st("contact.name", lang)} *</label>
+                    <input value={name} onChange={(e) => setName(e.target.value)} required className="w-full bg-transparent border-b border-outline-variant/30 focus:border-secondary focus:ring-0 px-0 py-2 transition-colors outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-widest text-on-surface-variant font-medium">{st("contact.email", lang)}</label>
-                    <input type="email" className="w-full bg-transparent border-b border-outline-variant/30 focus:border-secondary focus:ring-0 px-0 py-2 transition-colors outline-none" />
+                    <label className="text-xs uppercase tracking-widest text-on-surface-variant font-medium">{lang === "nl" ? "Telefoonnummer" : lang === "es" ? "Teléfono" : "Phone"} *</label>
+                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required className="w-full bg-transparent border-b border-outline-variant/30 focus:border-secondary focus:ring-0 px-0 py-2 transition-colors outline-none" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-widest text-on-surface-variant font-medium">{st("contact.subject", lang)}</label>
-                  <input className="w-full bg-transparent border-b border-outline-variant/30 focus:border-secondary focus:ring-0 px-0 py-2 transition-colors outline-none" />
+                  <label className="text-xs uppercase tracking-widest text-on-surface-variant font-medium">{st("contact.message", lang)} *</label>
+                  <textarea value={msgText} onChange={(e) => setMsgText(e.target.value)} required className="w-full bg-transparent border-b border-outline-variant/30 focus:border-secondary focus:ring-0 px-0 py-2 transition-colors outline-none resize-none" rows={4} />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-widest text-on-surface-variant font-medium">{st("contact.message", lang)}</label>
-                  <textarea className="w-full bg-transparent border-b border-outline-variant/30 focus:border-secondary focus:ring-0 px-0 py-2 transition-colors outline-none resize-none" rows={4} />
-                </div>
-                <button type="submit" className="bg-primary text-white px-10 py-4 rounded-xl font-headline tracking-wide hover:translate-y-[-2px] transition-all duration-300 shadow-lg shadow-primary/10">
-                  {st("contact.send", lang)}
+                <button type="submit" disabled={submitting} className="bg-primary text-white px-10 py-4 rounded-xl font-headline tracking-wide hover:translate-y-[-2px] transition-all duration-300 shadow-lg shadow-primary/10 disabled:opacity-50">
+                  {submitting ? "..." : st("contact.send", lang)}
                 </button>
               </form>
             </div>

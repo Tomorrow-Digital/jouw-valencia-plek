@@ -1,16 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/redesign/Navbar";
 import { Footer } from "@/components/redesign/Footer";
 import { type SiteLang, detectSiteLang, st } from "@/lib/site-i18n";
 import { MapPin, UtensilsCrossed, Waves } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
-const HERO_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuD-02HO-ZlkJALVjmiNf1wshldT2OGK1RCu6uc6E1-LYiXDp68IjdB1xhiVD8EUEpS9ZcaADl2bcujZimaJtP3CkVVVUhAzQuCDOa-Tp_HBuBQN8gjZ9Z0z92Cc5x2hOzAjtyq0lzAkwA9DrFvWdxJgzohp6ffXCwvT3-qRct1qUXb4Gh-ymL-hrTJbsoeX6LGfWh7fqNka2F3TsOOU9ipgyN9loFozia5Pd2tJ4tgsQdFM7lpxQDRETcgpk1EOoKu0EC3U99IlZ0FF";
-const ROOM_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuALT6D-di643WxcQt_QlwcY2NZPoURBc2eFdbbdpM5yWtDYU0_94xRW32anHU1IAaAmoKpJ3GnjMkzRKrYdvcwJqvptsIEUUYzseIxtld5C0jqftWy7vAyiHh-2u554hL59pg97wNmiZ1G8oWiMCsB2Ks938ZSN14y4I3FIdep_ImK4JPb1W1j6k5bo2Monvu0-i0NTxQlavoOR6pgEtamSpEc_SgcNvs9Res1441apqU5rYDIfH1HolkmvIeY7QAIcUJYidfLuhAW5";
-const BATH_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuBHjTjWnBK2MkDN-0AlB9UNBScz_p7OE-Ru_SvOQIaCntR119H93hO-SnfrQPeGJj8bdczCRXE8OqtIMvXbq124_yuqp9jwEnpvPZqwUGzNyq1boqGN7ulH1kQVHmW5dSn0zLgF9h8NXGQgG616k9lTdf2Z0y4G2eOZ3jRfh1nu64acNurDYE0KAvFaQNtXh1GhQkbkPtHmCrFY2iA52S36zHn1z0EuFSAidrrOE4Z1bmCjO6CaDzkS8lk1BAhIGSh55jerFKs8Keyw";
-const OUTDOOR_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuCvJx7ss4yH0KNB-2lDQd2DxTmM7jTxyG1MoyDBcvn5j-3X7mnqVbioh_u05arSDBa03Fp0hpStmcgdesHE3bHvp0KKbISVs-dIpnk40PCAZiL-84Ed_cErduilxGFpzPGCrIoVAIGGv3rHt_crfRp7JxO8fmH2FX53Jp3Csh3sHJcNQqZjBSSg7Onv44Z4NJzdO4uz_HkPOmxehmVpa1cWAuXfa3qnSnbI8UGJv_kkgPI1sTJeWL-KC0zkj7ERL17y3JxtAhJJh_U3";
+const FALLBACK_HERO = "https://lh3.googleusercontent.com/aida-public/AB6AXuD-02HO-ZlkJALVjmiNf1wshldT2OGK1RCu6uc6E1-LYiXDp68IjdB1xhiVD8EUEpS9ZcaADl2bcujZimaJtP3CkVVVUhAzQuCDOa-Tp_HBuBQN8gjZ9Z0z92Cc5x2hOzAjtyq0lzAkwA9DrFvWdxJgzohp6ffXCwvT3-qRct1qUXb4Gh-ymL-hrTJbsoeX6LGfWh7fqNka2F3TsOOU9ipgyN9loFozia5Pd2tJ4tgsQdFM7lpxQDRETcgpk1EOoKu0EC3U99IlZ0FF";
+const FALLBACK_ROOM = "https://lh3.googleusercontent.com/aida-public/AB6AXuALT6D-di643WxcQt_QlwcY2NZPoURBc2eFdbbdpM5yWtDYU0_94xRW32anHU1IAaAmoKpJ3GnjMkzRKrYdvcwJqvptsIEUUYzseIxtld5C0jqftWy7vAyiHh-2u554hL59pg97wNmiZ1G8oWiMCsB2Ks938ZSN14y4I3FIdep_ImK4JPb1W1j6k5bo2Monvu0-i0NTxQlavoOR6pgEtamSpEc_SgcNvs9Res1441apqU5rYDIfH1HolkmvIeY7QAIcUJYidfLuhAW5";
+const FALLBACK_BATH = "https://lh3.googleusercontent.com/aida-public/AB6AXuBHjTjWnBK2MkDN-0AlB9UNBScz_p7OE-Ru_SvOQIaCntR119H93hO-SnfrQPeGJj8bdczCRXE8OqtIMvXbq124_yuqp9jwEnpvPZqwUGzNyq1boqGN7ulH1kQVHmW5dSn0zLgF9h8NXGQgG616k9lTdf2Z0y4G2eOZ3jRfh1nu64acNurDYE0KAvFaQNtXh1GhQkbkPtHmCrFY2iA52S36zHn1z0EuFSAidrrOE4Z1bmCjO6CaDzkS8lk1BAhIGSh55jerFKs8Keyw";
+const FALLBACK_OUTDOOR = "https://lh3.googleusercontent.com/aida-public/AB6AXuCvJx7ss4yH0KNB-2lDQd2DxTmM7jTxyG1MoyDBcvn5j-3X7mnqVbioh_u05arSDBa03Fp0hpStmcgdesHE3bHvp0KKbISVs-dIpnk40PCAZiL-84Ed_cErduilxGFpzPGCrIoVAIGGv3rHt_crfRp7JxO8fmH2FX53Jp3Csh3sHJcNQqZjBSSg7Onv44Z4NJzdO4uz_HkPOmxehmVpa1cWAuXfa3qnSnbI8UGJv_kkgPI1sTJeWL-KC0zkj7ERL17y3JxtAhJJh_U3";
 
 export default function HomePage() {
   const [lang, setLang] = useState<SiteLang>(detectSiteLang);
+  const [photos, setPhotos] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    supabase.from("site_photos").select("*").order("sort_order", { ascending: true }).then(({ data }) => {
+      if (!data) return;
+      const map: Record<string, string> = {};
+      data.forEach((p) => {
+        if (!map[p.category]) map[p.category] = p.url;
+      });
+      setPhotos(map);
+    });
+  }, []);
+
+  const heroImg = photos.hero || FALLBACK_HERO;
+  const roomImg = photos.room || FALLBACK_ROOM;
+  const bathImg = photos.bathroom || FALLBACK_BATH;
+  const outdoorImg = photos.kitchen || FALLBACK_OUTDOOR;
 
   return (
     <div className="bg-surface text-foreground font-body">
@@ -19,7 +38,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-0">
-          <img src={HERO_IMG} alt="Swimming pool at Casita Valencia" className="w-full h-full object-cover" />
+          <img src={heroImg} alt="Swimming pool at Casita Valencia" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-foreground/20" />
         </div>
         <div className="relative z-10 text-center px-4 max-w-5xl">
@@ -40,9 +59,9 @@ export default function HomePage() {
                 <p className="text-sm font-medium">{st("hero.guestsDefault", lang)}</p>
               </div>
             </div>
-            <button className="bg-primary-container text-white px-8 py-4 rounded-full font-body font-bold text-sm tracking-widest uppercase hover:bg-primary transition-colors">
+            <Link to="/booking" className="bg-primary-container text-white px-8 py-4 rounded-full font-body font-bold text-sm tracking-widest uppercase hover:bg-primary transition-colors">
               {st("hero.cta", lang)}
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -60,7 +79,7 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-12 gap-8">
           <div className="col-span-12 lg:col-span-7 aspect-[4/5] md:aspect-video relative rounded-xl overflow-hidden group">
-            <img src={ROOM_IMG} alt="De Kamer" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={roomImg} alt="De Kamer" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div className="absolute bottom-8 left-8 text-white">
               <h3 className="font-headline text-3xl mb-1">{st("space.room", lang)}</h3>
               <p className="text-sm opacity-90 font-light tracking-wide">{st("space.roomSub", lang)}</p>
@@ -68,14 +87,14 @@ export default function HomePage() {
           </div>
           <div className="col-span-12 lg:col-span-5 flex flex-col gap-8">
             <div className="aspect-square relative rounded-xl overflow-hidden group">
-              <img src={BATH_IMG} alt="De Badkamer" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img src={bathImg} alt="De Badkamer" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute bottom-6 left-6 text-white">
                 <h3 className="font-headline text-2xl mb-1">{st("space.bathroom", lang)}</h3>
                 <p className="text-xs opacity-90 uppercase tracking-widest">{st("space.bathroomSub", lang)}</p>
               </div>
             </div>
             <div className="aspect-video relative rounded-xl overflow-hidden group">
-              <img src={OUTDOOR_IMG} alt="Het Buitenleven" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img src={outdoorImg} alt="Het Buitenleven" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute bottom-6 left-6 text-white">
                 <h3 className="font-headline text-2xl mb-1">{st("space.outdoor", lang)}</h3>
                 <p className="text-xs opacity-90 uppercase tracking-widest">{st("space.outdoorSub", lang)}</p>
