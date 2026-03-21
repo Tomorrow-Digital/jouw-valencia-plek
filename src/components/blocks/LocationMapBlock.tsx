@@ -28,7 +28,7 @@ export function LocationMapBlock({ data, lang }: { data: Record<string, any>; la
     : "#";
 
   return (
-    <section className="py-16 px-6">
+    <section className="max-w-screen-2xl mx-auto px-8 md:px-20 py-32">
       <div className="max-w-5xl mx-auto">
         {heading && (
           <h2 className="text-3xl font-serif font-bold text-foreground text-center mb-8">{heading}</h2>

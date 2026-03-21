@@ -15,7 +15,7 @@ export function DestinationsBlock({ data, lang }: { data: Record<string, any>; l
   };
 
   return (
-    <section className="max-w-screen-2xl mx-auto px-8 md:px-20 mb-32">
+    <section className="max-w-screen-2xl mx-auto px-8 md:px-20 pb-32">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
         {destinations.map((dest, i) => {
           const sources = getResponsiveSources(dest.image);
