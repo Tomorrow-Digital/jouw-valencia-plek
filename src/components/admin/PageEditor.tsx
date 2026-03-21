@@ -360,6 +360,7 @@ function BlockEditorSwitch({ block, onChange, pageId }: { block: PageBlock; onCh
     case "location_map": return <LocationMapEditor data={block.data} onChange={onChange} />;
     case "faq": return <FaqEditor data={block.data} onChange={onChange} />;
     case "booking": return <BookingEditor data={block.data} onChange={onChange} />;
+    case "feature": return <FeatureEditor data={block.data} onChange={onChange} pageId={pageId} />;
     default: return <p className="text-sm text-muted-foreground">Geen editor beschikbaar voor type: {block.type}</p>;
   }
 }
