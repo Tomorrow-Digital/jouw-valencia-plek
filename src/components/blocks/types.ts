@@ -143,6 +143,34 @@ export interface FeatureBlockData {
   ctaLink: string;
 }
 
+export interface DestinationItem {
+  title: TranslatableString;
+  description: TranslatableString;
+  travelTime: TranslatableString;
+  icon: string;
+  image: string | ResponsiveImage;
+}
+
+export interface DestinationsBlockData {
+  destinations: DestinationItem[];
+}
+
+export interface TipItem {
+  category: TranslatableString;
+  name: string;
+  description: TranslatableString;
+  image: string | ResponsiveImage;
+}
+
+export interface TipsBlockData {
+  sidebarLabel: TranslatableString;
+  heading: TranslatableString;
+  description: TranslatableString;
+  highlightTitle: TranslatableString;
+  highlightDescription: TranslatableString;
+  tips: TipItem[];
+}
+
 export type BlockData =
   | HeroBlockData
   | TextBlockData
@@ -153,7 +181,9 @@ export type BlockData =
   | BookingCtaBlockData
   | LocationMapBlockData
   | FaqBlockData
-  | FeatureBlockData;
+  | FeatureBlockData
+  | DestinationsBlockData
+  | TipsBlockData;
 
 export interface PageBlock {
   id: string;

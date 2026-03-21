@@ -67,7 +67,7 @@ export function TipsEditor({ data, onChange, pageId }: Props) {
             <Label>Naam</Label>
             <Input value={tip.name || ""} onChange={(e) => updateTip(i, "name", e.target.value)} />
           </div>
-          <TranslatableInput label="Beschrijving" value={tip.description} onChange={(v) => updateTip(i, "description", v)} type="textarea" />
+          <TranslatableInput label="Beschrijving" value={tip.description} onChange={(v) => updateTip(i, "description", v)} multiline />
           <ResponsiveImageField label="Afbeelding" value={tip.image} onChange={(v) => updateTip(i, "image", v)} pageId={pageId} />
         </div>
       ))}

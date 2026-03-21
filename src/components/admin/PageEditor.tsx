@@ -46,6 +46,8 @@ const BLOCK_TYPES = [
   { type: "faq", label: "FAQ", icon: HelpCircle },
   { type: "booking", label: "Boekingsmodule", icon: CalendarDays },
   { type: "feature", label: "Feature / Highlight", icon: Columns },
+  { type: "destinations", label: "Bestemmingen", icon: Navigation },
+  { type: "tips", label: "Lokale Tips", icon: Lightbulb },
 ];
 
 const PREVIEW_MODES = [

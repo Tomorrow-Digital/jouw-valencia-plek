@@ -62,7 +62,7 @@ export function DestinationsEditor({ data, onChange, pageId }: Props) {
           </div>
 
           <TranslatableInput label="Titel" value={dest.title} onChange={(v) => updateDest(i, "title", v)} />
-          <TranslatableInput label="Beschrijving" value={dest.description} onChange={(v) => updateDest(i, "description", v)} type="textarea" />
+          <TranslatableInput label="Beschrijving" value={dest.description} onChange={(v) => updateDest(i, "description", v)} multiline />
           <TranslatableInput label="Reistijd" value={dest.travelTime} onChange={(v) => updateDest(i, "travelTime", v)} />
 
           <div>
