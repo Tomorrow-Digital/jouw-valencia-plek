@@ -24,10 +24,18 @@ export default function Admin() {
 
   const sectionParam = (searchParams.get("section") as AdminSection) || "dashboard";
   const [section, setSection] = useState<AdminSection>(sectionParam);
+  const [editingPageId, setEditingPageId] = useState<string | null>(searchParams.get("pageId") || null);
 
   const handleSectionChange = (s: AdminSection) => {
     setSection(s);
-    setSearchParams({ section: s });
+    if (s !== "page-editor") setEditingPageId(null);
+    setSearchParams(s === "page-editor" && editingPageId ? { section: s, pageId: editingPageId } : { section: s });
+  };
+
+  const handleEditBlocks = (pageId: string) => {
+    setEditingPageId(pageId);
+    setSection("page-editor");
+    setSearchParams({ section: "page-editor", pageId });
   };
 
   useEffect(() => {
