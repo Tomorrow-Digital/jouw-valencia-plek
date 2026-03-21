@@ -515,7 +515,7 @@ function BookingsSection() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Weet je zeker dat je deze boeking wilt verwijderen?")) return;
+    if (!confirm(t('bookings.confirmDelete'))) return;
     await supabase.from("bookings").delete().eq("id", id);
     fetchBookings();
   };
