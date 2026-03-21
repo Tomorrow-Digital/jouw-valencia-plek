@@ -45,7 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export type AdminSection =
-  | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "deletion" | "users"
+  | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "pages" | "deletion" | "users"
   | "crm-inbox" | "crm-guests" | "crm-templates"
   | "integrations-whatsapp" | "integrations-n8n" | "integrations-email" | "integrations-payments" | "integrations-calendar";
 
