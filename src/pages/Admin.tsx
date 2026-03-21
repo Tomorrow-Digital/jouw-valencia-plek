@@ -532,13 +532,13 @@ function BookingsSection() {
     cancelled: t('bookings.statusCancelled'),
   };
 
-  if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Laden...</p>;
+  if (loading) return <p className="text-muted-foreground text-sm text-center py-12">{t('common.loading')}</p>;
 
   return (
     <div>
-      <SectionHeader title="Boekingen" subtitle={`${bookings.length} boekingsaanvragen ontvangen.`} />
+      <SectionHeader title={t('bookings.title')} subtitle={`${bookings.length} ${t('bookings.subtitle')}`} />
       {bookings.length === 0 ? (
-        <p className="text-muted-foreground text-sm text-center py-12">Nog geen boekingen ontvangen.</p>
+        <p className="text-muted-foreground text-sm text-center py-12">{t('bookings.none')}</p>
       ) : (
         <div className="space-y-4">
           {bookings.map(b => (
