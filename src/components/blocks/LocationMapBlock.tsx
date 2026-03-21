@@ -16,26 +16,60 @@ export function LocationMapBlock({ data, lang }: { data: Record<string, any>; la
   const heading = tr(d.heading, lang);
   const description = tr(d.description, lang);
   const nearbyPlaces = d.nearbyPlaces || [];
+  const bgImage = (d as any).backgroundImage;
 
-  // Google Maps embed URL
-  const mapUrl = d.latitude && d.longitude
-    ? `https://www.google.com/maps/embed/v1/view?key=GOOGLE_MAPS_KEY&center=${d.latitude},${d.longitude}&zoom=${d.zoom || 13}`
-    : null;
-
-  // Fallback: static map link
   const mapsLink = d.latitude && d.longitude
     ? `https://www.google.com/maps?q=${d.latitude},${d.longitude}`
     : "#";
 
+  const ctaLabel = lang === "nl" ? "Bekijk Route in Maps" : lang === "es" ? "Ver Ruta en Maps" : "View Route in Maps";
+
+  // Editorial card-on-background style
+  if (bgImage) {
+    return (
+      <section className="max-w-screen-2xl mx-auto px-8 md:px-20 py-32">
+        <div className="bg-surface-container-highest rounded-2xl p-12 overflow-hidden relative min-h-[500px] flex flex-col justify-center">
+          <div className="absolute inset-0 z-0">
+            <img src={bgImage} alt="" className="w-full h-full object-cover opacity-30 grayscale" />
+          </div>
+          <div className="relative z-10 max-w-lg bg-white/80 p-10 rounded-xl backdrop-blur-lg shadow-xl">
+            {heading && <h2 className="text-4xl font-headline font-bold mb-6">{heading}</h2>}
+            {description && <p className="text-on-surface-variant mb-8">{description}</p>}
+            {nearbyPlaces.length > 0 && (
+              <div className="space-y-4 mb-8">
+                {nearbyPlaces.map((place, i) => {
+                  const Icon = getIcon(place.icon || "map-pin");
+                  return (
+                    <div key={i} className="flex items-center gap-4">
+                      <Icon size={20} className="text-primary flex-shrink-0" />
+                      <span className="text-sm font-medium">{tr(place.name, lang)}{place.distance ? `, ${place.distance}` : ""}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <a
+              href={mapsLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full text-center border-2 border-primary text-primary font-bold py-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 uppercase tracking-widest text-xs"
+            >
+              {ctaLabel}
+            </a>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Default map embed style
   return (
     <section className="max-w-screen-2xl mx-auto px-8 md:px-20 py-32">
       <div className="max-w-5xl mx-auto">
         {heading && (
-          <h2 className="text-3xl font-serif font-bold text-foreground text-center mb-8">{heading}</h2>
+          <h2 className="text-3xl font-headline font-bold text-foreground text-center mb-8">{heading}</h2>
         )}
-
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Map */}
           <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted border border-border">
             {d.latitude && d.longitude ? (
               <iframe
@@ -51,12 +85,8 @@ export function LocationMapBlock({ data, lang }: { data: Record<string, any>; la
               </div>
             )}
           </div>
-
-          {/* Info */}
           <div>
-            {description && (
-              <p className="text-foreground/80 mb-6">{description}</p>
-            )}
+            {description && <p className="text-foreground/80 mb-6">{description}</p>}
             {nearbyPlaces.length > 0 && (
               <div className="space-y-3">
                 {nearbyPlaces.map((place, i) => {
