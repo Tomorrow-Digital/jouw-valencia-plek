@@ -46,7 +46,7 @@ export function TipsEditor({ data, onChange, pageId }: Props) {
       <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Zijbalk</h4>
       <TranslatableInput label="Label" value={data.sidebarLabel} onChange={(v) => updateField("sidebarLabel", v)} />
       <TranslatableInput label="Kop" value={data.heading} onChange={(v) => updateField("heading", v)} />
-      <TranslatableInput label="Beschrijving" value={data.description} onChange={(v) => updateField("description", v)} type="textarea" />
+      <TranslatableInput label="Beschrijving" value={data.description} onChange={(v) => updateField("description", v)} multiline />
       <TranslatableInput label="Highlight titel" value={data.highlightTitle} onChange={(v) => updateField("highlightTitle", v)} />
       <TranslatableInput label="Highlight beschrijving" value={data.highlightDescription} onChange={(v) => updateField("highlightDescription", v)} />
 
