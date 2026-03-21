@@ -409,7 +409,7 @@ function PricingSection() {
 
       {/* Seasonal pricing */}
       <div className="bg-background rounded-xl border border-border p-6">
-        <h3 className="font-semibold text-foreground mb-4">Seizoensprijzen</h3>
+        <h3 className="font-semibold text-foreground mb-4">{t('pricing.seasonal')}</h3>
         <div className="space-y-2 mb-4">
           {seasonal.map(s => (
             <div key={s.id} className="flex items-center justify-between bg-muted/40 rounded-lg p-3 gap-2">
