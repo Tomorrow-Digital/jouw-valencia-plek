@@ -113,7 +113,7 @@ export function AdminLayout({ section, onSectionChange, children }: AdminLayoutP
           </header>
           <main className={cn(
             "flex-1",
-            section === "crm-inbox" ? "" : "p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto"
+            section === "crm-inbox" || section === "page-editor" ? "" : "p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto"
           )}>{children}</main>
         </div>
       </div>

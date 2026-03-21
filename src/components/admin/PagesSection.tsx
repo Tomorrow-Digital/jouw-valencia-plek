@@ -162,6 +162,15 @@ export function PagesSection({ onEditBlocks }: Props) {
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
+                  {onEditBlocks && (
+                    <button
+                      onClick={() => onEditBlocks(page.id)}
+                      className="p-2 text-primary hover:text-primary/80 transition-colors"
+                      title="Blokken bewerken"
+                    >
+                      <LayoutTemplate size={14} />
+                    </button>
+                  )}
                   <a
                     href={`/p/${page.slug}`}
                     target="_blank"
