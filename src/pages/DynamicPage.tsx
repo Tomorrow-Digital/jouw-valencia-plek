@@ -7,8 +7,13 @@ import { BlockRenderer } from "@/components/blocks/BlockRenderer";
 import { detectSiteLang, type SiteLang } from "@/lib/site-i18n";
 import type { Page, PageBlock } from "@/components/blocks/types";
 
-export default function DynamicPage() {
-  const { slug } = useParams<{ slug: string }>();
+interface DynamicPageProps {
+  fixedSlug?: string;
+}
+
+export default function DynamicPage({ fixedSlug }: DynamicPageProps) {
+  const { slug: routeSlug } = useParams<{ slug: string }>();
+  const slug = fixedSlug || routeSlug;
   const [searchParams] = useSearchParams();
   const langParam = searchParams.get("lang");
   const [lang, setLang] = useState<SiteLang>(() => 
@@ -23,7 +28,6 @@ export default function DynamicPage() {
     if (!slug) { setNotFound(true); setLoading(false); return; }
 
     async function load() {
-      // Try matching slug, slug_en, or slug_es
       let pageData: any = null;
 
       const { data: bySlug } = await supabase
@@ -103,7 +107,7 @@ export default function DynamicPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-surface text-foreground font-body">
       {page?.meta_description && (
         <meta name="description" content={page.meta_description} />
       )}
