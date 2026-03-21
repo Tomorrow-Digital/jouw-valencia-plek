@@ -72,7 +72,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
                 isActive(item.to)
                   ? "text-primary-container font-semibold border-b-2 border-primary-container pb-1"
                   : showWhiteLogo
-                    ? "text-white/90 hover:text-white"
+                    ? "text-white font-bold hover:text-white"
                     : "text-on-surface-variant hover:text-foreground"
               }`}
             >
