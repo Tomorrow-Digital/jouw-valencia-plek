@@ -21,6 +21,7 @@ import {
   ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, GripVertical,
   Check, Loader2, Globe, FileText,
   LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle, CalendarDays, Columns,
+  Navigation, Lightbulb,
   Monitor, Tablet, Smartphone,
 } from "lucide-react";
 import {
