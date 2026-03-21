@@ -127,6 +127,22 @@ export interface FaqBlockData {
   items: FaqItem[];
 }
 
+export interface FeatureSpec {
+  icon: string;
+  label: TranslatableString;
+}
+
+export interface FeatureBlockData {
+  subtitle: TranslatableString;
+  heading: TranslatableString;
+  description: TranslatableString;
+  image: string | ResponsiveImage;
+  imagePosition: "left" | "right";
+  specs: FeatureSpec[];
+  ctaText: TranslatableString;
+  ctaLink: string;
+}
+
 export type BlockData =
   | HeroBlockData
   | TextBlockData
@@ -136,7 +152,8 @@ export type BlockData =
   | AmenitiesBlockData
   | BookingCtaBlockData
   | LocationMapBlockData
-  | FaqBlockData;
+  | FaqBlockData
+  | FeatureBlockData;
 
 export interface PageBlock {
   id: string;

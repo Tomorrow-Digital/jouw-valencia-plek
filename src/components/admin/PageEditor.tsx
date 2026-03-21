@@ -13,11 +13,12 @@ import { BookingCtaEditor } from "./block-editors/BookingCtaEditor";
 import { LocationMapEditor } from "./block-editors/LocationMapEditor";
 import { FaqEditor } from "./block-editors/FaqEditor";
 import { BookingEditor } from "./block-editors/BookingEditor";
+import { FeatureEditor } from "./block-editors/FeatureEditor";
 import type { PageBlock, Page } from "@/components/blocks/types";
 import {
   ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, GripVertical,
   Check, Loader2, Globe, FileText,
-  LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle, CalendarDays,
+  LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle, CalendarDays, Columns,
   Monitor, Tablet, Smartphone,
 } from "lucide-react";
 import {
@@ -41,6 +42,7 @@ const BLOCK_TYPES = [
   { type: "location_map", label: "Locatie", icon: MapPin },
   { type: "faq", label: "FAQ", icon: HelpCircle },
   { type: "booking", label: "Boekingsmodule", icon: CalendarDays },
+  { type: "feature", label: "Feature / Highlight", icon: Columns },
 ];
 
 const PREVIEW_MODES = [
@@ -358,6 +360,7 @@ function BlockEditorSwitch({ block, onChange, pageId }: { block: PageBlock; onCh
     case "location_map": return <LocationMapEditor data={block.data} onChange={onChange} />;
     case "faq": return <FaqEditor data={block.data} onChange={onChange} />;
     case "booking": return <BookingEditor data={block.data} onChange={onChange} />;
+    case "feature": return <FeatureEditor data={block.data} onChange={onChange} pageId={pageId} />;
     default: return <p className="text-sm text-muted-foreground">Geen editor beschikbaar voor type: {block.type}</p>;
   }
 }

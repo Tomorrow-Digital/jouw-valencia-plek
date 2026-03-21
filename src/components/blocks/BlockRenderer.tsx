@@ -8,6 +8,7 @@ import { BookingCtaBlock } from "./BookingCtaBlock";
 import { LocationMapBlock } from "./LocationMapBlock";
 import { FaqBlock } from "./FaqBlock";
 import { BookingBlock } from "./BookingBlock";
+import { FeatureBlock } from "./FeatureBlock";
 import type { PageBlock } from "./types";
 
 const blockComponents: Record<string, React.ComponentType<{ data: Record<string, any>; lang: string }>> = {
@@ -21,6 +22,7 @@ const blockComponents: Record<string, React.ComponentType<{ data: Record<string,
   location_map: LocationMapBlock,
   faq: FaqBlock,
   booking: BookingBlock,
+  feature: FeatureBlock,
 };
 
 interface BlockRendererProps {
