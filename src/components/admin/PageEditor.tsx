@@ -42,6 +42,7 @@ const BLOCK_TYPES = [
   { type: "location_map", label: "Locatie", icon: MapPin },
   { type: "faq", label: "FAQ", icon: HelpCircle },
   { type: "booking", label: "Boekingsmodule", icon: CalendarDays },
+  { type: "feature", label: "Feature / Highlight", icon: Columns },
 ];
 
 const PREVIEW_MODES = [
