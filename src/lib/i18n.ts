@@ -239,6 +239,21 @@ const translations: Record<string, Record<Language, string>> = {
   'integrations.calendarTitle': { nl: 'Kalender Integratie', en: 'Calendar Integration', es: 'Integración de calendario' },
   'integrations.calendarSub': { nl: 'Synchroniseer boekingen met Google Calendar, iCal of andere kalender-apps.', en: 'Sync bookings with Google Calendar, iCal or other calendar apps.', es: 'Sincroniza reservas con Google Calendar, iCal u otras apps.' },
 
+  // ── Pages ──
+  'nav.pages': { nl: "Pagina's", en: 'Pages', es: 'Páginas' },
+  'pages.title': { nl: "Pagina's", en: 'Pages', es: 'Páginas' },
+  'pages.subtitle': { nl: "Beheer dynamische pagina's opgebouwd uit blokken.", en: 'Manage dynamic pages built from blocks.', es: 'Gestiona páginas dinámicas construidas con bloques.' },
+  'pages.pageTitle': { nl: 'Titel', en: 'Title', es: 'Título' },
+  'pages.titlePlaceholder': { nl: 'Paginatitel...', en: 'Page title...', es: 'Título de página...' },
+  'pages.newPage': { nl: 'Nieuwe pagina', en: 'New page', es: 'Nueva página' },
+  'pages.confirmDelete': { nl: 'Weet je zeker dat je deze pagina wilt verwijderen? Alle blokken worden ook verwijderd.', en: 'Are you sure you want to delete this page? All blocks will also be deleted.', es: '¿Estás seguro? Todos los bloques también se eliminarán.' },
+  'pages.published': { nl: 'Gepubliceerd', en: 'Published', es: 'Publicado' },
+  'pages.draft': { nl: 'Concept', en: 'Draft', es: 'Borrador' },
+  'pages.publish': { nl: 'Publiceren', en: 'Publish', es: 'Publicar' },
+  'pages.unpublish': { nl: 'Depubliceren', en: 'Unpublish', es: 'Despublicar' },
+  'pages.preview': { nl: 'Bekijk pagina', en: 'Preview page', es: 'Vista previa' },
+  'pages.none': { nl: "Nog geen pagina's aangemaakt.", en: 'No pages created yet.', es: 'Aún no se han creado páginas.' },
+
   // ── Common ──
   'common.loading': { nl: 'Laden...', en: 'Loading...', es: 'Cargando...' },
   'common.save': { nl: 'Opslaan', en: 'Save', es: 'Guardar' },
