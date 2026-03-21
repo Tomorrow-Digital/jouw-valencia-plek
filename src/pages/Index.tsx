@@ -635,7 +635,10 @@ function FadeInSection({ children, className = "" }: { children: React.ReactNode
 // ═══════════════════════════════════════════════════════════════
 
 export default function Index() {
-  const [lang, setLang] = useState<Lang>("nl");
+  const [lang, setLang] = useState<Lang>(() => {
+    const saved = localStorage.getItem("site-lang") as Lang | null;
+    return saved && ["nl", "en", "es"].includes(saved) ? saved : "nl";
+  });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
