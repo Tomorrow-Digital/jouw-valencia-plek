@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getLanguage, setLanguage, type Language } from "@/lib/i18n";
 import {
   SidebarProvider,
   SidebarTrigger,
