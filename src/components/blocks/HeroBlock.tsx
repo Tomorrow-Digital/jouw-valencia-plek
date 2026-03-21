@@ -56,26 +56,36 @@ export function HeroBlock({ data, lang }: { data: Record<string, any>; lang: str
         )}
 
         {d.showBookingBar ? (
-          <div className="mt-12 bg-surface/90 backdrop-blur-md p-3 rounded-2xl md:rounded-full inline-flex flex-col md:flex-row items-stretch md:items-center gap-0 md:gap-2 shadow-2xl w-[90vw] max-w-md md:w-auto md:max-w-none">
-            <div className="flex items-center gap-3 px-6 py-3 border-b md:border-b-0 md:border-r border-outline-variant/30">
-              <div className="text-left">
-                <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">{arrivalLabel}</p>
-                <p className="text-sm font-medium">{arrivalPlaceholder}</p>
+          <>
+            <div className="mt-12 hidden md:inline-flex bg-surface/90 backdrop-blur-md p-3 rounded-full items-center gap-2 shadow-2xl">
+              <div className="flex items-center gap-3 px-6 py-3 border-r border-outline-variant/30">
+                <div className="text-left">
+                  <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">{arrivalLabel}</p>
+                  <p className="text-sm font-medium">{arrivalPlaceholder}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 px-6 py-3 border-b md:border-b-0 md:border-r border-outline-variant/30">
-              <div className="text-left">
-                <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">{guestsLabel}</p>
-                <p className="text-sm font-medium">{guestsDefault}</p>
+              <div className="flex items-center gap-3 px-6 py-3 border-r border-outline-variant/30">
+                <div className="text-left">
+                  <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">{guestsLabel}</p>
+                  <p className="text-sm font-medium">{guestsDefault}</p>
+                </div>
               </div>
+              <Link
+                to={d.ctaLink || "/booking"}
+                className="bg-primary-container text-white px-8 py-4 rounded-full font-body font-bold text-sm tracking-widest uppercase hover:bg-primary transition-colors"
+              >
+                {ctaText}
+              </Link>
             </div>
-            <Link
-              to={d.ctaLink || "/booking"}
-              className="bg-primary-container text-white px-8 py-4 rounded-xl md:rounded-full font-body font-bold text-sm tracking-widest uppercase hover:bg-primary transition-colors text-center mt-1 md:mt-0"
-            >
-              {ctaText}
-            </Link>
-          </div>
+            <div className="mt-8 md:hidden">
+              <Link
+                to={d.ctaLink || "/booking"}
+                className="inline-block bg-white/95 backdrop-blur-sm text-foreground px-10 py-4 rounded-full font-body font-bold text-sm tracking-widest uppercase shadow-lg hover:bg-white transition-colors"
+              >
+                {ctaText}
+              </Link>
+            </div>
+          </>
         ) : (
           ctaText && d.ctaLink && (
             <Link
