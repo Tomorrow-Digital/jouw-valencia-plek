@@ -386,15 +386,15 @@ function PricingSection() {
 
       {/* General config */}
       <div className="bg-background rounded-xl border border-border p-6">
-        <h3 className="font-semibold text-foreground mb-4">Algemene instellingen</h3>
+        <h3 className="font-semibold text-foreground mb-4">{t('pricing.general')}</h3>
         <div className="grid sm:grid-cols-3 gap-4 mb-4">
           {[
-            { key: "default_price_per_night", label: "Standaardprijs per nacht (€)" },
-            { key: "cleaning_fee", label: "Schoonmaakkosten (€)" },
-            { key: "minimum_stay", label: "Minimaal verblijf (nachten)" },
-            { key: "maximum_stay", label: "Maximaal verblijf (nachten)" },
-            { key: "weekly_discount", label: "Weekkorting (%)" },
-            { key: "monthly_discount", label: "Maandkorting (%)" },
+            { key: "default_price_per_night", label: t('pricing.defaultPrice') },
+            { key: "cleaning_fee", label: t('pricing.cleaningFee') },
+            { key: "minimum_stay", label: t('pricing.minStay') },
+            { key: "maximum_stay", label: t('pricing.maxStay') },
+            { key: "weekly_discount", label: t('pricing.weeklyDiscount') },
+            { key: "monthly_discount", label: t('pricing.monthlyDiscount') },
           ].map(field => (
             <div key={field.key}>
               <label className="block text-xs font-medium mb-1">{field.label}</label>
