@@ -202,6 +202,22 @@ function AdminSidebar({
       <SidebarFooter className="p-3 space-y-1">
         <SidebarMenu>
           <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={() => {
+                const langs: Language[] = ['nl', 'en', 'es'];
+                const current = getLanguage();
+                const next = langs[(langs.indexOf(current) + 1) % langs.length];
+                setLanguage(next);
+                window.location.reload();
+              }}
+              tooltip="Taal / Language / Idioma"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Globe className="w-4 h-4" />
+              <span>{getLanguage().toUpperCase()}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Naar website" className="text-muted-foreground hover:text-foreground">
               <a href="/" target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="w-4 h-4" />

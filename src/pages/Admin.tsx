@@ -55,8 +55,8 @@ export default function Admin() {
       {section === "deletion" && <DeletionRequestsSection />}
       {section === "users" && <UsersSection />}
       {section === "crm-inbox" && <CrmInbox />}
-      {section === "crm-guests" && <CrmPlaceholder type="guests" />}
-      {section === "crm-templates" && <CrmPlaceholder type="templates" />}
+      {section === "crm-guests" && <CrmGuests />}
+      {section === "crm-templates" && <CrmTemplates />}
       {section === "integrations-whatsapp" && <IntegrationWhatsApp />}
       {section === "integrations-n8n" && <IntegrationN8N />}
       {section === "integrations-email" && <IntegrationPlaceholder type="email" />}
