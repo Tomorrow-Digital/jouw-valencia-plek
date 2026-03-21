@@ -366,7 +366,7 @@ export default function BookingPage() {
               </div>
             )}
             <div className="rounded-xl overflow-hidden aspect-video">
-              <img src={COASTAL_IMG} alt="Valencia coast" className="w-full h-full object-cover" />
+              <img src={sidebarImage} alt="Valencia coast" className="w-full h-full object-cover" />
             </div>
           </aside>
         </div>
