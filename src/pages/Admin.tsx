@@ -172,7 +172,7 @@ function PhotosSection() {
                   <img src={photo.url} alt="" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                     {!photo.is_primary && (
-                      <button onClick={() => handleSetPrimary(photo)} className="bg-background/90 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-background transition-colors">Hoofdfoto</button>
+                      <button onClick={() => handleSetPrimary(photo)} className="bg-background/90 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-background transition-colors">{t('photos.mainPhoto')}</button>
                     )}
                     <button onClick={() => handleDelete(photo)} className="bg-destructive/90 text-destructive-foreground rounded-lg p-2 hover:bg-destructive transition-colors"><Trash2 size={14} /></button>
                   </div>
