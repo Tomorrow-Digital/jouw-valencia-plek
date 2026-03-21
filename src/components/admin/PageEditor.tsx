@@ -322,29 +322,21 @@ export function PageEditor({ pageId, onBack }: Props) {
             </div>
           </div>
           <div className="flex justify-center p-4">
-            {previewMode === "desktop" ? (
-              <div className="w-full bg-background">
-                <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} static />
-                <BlockRenderer blocks={blocks} lang={previewLang} />
-                {blocks.length === 0 && (
-                  <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
-                )}
-                <Footer lang={previewLang as any} />
-              </div>
-            ) : (
-              <div
-                className="border border-border rounded-xl shadow-lg bg-background overflow-hidden transition-all duration-300"
-                style={{ width: activePreviewMode.width, maxWidth: "100%" }}
-              >
-                <iframe
-                  key={previewMode + previewLang}
-                  src={`/p/${page?.slug || "home"}?lang=${previewLang}`}
-                  className="w-full border-0"
-                  style={{ height: previewMode === "tablet" ? "1024px" : "812px" }}
-                  title={`Preview (${previewMode})`}
-                />
-              </div>
-            )}
+            <div
+              className={`bg-background transition-all duration-300 ${
+                previewMode !== "desktop"
+                  ? "border border-border rounded-xl shadow-lg overflow-hidden"
+                  : "w-full"
+              }`}
+              style={previewMode !== "desktop" ? { width: activePreviewMode.width, maxWidth: "100%" } : undefined}
+            >
+              <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} static />
+              <BlockRenderer blocks={blocks} lang={previewLang} />
+              {blocks.length === 0 && (
+                <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
+              )}
+              <Footer lang={previewLang as any} />
+            </div>
           </div>
         </div>
       </div>
