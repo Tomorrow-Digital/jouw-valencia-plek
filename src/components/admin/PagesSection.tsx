@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { t } from "@/lib/i18n";
-import { Plus, Pencil, Trash2, Globe, FileText, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, FileText, ExternalLink, LayoutTemplate } from "lucide-react";
 import type { Page } from "@/components/blocks/types";
 
-export function PagesSection() {
+interface Props {
+  onEditBlocks?: (pageId: string) => void;
+}
+
+export function PagesSection({ onEditBlocks }: Props) {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
