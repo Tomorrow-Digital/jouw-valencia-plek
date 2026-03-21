@@ -40,6 +40,7 @@ const BLOCK_TYPES = [
   { type: "booking_cta", label: "Boeken CTA", icon: Phone },
   { type: "location_map", label: "Locatie", icon: MapPin },
   { type: "faq", label: "FAQ", icon: HelpCircle },
+  { type: "booking", label: "Boekingsmodule", icon: CalendarDays },
 ];
 
 const PREVIEW_MODES = [
