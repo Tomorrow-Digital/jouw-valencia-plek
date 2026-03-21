@@ -24,7 +24,18 @@ export function HeroEditor({ data, onChange, pageId }: Props) {
       <TranslatableInput label="Heading" value={d.heading || emptyTr()} onChange={(v) => update({ heading: v })} />
       <TranslatableInput label="Heading Italic Line" value={d.headingItalicLine || emptyTr()} onChange={(v) => update({ headingItalicLine: v })} />
       <TranslatableInput label="Subtitle" value={d.subtitle || emptyTr()} onChange={(v) => update({ subtitle: v })} multiline />
+      <TranslatableInput label="Hero beschrijving (editorial)" value={(data as any).heroDescription || emptyTr()} onChange={(v) => onChange({ ...data, heroDescription: v })} multiline />
       <ResponsiveImageField label="Achtergrond afbeelding" value={bgImage} onChange={(v) => update({ backgroundImage: v })} pageId={pageId} />
+
+      <div className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          checked={(data as any).alignment === "left"}
+          onChange={(e) => onChange({ ...data, alignment: e.target.checked ? "left" : "center" })}
+          className="rounded border-input"
+        />
+        <label className="text-xs font-medium text-foreground">Links uitgelijnde hero (editorial stijl)</label>
+      </div>
 
       <div className="flex items-center gap-3">
         <input
