@@ -54,6 +54,7 @@ export default function Admin() {
       {section === "photos" && <PhotosSection />}
       {section === "calendar" && <CalendarSection />}
       {section === "pricing" && <PricingSection />}
+      {section === "pages" && <PagesSection />}
       {section === "deletion" && <DeletionRequestsSection />}
       {section === "users" && <UsersSection />}
       {section === "crm-inbox" && <CrmInbox />}
