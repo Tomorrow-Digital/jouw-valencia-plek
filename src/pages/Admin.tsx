@@ -6,8 +6,9 @@ import { DashboardSection } from "@/components/admin/DashboardSection";
 import { IntegrationWhatsApp } from "@/components/admin/integrations/IntegrationWhatsApp";
 import { IntegrationN8N } from "@/components/admin/integrations/IntegrationN8N";
 import { IntegrationPlaceholder } from "@/components/admin/integrations/IntegrationPlaceholder";
-import { CrmPlaceholder } from "@/components/admin/CrmPlaceholder";
 import { CrmInbox } from "@/components/admin/crm/CrmInbox";
+import { CrmGuests } from "@/components/admin/crm/CrmGuests";
+import { CrmTemplates } from "@/components/admin/crm/CrmTemplates";
 import {
   Trash2, Plus, Upload, Save, X, Pencil, Check, UserX, Link2, Copy, Clock,
 } from "lucide-react";
