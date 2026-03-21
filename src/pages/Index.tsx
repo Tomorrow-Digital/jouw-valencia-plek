@@ -637,7 +637,11 @@ function FadeInSection({ children, className = "" }: { children: React.ReactNode
 export default function Index() {
   const [lang, setLang] = useState<Lang>(() => {
     const saved = localStorage.getItem("site-lang") as Lang | null;
-    return saved && ["nl", "en", "es"].includes(saved) ? saved : "nl";
+    if (saved && ["nl", "en", "es"].includes(saved)) return saved;
+    const browserLang = navigator.language?.slice(0, 2).toLowerCase();
+    if (browserLang === "nl") return "nl";
+    if (browserLang === "es") return "es";
+    return "en";
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
