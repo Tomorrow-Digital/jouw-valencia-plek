@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { type SiteLang, st } from "@/lib/site-i18n";
+import logoWhite from "@/assets/logo-white.png";
 
 interface FooterProps {
   lang: SiteLang;
@@ -11,7 +12,9 @@ export function Footer({ lang }: FooterProps) {
     <footer className="bg-surface-container-low py-16 px-8">
       <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
         <div>
-          <h3 className="font-serif italic text-2xl mb-4">Casita Valencia</h3>
+          <Link to="/">
+            <img src={logoWhite} alt="Casita Valencia" className="h-12 w-auto mb-4 brightness-0" />
+          </Link>
           <p className="text-on-surface-variant text-sm leading-relaxed max-w-xs">
             {st("footer.tagline", lang)}
           </p>
