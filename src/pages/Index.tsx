@@ -944,6 +944,26 @@ export default function Index() {
                 {s.label}
               </button>
             ))}
+            {/* Language switch */}
+            <div className="relative group">
+              <button className={`flex items-center gap-1 text-sm font-medium transition-colors duration-300 ${scrolled ? "text-foreground hover:text-primary" : "text-white/90 hover:text-white"}`}>
+                <Globe size={16} />
+                <span>{lang.toUpperCase()}</span>
+              </button>
+              <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="bg-card border border-border rounded-lg shadow-lg py-1 min-w-[120px]">
+                  {([["nl", "Nederlands"], ["en", "English"], ["es", "Español"]] as [Lang, string][]).map(([code, label]) => (
+                    <button
+                      key={code}
+                      onClick={() => { setLang(code); localStorage.setItem("site-lang", code); }}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors ${lang === code ? "text-primary font-medium" : "text-foreground"}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Mobile menu button */}
