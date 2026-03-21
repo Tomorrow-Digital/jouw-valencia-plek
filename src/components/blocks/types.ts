@@ -11,6 +11,13 @@ export interface HeroBlockData {
   backgroundImage: string;
   ctaText: TranslatableString;
   ctaLink: string;
+  showBookingBar?: boolean;
+  bookingBarArrivalLabel?: TranslatableString;
+  bookingBarArrivalPlaceholder?: TranslatableString;
+  bookingBarGuestsLabel?: TranslatableString;
+  bookingBarGuestsDefault?: TranslatableString;
+  fullHeight?: boolean;
+  headingItalicLine?: TranslatableString;
 }
 
 export interface TextBlockData {
