@@ -17,7 +17,7 @@ import type { PageBlock, Page } from "@/components/blocks/types";
 import {
   ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, GripVertical,
   Check, Loader2, Globe, FileText,
-  LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle,
+  LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle, CalendarDays,
   Monitor, Tablet, Smartphone,
 } from "lucide-react";
 import {
