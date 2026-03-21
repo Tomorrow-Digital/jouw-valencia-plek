@@ -443,6 +443,80 @@ export type Database = {
         }
         Relationships: []
       }
+      page_blocks: {
+        Row: {
+          created_at: string | null
+          data: Json
+          id: string
+          is_visible: boolean | null
+          page_id: string
+          position: number
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json
+          id?: string
+          is_visible?: boolean | null
+          page_id: string
+          position?: number
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json
+          id?: string
+          is_visible?: boolean | null
+          page_id?: string
+          position?: number
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_blocks_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pages: {
+        Row: {
+          created_at: string | null
+          id: string
+          meta_description: string | null
+          owner_id: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          meta_description?: string | null
+          owner_id?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          meta_description?: string | null
+          owner_id?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       pricing_config: {
         Row: {
           cleaning_fee: number
