@@ -51,11 +51,12 @@ const REVIEWS = [
   { name: "Laura & Marc", country: "🇩🇪", date: "2025-07", rating: 4, nl: "Geweldige ervaring! De locatie is rustig maar goed bereikbaar. De buitenkeuken 's avonds gebruiken is magisch.", en: "Great experience! The location is quiet but easily accessible. Using the outdoor kitchen in the evening is magical.", es: "¡Gran experiencia! La ubicación es tranquila pero accesible. Usar la cocina exterior por la noche es mágico." },
 ];
 
-const formatReviewDate = (dateStr: string, lang: "nl" | "en") => {
+const formatReviewDate = (dateStr: string, lang: Lang) => {
   const [year, month] = dateStr.split("-");
   const monthNames: Record<string, string[]> = {
     nl: ["", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"],
     en: ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    es: ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
   };
   return `${monthNames[lang][parseInt(month)]} ${year}`;
 };
