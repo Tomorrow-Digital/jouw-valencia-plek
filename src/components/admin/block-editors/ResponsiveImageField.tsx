@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, X, Monitor, Tablet, Smartphone } from "lucide-react";
+import { Upload, X, Monitor, Tablet, Smartphone, Image as ImageIcon } from "lucide-react";
 import type { ResponsiveImage } from "@/components/blocks/types";
+import { MediaLibraryPicker } from "./MediaLibraryPicker";
 
 interface Props {
   label: string;
@@ -17,7 +18,6 @@ const VIEWPORTS = [
 ] as const;
 
 export function ResponsiveImageField({ label, value, onChange, pageId }: Props) {
-  // Normalize: if value is a plain string, treat it as desktop-only
   const normalized: ResponsiveImage =
     typeof value === "string"
       ? { desktop: value, tablet: "", mobile: "" }
@@ -25,6 +25,7 @@ export function ResponsiveImageField({ label, value, onChange, pageId }: Props) 
 
   const [activeTab, setActiveTab] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [uploading, setUploading] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, viewport: keyof ResponsiveImage) => {
     const file = e.target.files?.[0];
@@ -43,6 +44,10 @@ export function ResponsiveImageField({ label, value, onChange, pageId }: Props) 
 
   const clearImage = (viewport: keyof ResponsiveImage) => {
     onChange({ ...normalized, [viewport]: "" });
+  };
+
+  const handleLibrarySelect = (url: string) => {
+    onChange({ ...normalized, [activeTab]: url });
   };
 
   const currentUrl = normalized[activeTab];
@@ -76,7 +81,7 @@ export function ResponsiveImageField({ label, value, onChange, pageId }: Props) 
         ))}
       </div>
 
-      {/* Upload area for active viewport */}
+      {/* Image display or upload area */}
       {currentUrl ? (
         <div className="relative rounded-md overflow-hidden border border-input">
           <img src={currentUrl} alt="" className="w-full h-32 object-cover" />
@@ -89,23 +94,39 @@ export function ResponsiveImageField({ label, value, onChange, pageId }: Props) 
           </button>
         </div>
       ) : (
-        <div>
-          <label className="flex items-center justify-center gap-2 border-2 border-dashed border-input rounded-md p-6 cursor-pointer hover:border-primary/50 transition-colors text-sm text-muted-foreground">
-            <Upload size={16} />
-            {uploading ? "Uploading..." : `Kies ${activeTab} afbeelding`}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleUpload(e, activeTab)}
-              className="hidden"
-              disabled={uploading}
-            />
-          </label>
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <label className="flex-1 flex items-center justify-center gap-2 border-2 border-dashed border-input rounded-md p-4 cursor-pointer hover:border-primary/50 transition-colors text-sm text-muted-foreground">
+              <Upload size={16} />
+              {uploading ? "Uploaden..." : "Upload nieuw"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleUpload(e, activeTab)}
+                className="hidden"
+                disabled={uploading}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => setLibraryOpen(true)}
+              className="flex-1 flex items-center justify-center gap-2 border-2 border-dashed border-input rounded-md p-4 hover:border-primary/50 transition-colors text-sm text-muted-foreground"
+            >
+              <ImageIcon size={16} />
+              Uit bibliotheek
+            </button>
+          </div>
           {fallbackInfo && (
-            <p className="text-[10px] text-muted-foreground mt-1 italic">{fallbackInfo}</p>
+            <p className="text-[10px] text-muted-foreground italic">{fallbackInfo}</p>
           )}
         </div>
       )}
+
+      <MediaLibraryPicker
+        open={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+        onSelect={handleLibrarySelect}
+      />
     </div>
   );
 }
