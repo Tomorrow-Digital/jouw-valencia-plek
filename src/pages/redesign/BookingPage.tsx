@@ -436,6 +436,11 @@ export default function BookingPage() {
             </div>
           </section>
         )}
+
+        {/* CTA block from editor */}
+        {ctaBlock && ctaBlock.is_visible && (
+          <BookingCtaBlock data={ctaBlock.data} lang={lang} />
+        )}
       </main>
 
       <Footer lang={lang} />
