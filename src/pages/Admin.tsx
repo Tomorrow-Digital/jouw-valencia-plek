@@ -564,7 +564,7 @@ function BookingsSection() {
                 <div><span className="text-muted-foreground text-xs">{t('bookings.guests')}</span><p className="font-medium">{b.guests}</p></div>
                 <div><span className="text-muted-foreground text-xs">{t('bookings.totalPrice')}</span><p className="font-medium">{b.total_price ? `€${b.total_price}` : "—"}</p></div>
               </div>
-              {b.message && <div className="mt-3 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3"><span className="text-xs font-medium text-foreground">Bericht:</span> {b.message}</div>}
+              {b.message && <div className="mt-3 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3"><span className="text-xs font-medium text-foreground">{t('bookings.message')}</span> {b.message}</div>}
               <p className="text-xs text-muted-foreground mt-3">Ontvangen: {new Date(b.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
             </div>
           ))}
