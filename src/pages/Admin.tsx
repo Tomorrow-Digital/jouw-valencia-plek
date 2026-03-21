@@ -382,7 +382,7 @@ function PricingSection() {
 
   return (
     <div className="space-y-8">
-      <SectionHeader title="Prijzen" subtitle="Beheer standaardprijzen, seizoensprijzen en speciale periodes." />
+      <SectionHeader title={t('pricing.title')} subtitle={t('pricing.subtitle')} />
 
       {/* General config */}
       <div className="bg-background rounded-xl border border-border p-6">
