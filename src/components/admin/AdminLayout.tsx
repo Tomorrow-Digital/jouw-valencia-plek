@@ -38,6 +38,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export type AdminSection =
   | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "deletion" | "users"
