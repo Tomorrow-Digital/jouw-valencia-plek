@@ -4,9 +4,9 @@ import { Menu, X } from "lucide-react";
 import { type SiteLang, st, saveSiteLang } from "@/lib/site-i18n";
 import logoColor from "@/assets/logo-color.png";
 import logoWhite from "@/assets/logo-white.png";
-import flagNl from "@/assets/flag-nl.png";
-import flagEn from "@/assets/flag-en.png";
-import flagEs from "@/assets/flag-es.png";
+import flagNl from "@/assets/flag-nl.svg";
+import flagEn from "@/assets/flag-en.svg";
+import flagEs from "@/assets/flag-es.svg";
 
 interface NavbarProps {
   lang: SiteLang;
