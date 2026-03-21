@@ -11,13 +11,14 @@ import flagEs from "@/assets/flag-es.svg";
 interface NavbarProps {
   lang: SiteLang;
   onLangChange: (lang: SiteLang) => void;
+  static?: boolean;
 }
 
 const langs: SiteLang[] = ["nl", "en", "es"];
 const langLabels: Record<SiteLang, string> = { nl: "Nederlands", en: "English", es: "Español" };
 const flagMap: Record<SiteLang, string> = { nl: flagNl, en: flagEn, es: flagEs };
 
-export function Navbar({ lang, onLangChange }: NavbarProps) {
+export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -50,8 +51,8 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
   const showWhiteLogo = isHome && !scrolled && !mobileOpen;
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      scrolled || !isHome ? "bg-white/80 backdrop-blur-xl shadow-sm" : "bg-transparent"
+    <nav className={`${isStatic ? "relative" : "fixed top-0"} w-full z-50 transition-all duration-300 ${
+      isStatic || scrolled || !isHome ? "bg-white/80 backdrop-blur-xl shadow-sm" : "bg-transparent"
     }`}>
       <div className="flex justify-between items-center px-6 md:px-8 py-3 max-w-screen-2xl mx-auto">
         <Link to="/">

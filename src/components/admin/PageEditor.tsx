@@ -274,7 +274,7 @@ export function PageEditor({ pageId, onBack }: Props) {
               className={`transition-all duration-300 ${
                 previewMode !== "desktop"
                   ? "border border-border rounded-xl shadow-lg bg-background overflow-hidden"
-                  : ""
+                  : "bg-background"
               }`}
               style={{
                 width: activePreviewMode.width,
@@ -282,13 +282,11 @@ export function PageEditor({ pageId, onBack }: Props) {
               }}
             >
               <div className="relative">
-                <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} />
-                <div className="pt-20">
-                  <BlockRenderer blocks={blocks} lang={previewLang} />
-                  {blocks.length === 0 && (
-                    <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
-                  )}
-                </div>
+                <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} static />
+                <BlockRenderer blocks={blocks} lang={previewLang} />
+                {blocks.length === 0 && (
+                  <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
+                )}
                 <Footer lang={previewLang as any} />
               </div>
             </div>
