@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Globe, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { type SiteLang, st, saveSiteLang } from "@/lib/site-i18n";
+import logoColor from "@/assets/logo-color.png";
+import logoWhite from "@/assets/logo-white.png";
+import flagNl from "@/assets/flag-nl.png";
+import flagEn from "@/assets/flag-en.png";
+import flagEs from "@/assets/flag-es.png";
 
 interface NavbarProps {
   lang: SiteLang;
@@ -10,11 +15,22 @@ interface NavbarProps {
 
 const langs: SiteLang[] = ["nl", "en", "es"];
 const langLabels: Record<SiteLang, string> = { nl: "Nederlands", en: "English", es: "Español" };
+const flagMap: Record<SiteLang, string> = { nl: flagNl, en: flagEn, es: flagEs };
 
 export function Navbar({ lang, onLangChange }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
+  const isHome = location.pathname === "/" || location.pathname === "/home";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const navItems = [
     { to: "/rooms", label: st("nav.rooms", lang) },
@@ -31,11 +47,19 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
     setLangOpen(false);
   };
 
+  const showWhiteLogo = isHome && !scrolled && !mobileOpen;
+
   return (
-    <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-sm">
-      <div className="flex justify-between items-center px-6 md:px-8 py-4 max-w-screen-2xl mx-auto">
-        <Link to="/home" className="text-2xl font-serif italic text-foreground">
-          Casita Valencia
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      scrolled || !isHome ? "bg-white/80 backdrop-blur-xl shadow-sm" : "bg-transparent"
+    }`}>
+      <div className="flex justify-between items-center px-6 md:px-8 py-3 max-w-screen-2xl mx-auto">
+        <Link to="/">
+          <img
+            src={showWhiteLogo ? logoWhite : logoColor}
+            alt="Casita Valencia"
+            className="h-14 w-auto"
+          />
         </Link>
 
         {/* Desktop Nav */}
@@ -47,7 +71,9 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
               className={`font-serif tracking-wide text-sm uppercase transition-colors ${
                 isActive(item.to)
                   ? "text-primary-container font-semibold border-b-2 border-primary-container pb-1"
-                  : "text-on-surface-variant hover:text-foreground"
+                  : showWhiteLogo
+                    ? "text-white/90 hover:text-white"
+                    : "text-on-surface-variant hover:text-foreground"
               }`}
             >
               {item.label}
@@ -56,25 +82,25 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          {/* Language switcher */}
+          {/* Flag language switcher */}
           <div className="relative">
             <button
               onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-1.5 text-on-surface-variant hover:text-foreground transition-colors p-2"
+              className="flex items-center gap-2 p-2 rounded-full hover:bg-black/5 transition-colors"
             >
-              <Globe className="w-4 h-4" />
-              <span className="text-xs font-medium uppercase">{lang}</span>
+              <img src={flagMap[lang]} alt={langLabels[lang]} className="w-6 h-4 object-cover rounded-sm" />
             </button>
             {langOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-outline-variant/20 py-1 min-w-[140px]">
+              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-outline-variant/20 py-1 min-w-[160px]">
                 {langs.map((l) => (
                   <button
                     key={l}
                     onClick={() => handleLang(l)}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-surface-container-low transition-colors ${
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low transition-colors flex items-center gap-3 ${
                       l === lang ? "text-primary font-medium" : "text-foreground"
                     }`}
                   >
+                    <img src={flagMap[l]} alt={langLabels[l]} className="w-6 h-4 object-cover rounded-sm" />
                     {langLabels[l]}
                   </button>
                 ))}
@@ -92,7 +118,11 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
 
         {/* Mobile hamburger */}
         <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2">
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileOpen ? (
+            <X className={`w-6 h-6 ${showWhiteLogo ? "text-white" : ""}`} />
+          ) : (
+            <Menu className={`w-6 h-6 ${showWhiteLogo ? "text-white" : ""}`} />
+          )}
         </button>
       </div>
 
@@ -111,16 +141,17 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
               {item.label}
             </Link>
           ))}
-          <div className="flex gap-2 pt-4 border-t border-outline-variant/20">
+          <div className="flex gap-3 pt-4 border-t border-outline-variant/20">
             {langs.map((l) => (
               <button
                 key={l}
                 onClick={() => { handleLang(l); setMobileOpen(false); }}
-                className={`px-3 py-1.5 rounded-full text-sm ${
-                  l === lang ? "bg-primary text-white" : "bg-surface-container-low text-foreground"
+                className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm ${
+                  l === lang ? "bg-primary/10 ring-2 ring-primary" : "bg-surface-container-low"
                 }`}
               >
-                {l.toUpperCase()}
+                <img src={flagMap[l]} alt={langLabels[l]} className="w-5 h-3.5 object-cover rounded-sm" />
+                <span className="text-xs font-medium">{l.toUpperCase()}</span>
               </button>
             ))}
           </div>
