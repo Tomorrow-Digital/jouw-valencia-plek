@@ -734,7 +734,7 @@ export default function Index() {
   const hostImg = getImg("host", hostImgFallback);
 
   const t = useMemo(() => getTranslations(pricingConfig.minimumStay)[lang], [lang, pricingConfig.minimumStay]);
-  const dateFnsLocale = lang === "nl" ? nl : enUS;
+  const dateFnsLocale = lang === "nl" ? nl : lang === "es" ? es : enUS;
 
   // Scroll listener for nav
   useEffect(() => {
