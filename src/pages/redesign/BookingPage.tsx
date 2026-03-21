@@ -217,11 +217,11 @@ export default function BookingPage() {
             <div className="md:col-span-7">
               <span className="text-primary font-medium tracking-widest uppercase text-xs mb-4 block">{st("book.label", lang)}</span>
               <h1 className="text-5xl md:text-7xl font-headline leading-tight mb-6">
-                {st("book.title1", lang)} <br /><span className="italic">{st("book.title2", lang)}</span>
+                {headerHeading}
               </h1>
             </div>
             <div className="md:col-span-5 pb-2">
-              <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">{st("book.description", lang)}</p>
+              <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">{headerSubtitle}</p>
             </div>
           </div>
         </header>
