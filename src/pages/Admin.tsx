@@ -287,7 +287,7 @@ function CalendarSection() {
             )}
           </div>
         ))}
-        {blockedDates.length === 0 && <p className="text-muted-foreground text-sm text-center py-8">Geen geblokkeerde periodes.</p>}
+        {blockedDates.length === 0 && <p className="text-muted-foreground text-sm text-center py-8">{t('calendar.none')}</p>}
       </div>
     </div>
   );
