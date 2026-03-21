@@ -595,13 +595,13 @@ function MessagesSection() {
     setMessages(prev => prev.filter(m => m.id !== id));
   };
 
-  if (loading) return <p className="text-muted-foreground">Laden...</p>;
+  if (loading) return <p className="text-muted-foreground">{t('common.loading')}</p>;
 
   return (
     <div>
-      <SectionHeader title="Berichten" subtitle={`${messages.length} contactberichten ontvangen.`} />
+      <SectionHeader title={t('messages.title')} subtitle={`${messages.length} ${t('messages.subtitle')}`} />
       {messages.length === 0 ? (
-        <p className="text-muted-foreground text-sm text-center py-12">Nog geen berichten ontvangen.</p>
+        <p className="text-muted-foreground text-sm text-center py-12">{t('messages.none')}</p>
       ) : (
         <div className="space-y-3">
           {messages.map(m => (
