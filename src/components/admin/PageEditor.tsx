@@ -316,7 +316,34 @@ export function PageEditor({ pageId, onBack }: Props) {
   );
 }
 
-function BlockEditorSwitch({ block, onChange, pageId }: { block: PageBlock; onChange: (data: Record<string, any>) => void; pageId: string }) {
+function SortableBlockItem({ id, children }: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    position: "relative" as const,
+    zIndex: isDragging ? 10 : undefined,
+  };
+  return (
+    <div ref={setNodeRef} style={style} {...attributes}>
+      {children}
+    </div>
+  );
+}
+
+function DragHandle() {
+  const { listeners, setActivatorNodeRef } = useSortable({ id: "" });
+  return null;
+}
+
+function DragHandleInner({ id }: { id: string }) {
+  return (
+    <GripVertical size={14} className="text-muted-foreground cursor-grab active:cursor-grabbing flex-shrink-0" />
+  );
+}
+
+
   switch (block.type) {
     case "hero": return <HeroEditor data={block.data} onChange={onChange} pageId={pageId} />;
     case "text": return <TextEditor data={block.data} onChange={onChange} />;
