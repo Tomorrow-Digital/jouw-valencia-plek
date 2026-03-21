@@ -378,7 +378,7 @@ function PricingSection() {
     fetchAll();
   };
 
-  if (!config) return <p className="text-muted-foreground text-sm">Laden...</p>;
+  if (!config) return <p className="text-muted-foreground text-sm">{t('common.loading')}</p>;
 
   return (
     <div className="space-y-8">
