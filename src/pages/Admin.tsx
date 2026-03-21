@@ -238,22 +238,22 @@ function CalendarSection() {
 
   return (
     <div>
-      <SectionHeader title="Kalender" subtitle="Blokkeer periodes waarin de woning niet beschikbaar is." />
+      <SectionHeader title={t('calendar.title')} subtitle={t('calendar.subtitle')} />
       <form onSubmit={handleAdd} className="bg-background rounded-xl border border-border p-4 mb-6 flex flex-wrap gap-3 items-end">
         <div>
-          <label className="block text-xs font-medium mb-1">Startdatum</label>
+          <label className="block text-xs font-medium mb-1">{t('calendar.startDate')}</label>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Einddatum</label>
+          <label className="block text-xs font-medium mb-1">{t('calendar.endDate')}</label>
           <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Reden (optioneel)</label>
-          <input type="text" value={reason} onChange={e => setReason(e.target.value)} placeholder="bijv. Bezet, Privé" className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+          <label className="block text-xs font-medium mb-1">{t('calendar.reason')}</label>
+          <input type="text" value={reason} onChange={e => setReason(e.target.value)} placeholder={t('calendar.reasonPlaceholder')} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
         </div>
         <button type="submit" disabled={saving} className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97]">
-          <Plus size={16} /> Toevoegen
+          <Plus size={16} /> {t('common.add')}
         </button>
       </form>
 
