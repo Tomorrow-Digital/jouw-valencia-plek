@@ -52,32 +52,32 @@ interface NavItem {
   disabled?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
-  { id: "bookings", label: "Boekingen", icon: ClipboardList, group: "overview" },
-  { id: "messages", label: "Contactberichten", icon: MessageSquare, group: "overview" },
-  { id: "photos", label: "Foto's", icon: Image, group: "content" },
-  { id: "calendar", label: "Kalender", icon: Calendar, group: "content" },
-  { id: "pricing", label: "Prijzen", icon: Euro, group: "content" },
-  { id: "crm-inbox", label: "Inbox", icon: MessageCircle, group: "crm" },
-  { id: "crm-guests", label: "Gasten", icon: Users, group: "crm" },
-  { id: "crm-templates", label: "Templates", icon: FileText, group: "crm" },
-  { id: "integrations-whatsapp", label: "WhatsApp", icon: Phone, group: "integrations" },
-  { id: "integrations-n8n", label: "N8N Automations", icon: Workflow, group: "integrations" },
-  { id: "integrations-email", label: "E-mail", icon: Mail, group: "integrations", disabled: true },
-  { id: "integrations-payments", label: "Betalingen", icon: CreditCard, group: "integrations", disabled: true },
-  { id: "integrations-calendar", label: "Kalender", icon: CalendarDays, group: "integrations", disabled: true },
-  { id: "deletion", label: "Verwijderverzoeken", icon: ShieldAlert, group: "privacy" },
-  { id: "users", label: "Gebruikers", icon: Users, group: "privacy" },
+const getNavItems = (): NavItem[] => [
+  { id: "dashboard", label: t('nav.dashboard'), icon: LayoutDashboard, group: "overview" },
+  { id: "bookings", label: t('nav.bookings'), icon: ClipboardList, group: "overview" },
+  { id: "messages", label: t('nav.contactMessages'), icon: MessageSquare, group: "overview" },
+  { id: "photos", label: t('nav.photos'), icon: Image, group: "content" },
+  { id: "calendar", label: t('nav.calendar'), icon: Calendar, group: "content" },
+  { id: "pricing", label: t('nav.pricing'), icon: Euro, group: "content" },
+  { id: "crm-inbox", label: t('nav.inbox'), icon: MessageCircle, group: "crm" },
+  { id: "crm-guests", label: t('nav.guests'), icon: Users, group: "crm" },
+  { id: "crm-templates", label: t('nav.templates'), icon: FileText, group: "crm" },
+  { id: "integrations-whatsapp", label: t('nav.whatsapp'), icon: Phone, group: "integrations" },
+  { id: "integrations-n8n", label: t('nav.n8n'), icon: Workflow, group: "integrations" },
+  { id: "integrations-email", label: t('nav.email'), icon: Mail, group: "integrations", disabled: true },
+  { id: "integrations-payments", label: t('nav.payments'), icon: CreditCard, group: "integrations", disabled: true },
+  { id: "integrations-calendar", label: t('nav.calendarInt'), icon: CalendarDays, group: "integrations", disabled: true },
+  { id: "deletion", label: t('nav.deletion'), icon: ShieldAlert, group: "privacy" },
+  { id: "users", label: t('nav.users'), icon: Users, group: "privacy" },
 ];
 
-const groupLabels: Record<string, string> = {
-  overview: "Overzicht",
-  content: "Beheer",
-  crm: "CRM",
-  integrations: "Integraties",
-  privacy: "Privacy & AVG",
-};
+const getGroupLabels = (): Record<string, string> => ({
+  overview: t('nav.overview'),
+  content: t('nav.management'),
+  crm: t('nav.crm'),
+  integrations: t('nav.integrations'),
+  privacy: t('nav.privacy'),
+});
 
 interface AdminLayoutProps {
   section: AdminSection;
