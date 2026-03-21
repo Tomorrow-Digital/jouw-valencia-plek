@@ -403,7 +403,7 @@ function PricingSection() {
           ))}
         </div>
         <button onClick={handleSaveConfig} disabled={saving} className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97]">
-          <Save size={16} /> {saving ? "Opslaan..." : "Opslaan"}
+          <Save size={16} /> {saving ? t('common.saving') : t('common.save')}
         </button>
       </div>
 
