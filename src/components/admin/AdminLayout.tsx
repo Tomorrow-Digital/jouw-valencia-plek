@@ -103,7 +103,10 @@ export function AdminLayout({ section, onSectionChange, children }: AdminLayoutP
               {navItems.find((n) => n.id === section)?.label || "Dashboard"}
             </h1>
           </header>
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto">{children}</main>
+          <main className={cn(
+            "flex-1",
+            section === "crm-inbox" ? "" : "p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto"
+          )}>{children}</main>
         </div>
       </div>
     </SidebarProvider>
