@@ -102,7 +102,7 @@ export function AdminLayout({ section, onSectionChange, children }: AdminLayoutP
             <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
             <div className="h-5 w-px bg-border" />
             <h1 className="text-sm font-medium text-foreground truncate">
-              {navItems.find((n) => n.id === section)?.label || "Dashboard"}
+              {getNavItems().find((n) => n.id === section)?.label || "Dashboard"}
             </h1>
           </header>
           <main className={cn(
