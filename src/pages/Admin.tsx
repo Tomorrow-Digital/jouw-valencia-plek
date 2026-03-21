@@ -559,10 +559,10 @@ function BookingsSection() {
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                <div><span className="text-muted-foreground text-xs">Check-in</span><p className="font-medium">{b.check_in}</p></div>
-                <div><span className="text-muted-foreground text-xs">Check-out</span><p className="font-medium">{b.check_out}</p></div>
-                <div><span className="text-muted-foreground text-xs">Gasten</span><p className="font-medium">{b.guests}</p></div>
-                <div><span className="text-muted-foreground text-xs">Totaalprijs</span><p className="font-medium">{b.total_price ? `€${b.total_price}` : "—"}</p></div>
+                <div><span className="text-muted-foreground text-xs">{t('bookings.checkIn')}</span><p className="font-medium">{b.check_in}</p></div>
+                <div><span className="text-muted-foreground text-xs">{t('bookings.checkOut')}</span><p className="font-medium">{b.check_out}</p></div>
+                <div><span className="text-muted-foreground text-xs">{t('bookings.guests')}</span><p className="font-medium">{b.guests}</p></div>
+                <div><span className="text-muted-foreground text-xs">{t('bookings.totalPrice')}</span><p className="font-medium">{b.total_price ? `€${b.total_price}` : "—"}</p></div>
               </div>
               {b.message && <div className="mt-3 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3"><span className="text-xs font-medium text-foreground">Bericht:</span> {b.message}</div>}
               <p className="text-xs text-muted-foreground mt-3">Ontvangen: {new Date(b.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
