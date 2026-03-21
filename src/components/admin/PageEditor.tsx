@@ -366,6 +366,8 @@ function BlockEditorSwitch({ block, onChange, pageId }: { block: PageBlock; onCh
     case "faq": return <FaqEditor data={block.data} onChange={onChange} />;
     case "booking": return <BookingEditor data={block.data} onChange={onChange} />;
     case "feature": return <FeatureEditor data={block.data} onChange={onChange} pageId={pageId} />;
+    case "destinations": return <DestinationsEditor data={block.data} onChange={onChange} pageId={pageId} />;
+    case "tips": return <TipsEditor data={block.data} onChange={onChange} pageId={pageId} />;
     default: return <p className="text-sm text-muted-foreground">Geen editor beschikbaar voor type: {block.type}</p>;
   }
 }
