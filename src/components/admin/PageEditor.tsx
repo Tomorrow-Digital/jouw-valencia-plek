@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
+import { Navbar } from "@/components/redesign/Navbar";
+import { Footer } from "@/components/redesign/Footer";
 import { HeroEditor } from "./block-editors/HeroEditor";
 import { TextEditor } from "./block-editors/TextEditor";
 import { GalleryEditor } from "./block-editors/GalleryEditor";
