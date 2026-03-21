@@ -9,6 +9,7 @@ import { IntegrationPlaceholder } from "@/components/admin/integrations/Integrat
 import { CrmInbox } from "@/components/admin/crm/CrmInbox";
 import { CrmGuests } from "@/components/admin/crm/CrmGuests";
 import { CrmTemplates } from "@/components/admin/crm/CrmTemplates";
+import { t } from "@/lib/i18n";
 import {
   Trash2, Plus, Upload, Save, X, Pencil, Check, UserX, Link2, Copy, Clock,
 } from "lucide-react";
@@ -41,7 +42,7 @@ export default function Admin() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><p className="text-muted-foreground">Laden...</p></div>;
+  if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><p className="text-muted-foreground">{t('common.loading')}</p></div>;
   if (!user) return null;
 
   return (
@@ -84,11 +85,11 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }
 // ═══════════════════════════════════════
 
 const CATEGORIES = [
-  { id: "hero", label: "Hero (hoofdbeeld)" },
-  { id: "room", label: "De Kamer" },
-  { id: "bathroom", label: "De Badkamer" },
-  { id: "kitchen", label: "De Buitenkeuken" },
-  { id: "host", label: "Host foto" },
+  { id: "hero", label: t('photos.hero') },
+  { id: "room", label: t('photos.room') },
+  { id: "bathroom", label: t('photos.bathroom') },
+  { id: "kitchen", label: t('photos.kitchen') },
+  { id: "host", label: t('photos.host') },
 ];
 
 function PhotosSection() {
@@ -147,14 +148,14 @@ function PhotosSection() {
 
   return (
     <div>
-      <SectionHeader title="Foto's" subtitle="Beheer de foto's op de website per categorie." />
+      <SectionHeader title={t('photos.title')} subtitle={t('photos.subtitle')} />
       <div className="flex items-center gap-4 mb-6">
         <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
           {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
         </select>
         <label className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium cursor-pointer hover:bg-primary/90 transition-colors active:scale-[0.97]">
           <Upload size={16} />
-          {uploading ? "Uploaden..." : "Foto's uploaden"}
+          {uploading ? t('photos.uploading') : t('photos.upload')}
           <input type="file" accept="image/*" multiple onChange={handleUpload} className="hidden" disabled={uploading} />
         </label>
       </div>
@@ -171,11 +172,11 @@ function PhotosSection() {
                   <img src={photo.url} alt="" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                     {!photo.is_primary && (
-                      <button onClick={() => handleSetPrimary(photo)} className="bg-background/90 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-background transition-colors">Hoofdfoto</button>
+                      <button onClick={() => handleSetPrimary(photo)} className="bg-background/90 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-background transition-colors">{t('photos.mainPhoto')}</button>
                     )}
                     <button onClick={() => handleDelete(photo)} className="bg-destructive/90 text-destructive-foreground rounded-lg p-2 hover:bg-destructive transition-colors"><Trash2 size={14} /></button>
                   </div>
-                  {photo.is_primary && <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-md">Hoofdfoto</span>}
+                  {photo.is_primary && <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-md">{t('photos.mainPhoto')}</span>}
                 </div>
               ))}
             </div>
@@ -183,7 +184,7 @@ function PhotosSection() {
         );
       })}
 
-      {photos.length === 0 && <p className="text-muted-foreground text-sm text-center py-12">Nog geen foto's geüpload.</p>}
+      {photos.length === 0 && <p className="text-muted-foreground text-sm text-center py-12">{t('photos.none')}</p>}
     </div>
   );
 }
@@ -237,22 +238,22 @@ function CalendarSection() {
 
   return (
     <div>
-      <SectionHeader title="Kalender" subtitle="Blokkeer periodes waarin de woning niet beschikbaar is." />
+      <SectionHeader title={t('calendar.title')} subtitle={t('calendar.subtitle')} />
       <form onSubmit={handleAdd} className="bg-background rounded-xl border border-border p-4 mb-6 flex flex-wrap gap-3 items-end">
         <div>
-          <label className="block text-xs font-medium mb-1">Startdatum</label>
+          <label className="block text-xs font-medium mb-1">{t('calendar.startDate')}</label>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Einddatum</label>
+          <label className="block text-xs font-medium mb-1">{t('calendar.endDate')}</label>
           <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Reden (optioneel)</label>
-          <input type="text" value={reason} onChange={e => setReason(e.target.value)} placeholder="bijv. Bezet, Privé" className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+          <label className="block text-xs font-medium mb-1">{t('calendar.reason')}</label>
+          <input type="text" value={reason} onChange={e => setReason(e.target.value)} placeholder={t('calendar.reasonPlaceholder')} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
         </div>
         <button type="submit" disabled={saving} className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97]">
-          <Plus size={16} /> Toevoegen
+          <Plus size={16} /> {t('common.add')}
         </button>
       </form>
 
@@ -286,7 +287,7 @@ function CalendarSection() {
             )}
           </div>
         ))}
-        {blockedDates.length === 0 && <p className="text-muted-foreground text-sm text-center py-8">Geen geblokkeerde periodes.</p>}
+        {blockedDates.length === 0 && <p className="text-muted-foreground text-sm text-center py-8">{t('calendar.none')}</p>}
       </div>
     </div>
   );
@@ -377,23 +378,23 @@ function PricingSection() {
     fetchAll();
   };
 
-  if (!config) return <p className="text-muted-foreground text-sm">Laden...</p>;
+  if (!config) return <p className="text-muted-foreground text-sm">{t('common.loading')}</p>;
 
   return (
     <div className="space-y-8">
-      <SectionHeader title="Prijzen" subtitle="Beheer standaardprijzen, seizoensprijzen en speciale periodes." />
+      <SectionHeader title={t('pricing.title')} subtitle={t('pricing.subtitle')} />
 
       {/* General config */}
       <div className="bg-background rounded-xl border border-border p-6">
-        <h3 className="font-semibold text-foreground mb-4">Algemene instellingen</h3>
+        <h3 className="font-semibold text-foreground mb-4">{t('pricing.general')}</h3>
         <div className="grid sm:grid-cols-3 gap-4 mb-4">
           {[
-            { key: "default_price_per_night", label: "Standaardprijs per nacht (€)" },
-            { key: "cleaning_fee", label: "Schoonmaakkosten (€)" },
-            { key: "minimum_stay", label: "Minimaal verblijf (nachten)" },
-            { key: "maximum_stay", label: "Maximaal verblijf (nachten)" },
-            { key: "weekly_discount", label: "Weekkorting (%)" },
-            { key: "monthly_discount", label: "Maandkorting (%)" },
+            { key: "default_price_per_night", label: t('pricing.defaultPrice') },
+            { key: "cleaning_fee", label: t('pricing.cleaningFee') },
+            { key: "minimum_stay", label: t('pricing.minStay') },
+            { key: "maximum_stay", label: t('pricing.maxStay') },
+            { key: "weekly_discount", label: t('pricing.weeklyDiscount') },
+            { key: "monthly_discount", label: t('pricing.monthlyDiscount') },
           ].map(field => (
             <div key={field.key}>
               <label className="block text-xs font-medium mb-1">{field.label}</label>
@@ -402,13 +403,13 @@ function PricingSection() {
           ))}
         </div>
         <button onClick={handleSaveConfig} disabled={saving} className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97]">
-          <Save size={16} /> {saving ? "Opslaan..." : "Opslaan"}
+          <Save size={16} /> {saving ? t('common.saving') : t('common.save')}
         </button>
       </div>
 
       {/* Seasonal pricing */}
       <div className="bg-background rounded-xl border border-border p-6">
-        <h3 className="font-semibold text-foreground mb-4">Seizoensprijzen</h3>
+        <h3 className="font-semibold text-foreground mb-4">{t('pricing.seasonal')}</h3>
         <div className="space-y-2 mb-4">
           {seasonal.map(s => (
             <div key={s.id} className="flex items-center justify-between bg-muted/40 rounded-lg p-3 gap-2">
@@ -450,7 +451,7 @@ function PricingSection() {
 
       {/* Custom pricing */}
       <div className="bg-background rounded-xl border border-border p-6">
-        <h3 className="font-semibold text-foreground mb-4">Speciale periodes</h3>
+        <h3 className="font-semibold text-foreground mb-4">{t('pricing.special')}</h3>
         <div className="space-y-2 mb-4">
           {custom.map(c => (
             <div key={c.id} className="flex items-center justify-between bg-muted/40 rounded-lg p-3 gap-2">
@@ -514,7 +515,7 @@ function BookingsSection() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Weet je zeker dat je deze boeking wilt verwijderen?")) return;
+    if (!confirm(t('bookings.confirmDelete'))) return;
     await supabase.from("bookings").delete().eq("id", id);
     fetchBookings();
   };
@@ -526,18 +527,18 @@ function BookingsSection() {
   };
 
   const statusLabels: Record<string, string> = {
-    pending: "In afwachting",
-    confirmed: "Bevestigd",
-    cancelled: "Geannuleerd",
+    pending: t('bookings.statusPending'),
+    confirmed: t('bookings.statusConfirmed'),
+    cancelled: t('bookings.statusCancelled'),
   };
 
-  if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Laden...</p>;
+  if (loading) return <p className="text-muted-foreground text-sm text-center py-12">{t('common.loading')}</p>;
 
   return (
     <div>
-      <SectionHeader title="Boekingen" subtitle={`${bookings.length} boekingsaanvragen ontvangen.`} />
+      <SectionHeader title={t('bookings.title')} subtitle={`${bookings.length} ${t('bookings.subtitle')}`} />
       {bookings.length === 0 ? (
-        <p className="text-muted-foreground text-sm text-center py-12">Nog geen boekingen ontvangen.</p>
+        <p className="text-muted-foreground text-sm text-center py-12">{t('bookings.none')}</p>
       ) : (
         <div className="space-y-4">
           {bookings.map(b => (
@@ -550,21 +551,21 @@ function BookingsSection() {
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[b.status] || "bg-muted text-muted-foreground"}`}>{statusLabels[b.status] || b.status}</span>
                   <select value={b.status} onChange={e => updateStatus(b.id, e.target.value)} className="rounded border border-input bg-background px-2 py-1 text-xs">
-                    <option value="pending">In afwachting</option>
-                    <option value="confirmed">Bevestigd</option>
-                    <option value="cancelled">Geannuleerd</option>
+                    <option value="pending">{t('bookings.statusPending')}</option>
+                    <option value="confirmed">{t('bookings.statusConfirmed')}</option>
+                    <option value="cancelled">{t('bookings.statusCancelled')}</option>
                   </select>
                   <button onClick={() => handleDelete(b.id)} className="text-destructive hover:text-destructive/80 transition-colors ml-1"><Trash2 size={14} /></button>
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                <div><span className="text-muted-foreground text-xs">Check-in</span><p className="font-medium">{b.check_in}</p></div>
-                <div><span className="text-muted-foreground text-xs">Check-out</span><p className="font-medium">{b.check_out}</p></div>
-                <div><span className="text-muted-foreground text-xs">Gasten</span><p className="font-medium">{b.guests}</p></div>
-                <div><span className="text-muted-foreground text-xs">Totaalprijs</span><p className="font-medium">{b.total_price ? `€${b.total_price}` : "—"}</p></div>
+                <div><span className="text-muted-foreground text-xs">{t('bookings.checkIn')}</span><p className="font-medium">{b.check_in}</p></div>
+                <div><span className="text-muted-foreground text-xs">{t('bookings.checkOut')}</span><p className="font-medium">{b.check_out}</p></div>
+                <div><span className="text-muted-foreground text-xs">{t('bookings.guests')}</span><p className="font-medium">{b.guests}</p></div>
+                <div><span className="text-muted-foreground text-xs">{t('bookings.totalPrice')}</span><p className="font-medium">{b.total_price ? `€${b.total_price}` : "—"}</p></div>
               </div>
-              {b.message && <div className="mt-3 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3"><span className="text-xs font-medium text-foreground">Bericht:</span> {b.message}</div>}
-              <p className="text-xs text-muted-foreground mt-3">Ontvangen: {new Date(b.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+              {b.message && <div className="mt-3 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3"><span className="text-xs font-medium text-foreground">{t('bookings.message')}</span> {b.message}</div>}
+              <p className="text-xs text-muted-foreground mt-3">{t('bookings.received')} {new Date(b.created_at).toLocaleString("nl-NL", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
             </div>
           ))}
         </div>
@@ -594,13 +595,13 @@ function MessagesSection() {
     setMessages(prev => prev.filter(m => m.id !== id));
   };
 
-  if (loading) return <p className="text-muted-foreground">Laden...</p>;
+  if (loading) return <p className="text-muted-foreground">{t('common.loading')}</p>;
 
   return (
     <div>
-      <SectionHeader title="Berichten" subtitle={`${messages.length} contactberichten ontvangen.`} />
+      <SectionHeader title={t('messages.title')} subtitle={`${messages.length} ${t('messages.subtitle')}`} />
       {messages.length === 0 ? (
-        <p className="text-muted-foreground text-sm text-center py-12">Nog geen berichten ontvangen.</p>
+        <p className="text-muted-foreground text-sm text-center py-12">{t('messages.none')}</p>
       ) : (
         <div className="space-y-3">
           {messages.map(m => (

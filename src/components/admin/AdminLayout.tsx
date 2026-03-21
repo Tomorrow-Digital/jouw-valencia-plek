@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { getLanguage, setLanguage, type Language } from "@/lib/i18n";
+import { getLanguage, setLanguage, t, LANGUAGE_LABELS, type Language } from "@/lib/i18n";
 import {
   SidebarProvider,
   SidebarTrigger,
@@ -38,6 +38,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export type AdminSection =
   | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "deletion" | "users"
@@ -52,32 +55,32 @@ interface NavItem {
   disabled?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
-  { id: "bookings", label: "Boekingen", icon: ClipboardList, group: "overview" },
-  { id: "messages", label: "Contactberichten", icon: MessageSquare, group: "overview" },
-  { id: "photos", label: "Foto's", icon: Image, group: "content" },
-  { id: "calendar", label: "Kalender", icon: Calendar, group: "content" },
-  { id: "pricing", label: "Prijzen", icon: Euro, group: "content" },
-  { id: "crm-inbox", label: "Inbox", icon: MessageCircle, group: "crm" },
-  { id: "crm-guests", label: "Gasten", icon: Users, group: "crm" },
-  { id: "crm-templates", label: "Templates", icon: FileText, group: "crm" },
-  { id: "integrations-whatsapp", label: "WhatsApp", icon: Phone, group: "integrations" },
-  { id: "integrations-n8n", label: "N8N Automations", icon: Workflow, group: "integrations" },
-  { id: "integrations-email", label: "E-mail", icon: Mail, group: "integrations", disabled: true },
-  { id: "integrations-payments", label: "Betalingen", icon: CreditCard, group: "integrations", disabled: true },
-  { id: "integrations-calendar", label: "Kalender", icon: CalendarDays, group: "integrations", disabled: true },
-  { id: "deletion", label: "Verwijderverzoeken", icon: ShieldAlert, group: "privacy" },
-  { id: "users", label: "Gebruikers", icon: Users, group: "privacy" },
+const getNavItems = (): NavItem[] => [
+  { id: "dashboard", label: t('nav.dashboard'), icon: LayoutDashboard, group: "overview" },
+  { id: "bookings", label: t('nav.bookings'), icon: ClipboardList, group: "overview" },
+  { id: "messages", label: t('nav.contactMessages'), icon: MessageSquare, group: "overview" },
+  { id: "photos", label: t('nav.photos'), icon: Image, group: "content" },
+  { id: "calendar", label: t('nav.calendar'), icon: Calendar, group: "content" },
+  { id: "pricing", label: t('nav.pricing'), icon: Euro, group: "content" },
+  { id: "crm-inbox", label: t('nav.inbox'), icon: MessageCircle, group: "crm" },
+  { id: "crm-guests", label: t('nav.guests'), icon: Users, group: "crm" },
+  { id: "crm-templates", label: t('nav.templates'), icon: FileText, group: "crm" },
+  { id: "integrations-whatsapp", label: t('nav.whatsapp'), icon: Phone, group: "integrations" },
+  { id: "integrations-n8n", label: t('nav.n8n'), icon: Workflow, group: "integrations" },
+  { id: "integrations-email", label: t('nav.email'), icon: Mail, group: "integrations", disabled: true },
+  { id: "integrations-payments", label: t('nav.payments'), icon: CreditCard, group: "integrations", disabled: true },
+  { id: "integrations-calendar", label: t('nav.calendarInt'), icon: CalendarDays, group: "integrations", disabled: true },
+  { id: "deletion", label: t('nav.deletion'), icon: ShieldAlert, group: "privacy" },
+  { id: "users", label: t('nav.users'), icon: Users, group: "privacy" },
 ];
 
-const groupLabels: Record<string, string> = {
-  overview: "Overzicht",
-  content: "Beheer",
-  crm: "CRM",
-  integrations: "Integraties",
-  privacy: "Privacy & AVG",
-};
+const getGroupLabels = (): Record<string, string> => ({
+  overview: t('nav.overview'),
+  content: t('nav.management'),
+  crm: t('nav.crm'),
+  integrations: t('nav.integrations'),
+  privacy: t('nav.privacy'),
+});
 
 interface AdminLayoutProps {
   section: AdminSection;
@@ -102,7 +105,7 @@ export function AdminLayout({ section, onSectionChange, children }: AdminLayoutP
             <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
             <div className="h-5 w-px bg-border" />
             <h1 className="text-sm font-medium text-foreground truncate">
-              {navItems.find((n) => n.id === section)?.label || "Dashboard"}
+              {getNavItems().find((n) => n.id === section)?.label || "Dashboard"}
             </h1>
           </header>
           <main className={cn(
@@ -149,6 +152,8 @@ function AdminSidebar({
 
       <SidebarContent>
         {groups.map((group) => {
+          const navItems = getNavItems();
+          const groupLabels = getGroupLabels();
           const items = navItems.filter((n) => n.group === group);
           return (
             <SidebarGroup key={group}>
@@ -171,7 +176,7 @@ function AdminSidebar({
                                 <span>{item.label}</span>
                               </SidebarMenuButton>
                             </TooltipTrigger>
-                            <TooltipContent side="right">Binnenkort beschikbaar</TooltipContent>
+                            <TooltipContent side="right">{t('nav.comingSoon')}</TooltipContent>
                           </Tooltip>
                         </SidebarMenuItem>
                       );
@@ -203,33 +208,41 @@ function AdminSidebar({
       <SidebarFooter className="p-3 space-y-1">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => {
-                const langs: Language[] = ['nl', 'en', 'es'];
-                const current = getLanguage();
-                const next = langs[(langs.indexOf(current) + 1) % langs.length];
-                setLanguage(next);
-                window.location.reload();
-              }}
-              tooltip="Taal / Language / Idioma"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Globe className="w-4 h-4" />
-              <span>{getLanguage().toUpperCase()}</span>
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  tooltip={`${t('common.language')}: ${LANGUAGE_LABELS[getLanguage()]}`}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>{LANGUAGE_LABELS[getLanguage()]}</span>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start">
+                {(Object.keys(LANGUAGE_LABELS) as Language[]).map(lang => (
+                  <DropdownMenuItem
+                    key={lang}
+                    onClick={() => { setLanguage(lang); window.location.reload(); }}
+                    className={lang === getLanguage() ? "font-medium text-primary" : ""}
+                  >
+                    {LANGUAGE_LABELS[lang]}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Naar website" className="text-muted-foreground hover:text-foreground">
+            <SidebarMenuButton asChild tooltip={t('nav.toWebsite')} className="text-muted-foreground hover:text-foreground">
               <a href="/" target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="w-4 h-4" />
-                <span>Naar website</span>
+                <span>{t('nav.toWebsite')}</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={onLogout} tooltip="Uitloggen" className="text-muted-foreground hover:text-destructive">
+            <SidebarMenuButton onClick={onLogout} tooltip={t('nav.logout')} className="text-muted-foreground hover:text-destructive">
               <LogOut className="w-4 h-4" />
-              <span>Uitloggen</span>
+              <span>{t('nav.logout')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
