@@ -48,8 +48,13 @@ export function Footer({ lang }: FooterProps) {
           </p>
         </div>
       </div>
-      <div className="max-w-screen-xl mx-auto mt-12 pt-8 border-t border-outline-variant/30 text-center text-xs text-on-surface-variant">
-        © {year} {st("footer.rights", lang)}
+      <div className="max-w-screen-xl mx-auto mt-12 pt-8 border-t border-outline-variant/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
+        <p>© {year} {st("footer.rights", lang)}</p>
+        <div className="flex flex-wrap justify-center gap-x-5 gap-y-1">
+          <Link to="/privacy-policy" className="hover:text-foreground transition-colors">Privacybeleid</Link>
+          <Link to="/terms-of-service" className="hover:text-foreground transition-colors">Algemene Voorwaarden</Link>
+          <Link to="/data-deletion" className="hover:text-foreground transition-colors">Gegevens verwijderen</Link>
+        </div>
       </div>
     </footer>
   );
