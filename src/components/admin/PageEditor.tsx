@@ -14,11 +14,20 @@ import { LocationMapEditor } from "./block-editors/LocationMapEditor";
 import { FaqEditor } from "./block-editors/FaqEditor";
 import type { PageBlock, Page } from "@/components/blocks/types";
 import {
-  ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown,
+  ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, GripVertical,
   Save, Check, Loader2, Globe, FileText,
   LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle,
   Monitor, Tablet, Smartphone,
 } from "lucide-react";
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove, SortableContext, sortableKeyboardCoordinates,
+  useSortable, verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const BLOCK_TYPES = [
   { type: "hero", label: "Hero", icon: LayoutTemplate },
