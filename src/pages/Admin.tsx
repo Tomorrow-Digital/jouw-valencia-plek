@@ -527,9 +527,9 @@ function BookingsSection() {
   };
 
   const statusLabels: Record<string, string> = {
-    pending: "In afwachting",
-    confirmed: "Bevestigd",
-    cancelled: "Geannuleerd",
+    pending: t('bookings.statusPending'),
+    confirmed: t('bookings.statusConfirmed'),
+    cancelled: t('bookings.statusCancelled'),
   };
 
   if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Laden...</p>;
