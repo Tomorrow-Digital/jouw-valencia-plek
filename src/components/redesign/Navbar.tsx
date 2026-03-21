@@ -33,10 +33,10 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
   }, []);
 
   const navItems = [
-    { to: "/rooms", label: st("nav.rooms", lang) },
-    { to: "/surroundings", label: st("nav.surroundings", lang) },
-    { to: "/booking", label: st("nav.pricing", lang) },
-    { to: "/contact", label: st("nav.contact", lang) },
+    { to: "/p/kamers", label: st("nav.rooms", lang) },
+    { to: "/p/omgeving", label: st("nav.surroundings", lang) },
+    { to: "/p/boeken", label: st("nav.pricing", lang) },
+    { to: "/p/contact", label: st("nav.contact", lang) },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -109,7 +109,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
           </div>
 
           <Link
-            to="/booking"
+            to="/p/boeken"
             className="bg-primary-container text-white px-6 py-2.5 rounded-full font-body text-sm font-semibold tracking-wide hover:opacity-80 transition-opacity active:scale-95"
           >
             {st("nav.bookNow", lang)}
@@ -156,7 +156,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             ))}
           </div>
           <Link
-            to="/booking"
+            to="/p/boeken"
             onClick={() => setMobileOpen(false)}
             className="block text-center bg-primary-container text-white px-6 py-3 rounded-full font-semibold"
           >

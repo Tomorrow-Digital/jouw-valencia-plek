@@ -30,7 +30,7 @@ export function Footer({ lang }: FooterProps) {
               </a>
             </li>
             <li>
-              <Link to="/contact" className="text-on-surface-variant hover:text-foreground transition-colors">
+              <Link to="/p/contact" className="text-on-surface-variant hover:text-foreground transition-colors">
                 {st("footer.contactUs", lang)}
               </Link>
             </li>

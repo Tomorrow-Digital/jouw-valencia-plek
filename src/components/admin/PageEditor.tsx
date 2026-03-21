@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
+import { Navbar } from "@/components/redesign/Navbar";
+import { Footer } from "@/components/redesign/Footer";
 import { HeroEditor } from "./block-editors/HeroEditor";
 import { TextEditor } from "./block-editors/TextEditor";
 import { GalleryEditor } from "./block-editors/GalleryEditor";
@@ -279,10 +281,16 @@ export function PageEditor({ pageId, onBack }: Props) {
                 maxWidth: "100%",
               }}
             >
-              <BlockRenderer blocks={blocks} lang={previewLang} />
-              {blocks.length === 0 && (
-                <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
-              )}
+              <div className="relative">
+                <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} />
+                <div className="pt-20">
+                  <BlockRenderer blocks={blocks} lang={previewLang} />
+                  {blocks.length === 0 && (
+                    <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">Geen blokken om te tonen</div>
+                  )}
+                </div>
+                <Footer lang={previewLang as any} />
+              </div>
             </div>
           </div>
         </div>
