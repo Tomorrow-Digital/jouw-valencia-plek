@@ -64,6 +64,7 @@ const getNavItems = (): NavItem[] => [
   { id: "photos", label: t('nav.photos'), icon: Image, group: "content" },
   { id: "calendar", label: t('nav.calendar'), icon: Calendar, group: "content" },
   { id: "pricing", label: t('nav.pricing'), icon: Euro, group: "content" },
+  { id: "pages", label: t('nav.pages'), icon: PanelLeft, group: "content" },
   { id: "crm-inbox", label: t('nav.inbox'), icon: MessageCircle, group: "crm" },
   { id: "crm-guests", label: t('nav.guests'), icon: Users, group: "crm" },
   { id: "crm-templates", label: t('nav.templates'), icon: FileText, group: "crm" },
