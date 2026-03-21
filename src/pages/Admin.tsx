@@ -176,7 +176,7 @@ function PhotosSection() {
                     )}
                     <button onClick={() => handleDelete(photo)} className="bg-destructive/90 text-destructive-foreground rounded-lg p-2 hover:bg-destructive transition-colors"><Trash2 size={14} /></button>
                   </div>
-                  {photo.is_primary && <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-md">Hoofdfoto</span>}
+                  {photo.is_primary && <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-md">{t('photos.mainPhoto')}</span>}
                 </div>
               ))}
             </div>
