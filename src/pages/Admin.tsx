@@ -148,14 +148,14 @@ function PhotosSection() {
 
   return (
     <div>
-      <SectionHeader title="Foto's" subtitle="Beheer de foto's op de website per categorie." />
+      <SectionHeader title={t('photos.title')} subtitle={t('photos.subtitle')} />
       <div className="flex items-center gap-4 mb-6">
         <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
           {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
         </select>
         <label className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium cursor-pointer hover:bg-primary/90 transition-colors active:scale-[0.97]">
           <Upload size={16} />
-          {uploading ? "Uploaden..." : "Foto's uploaden"}
+          {uploading ? t('photos.uploading') : t('photos.upload')}
           <input type="file" accept="image/*" multiple onChange={handleUpload} className="hidden" disabled={uploading} />
         </label>
       </div>
