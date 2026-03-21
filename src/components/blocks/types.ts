@@ -33,7 +33,7 @@ export interface TextBlockData {
 }
 
 export interface GalleryImage {
-  src: string;
+  src: string | ResponsiveImage;
   alt: TranslatableString;
   caption: TranslatableString;
 }
