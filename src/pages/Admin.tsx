@@ -9,6 +9,7 @@ import { IntegrationPlaceholder } from "@/components/admin/integrations/Integrat
 import { CrmInbox } from "@/components/admin/crm/CrmInbox";
 import { CrmGuests } from "@/components/admin/crm/CrmGuests";
 import { CrmTemplates } from "@/components/admin/crm/CrmTemplates";
+import { PagesSection } from "@/components/admin/PagesSection";
 import { t } from "@/lib/i18n";
 import {
   Trash2, Plus, Upload, Save, X, Pencil, Check, UserX, Link2, Copy, Clock,
