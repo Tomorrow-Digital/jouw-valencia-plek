@@ -85,11 +85,11 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }
 // ═══════════════════════════════════════
 
 const CATEGORIES = [
-  { id: "hero", label: "Hero (hoofdbeeld)" },
-  { id: "room", label: "De Kamer" },
-  { id: "bathroom", label: "De Badkamer" },
-  { id: "kitchen", label: "De Buitenkeuken" },
-  { id: "host", label: "Host foto" },
+  { id: "hero", label: t('photos.hero') },
+  { id: "room", label: t('photos.room') },
+  { id: "bathroom", label: t('photos.bathroom') },
+  { id: "kitchen", label: t('photos.kitchen') },
+  { id: "host", label: t('photos.host') },
 ];
 
 function PhotosSection() {
