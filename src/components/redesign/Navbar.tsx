@@ -156,7 +156,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             ))}
           </div>
           <Link
-            to="/booking"
+            to="/p/boeken"
             onClick={() => setMobileOpen(false)}
             className="block text-center bg-primary-container text-white px-6 py-3 rounded-full font-semibold"
           >
