@@ -5,7 +5,7 @@ import {
   getDay, isSameDay, isWithinInterval, isBefore, isAfter, differenceInCalendarDays,
   parseISO, startOfDay, addDays
 } from "date-fns";
-import { nl, enUS } from "date-fns/locale";
+import { nl, enUS, es } from "date-fns/locale";
 import {
   Bath, ChefHat, Wifi, Bed, DoorOpen, Car, WashingMachine,
   TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
@@ -45,17 +45,18 @@ interface PricingConfig {
 // ═══════════════════════════════════════════════════════════════
 
 const REVIEWS = [
-  { name: "Sophie", country: "🇳🇱", date: "2025-09", rating: 5, nl: "Wat een heerlijke plek! De buitenkeuken is fantastisch en de kamer is prachtig ingericht. We komen zeker terug.", en: "What a wonderful place! The outdoor kitchen is fantastic and the room is beautifully decorated. We'll definitely be back." },
-  { name: "Thomas", country: "🇧🇪", date: "2025-08", rating: 5, nl: "Rustig, authentiek en precies wat we zochten. De host denkt echt aan alles. Perfecte uitvalsbasis voor Valencia.", en: "Quiet, authentic and exactly what we were looking for. The host really thinks of everything. Perfect base for Valencia." },
-  { name: "Emma", country: "🇬🇧", date: "2025-10", rating: 5, nl: "Absoluut de mooiste plek waar we ooit gelogeerd hebben. Persoonlijk, warm en met zoveel aandacht voor detail.", en: "Absolutely the most beautiful place we've ever stayed. Personal, warm and with so much attention to detail." },
-  { name: "Laura & Marc", country: "🇩🇪", date: "2025-07", rating: 4, nl: "Geweldige ervaring! De locatie is rustig maar goed bereikbaar. De buitenkeuken 's avonds gebruiken is magisch.", en: "Great experience! The location is quiet but easily accessible. Using the outdoor kitchen in the evening is magical." },
+  { name: "Sophie", country: "🇳🇱", date: "2025-09", rating: 5, nl: "Wat een heerlijke plek! De buitenkeuken is fantastisch en de kamer is prachtig ingericht. We komen zeker terug.", en: "What a wonderful place! The outdoor kitchen is fantastic and the room is beautifully decorated. We'll definitely be back.", es: "¡Qué lugar tan maravilloso! La cocina exterior es fantástica y la habitación está bellamente decorada. Volveremos seguro." },
+  { name: "Thomas", country: "🇧🇪", date: "2025-08", rating: 5, nl: "Rustig, authentiek en precies wat we zochten. De host denkt echt aan alles. Perfecte uitvalsbasis voor Valencia.", en: "Quiet, authentic and exactly what we were looking for. The host really thinks of everything. Perfect base for Valencia.", es: "Tranquilo, auténtico y exactamente lo que buscábamos. La anfitriona piensa en todo. Base perfecta para Valencia." },
+  { name: "Emma", country: "🇬🇧", date: "2025-10", rating: 5, nl: "Absoluut de mooiste plek waar we ooit gelogeerd hebben. Persoonlijk, warm en met zoveel aandacht voor detail.", en: "Absolutely the most beautiful place we've ever stayed. Personal, warm and with so much attention to detail.", es: "Sin duda el lugar más bonito donde nos hemos alojado. Personal, cálido y con mucha atención al detalle." },
+  { name: "Laura & Marc", country: "🇩🇪", date: "2025-07", rating: 4, nl: "Geweldige ervaring! De locatie is rustig maar goed bereikbaar. De buitenkeuken 's avonds gebruiken is magisch.", en: "Great experience! The location is quiet but easily accessible. Using the outdoor kitchen in the evening is magical.", es: "¡Gran experiencia! La ubicación es tranquila pero accesible. Usar la cocina exterior por la noche es mágico." },
 ];
 
-const formatReviewDate = (dateStr: string, lang: "nl" | "en") => {
+const formatReviewDate = (dateStr: string, lang: Lang) => {
   const [year, month] = dateStr.split("-");
   const monthNames: Record<string, string[]> = {
     nl: ["", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"],
     en: ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    es: ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
   };
   return `${monthNames[lang][parseInt(month)]} ${year}`;
 };
@@ -285,9 +286,121 @@ const getTranslations = (minimumStay: number) => ({
       copyright: `© ${new Date().getFullYear()} Casa Valencia · Torrent, Valencia, Spain`,
     },
   },
+  es: {
+    nav: { space: "El Espacio", amenities: "Servicios", location: "Entorno", pricing: "Precios y Reservas", reviews: "Reseñas", contact: "Contacto" },
+    hero: {
+      headline1: "Tapas en la ciudad.",
+      headline2: "Relax junto a la piscina",
+      subtitle: "Casa de huéspedes privada con jardín y piscina, a quince minutos de Valencia.",
+      cta: "Elige tus fechas",
+      trust: "Casa de huéspedes privada · Torrent, Valencia",
+    },
+    space: {
+      title: "El Espacio",
+      room: { title: "La Habitación", desc: "Despierta con la luz española a través de las persianas. Cama doble y el silencio justo." },
+      bathroom: { title: "El Baño", desc: "Ducha a ras de suelo, toallas frescas y una mañana que es toda tuya." },
+      kitchen: { title: "La Cocina Exterior", desc: "Cocinar bajo la terraza con vistas a la piscina. Cocina de gas, nevera y todo a mano." },
+      vibe: "Esto no es un hotel ni una fábrica de Airbnb. Es un lugar con alma. Donde te despiertas con la luz del sol a través de las persianas, preparas café en tu propia cocina y empiezas el día a tu ritmo.",
+    },
+    midCta1: { headline: "¿Cuándo vienes?", cta: "Elige tus fechas" },
+    amenities: {
+      title: "Servicios",
+      intro: "Todo lo que necesitas. Nada que no necesites.",
+      main: ["Baño privado", "Cocina exterior con nevera y fogón", "Piscina", "Tumbonas", "WiFi gratis", "Aparcamiento gratuito", "Entrada privada", "Terraza exterior con muebles de jardín", "Cama king-size", "Hamaca"],
+      practical: ["Toallas y ropa de cama", "Lavadora (compartida)"],
+      localTips: { title: "Consejos locales de Charmaine", subtitle: "Una guía personal con los mejores restaurantes, mercados, playas y rincones escondidos de la zona. La recibirás a tu llegada." },
+    },
+    location: {
+      title: "El Entorno",
+      valencia: { title: "Centro de Valencia", detail: "25 min en metro" },
+      beach: { title: "Playa", detail: "20 min en coche · Playa de Pinedo y El Saler" },
+      shops: { title: "Supermercado y restaurantes", detail: "5 min en coche" },
+      airport: { title: "Aeropuerto de Valencia", detail: "20 min en coche" },
+      desc: "Ubicado en Torrent, un pueblo español auténtico a las afueras de Valencia. Aquí no hay masas de turistas, sino panaderías de verdad, mercados los sábados y vecinos sentados en sus terrazas por la noche. La España real.",
+    },
+    midCta2: { headline: "La ciudad a 20 minutos. El silencio a cero.", cta: "Ver disponibilidad" },
+    pricing: {
+      title: "Precios y Disponibilidad",
+      nights: "noches",
+      night: "noche",
+      perNight: "por noche",
+      subtotal: "Subtotal",
+      cleaningFee: "Gastos de limpieza",
+      discount: "descuento",
+      total: "Total",
+      selectDates: "Selecciona tus fechas",
+      selectCheckIn: "¿Cuándo llegas?",
+      selectCheckOut: "Elige una fecha de salida",
+      minStayWarning: `La estancia mínima es de ${minimumStay} noches`,
+      season: "Temporada",
+      period: "Período",
+      pricePerNight: "Precio por noche",
+      pricingOverview: "Resumen de precios",
+      fromPrice: "por noche · Mínimo {min} noches",
+    },
+    booking: {
+      title: "Solicitud de Reserva",
+      firstName: "Nombre",
+      lastName: "Apellido",
+      email: "Correo electrónico",
+      phone: "Teléfono",
+      guests: "Número de huéspedes",
+      arrival: "Hora estimada de llegada",
+      message: "Mensaje (opcional)",
+      submit: "Enviar solicitud de reserva",
+      success: "¡Gracias! Confirmaremos tu reserva en 24 horas.",
+      required: "Este campo es obligatorio",
+      invalidEmail: "Correo electrónico no válido",
+      invalidPhone: "Número de teléfono no válido",
+    },
+    reviews: { title: "Lo que dicen nuestros huéspedes", note: "Reserva directa · Contacto personal · Sin intermediarios" },
+    faq: {
+      title: "Preguntas frecuentes",
+      items: [
+        { q: "¿Cómo reservo?", a: "Elige tus fechas en el calendario de arriba y rellena el formulario de reserva. Recibirás un email de confirmación y las instrucciones de pago en 24 horas." },
+        { q: "¿Cuál es la estancia mínima?", a: "Mínimo 3 noches. En temporada alta (julio-agosto) requerimos un mínimo de 5 noches." },
+        { q: "¿Cómo llego desde el aeropuerto?", a: "El aeropuerto de Valencia está a 25 minutos en coche. En metro llegas a Torrent en 40 minutos. Te enviaremos las indicaciones con tu reserva." },
+        { q: "¿Hay aparcamiento?", a: "Sí, hay una plaza de aparcamiento privada en el recinto. Gratuita y junto a la casa de huéspedes." },
+        { q: "¿Comparto el espacio con otros huéspedes?", a: "No. La casa de huéspedes, la piscina y el jardín son completamente privados durante tu estancia." },
+        { q: "¿Se admiten mascotas?", a: "Contáctanos para discutir las opciones." },
+        { q: "¿Qué incluye la guía de consejos locales?", a: "Una selección personal de nuestros restaurantes, playas, mercados, paseos y rincones escondidos favoritos de Valencia y alrededores. La recibirás digitalmente a tu llegada." },
+      ],
+    },
+    rules: {
+      title: "Normas de la Casa",
+      items: [
+        { icon: "clock", text: "Check-in: 15:00 – 20:00" },
+        { icon: "clock", text: "Check-out: antes de las 11:00" },
+        { icon: "ban", text: "No fumar" },
+        { icon: "party", text: "No se permiten fiestas" },
+        { icon: "moon", text: "Silencio después de las 22:00" },
+        { icon: "paw", text: "Mascotas: consultar" },
+      ],
+    },
+    contact: {
+      title: "Contacto",
+      hostedBy: "Tu anfitriona: Charmaine",
+      hostDesc: "Soy Charmaine y vivo en Valencia. Conozco los mejores sitios, desde mercados locales hasta restaurantes escondidos. ¿Tienes preguntas sobre la casa o quieres consejos para tu estancia? No dudes en enviarme un mensaje.",
+      whatsapp: "WhatsApp",
+      footer: "Hecho con ♥ en Valencia",
+      formTitle: "Enviar un mensaje",
+      formName: "Nombre",
+      formPhone: "Número de teléfono",
+      formCountryCode: "Código de país",
+      formMessage: "Mensaje",
+      formSend: "Enviar mensaje",
+      formSending: "Enviando...",
+      formSuccess: "¡Mensaje enviado! Nos pondremos en contacto contigo lo antes posible.",
+      formError: "Algo salió mal. Inténtalo de nuevo o envía un WhatsApp.",
+    },
+    footer: {
+      tagline: "Tu propio lugar en Valencia",
+      copyright: `© ${new Date().getFullYear()} Casa Valencia · Torrent, Valencia, España`,
+    },
+  },
 });
 
-type Lang = "nl" | "en";
+type Lang = "nl" | "en" | "es";
 
 // ═══════════════════════════════════════════════════════════════
 // CONTACT FORM
@@ -522,7 +635,10 @@ function FadeInSection({ children, className = "" }: { children: React.ReactNode
 // ═══════════════════════════════════════════════════════════════
 
 export default function Index() {
-  const [lang, setLang] = useState<Lang>("nl");
+  const [lang, setLang] = useState<Lang>(() => {
+    const saved = localStorage.getItem("site-lang") as Lang | null;
+    return saved && ["nl", "en", "es"].includes(saved) ? saved : "nl";
+  });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
@@ -618,7 +734,7 @@ export default function Index() {
   const hostImg = getImg("host", hostImgFallback);
 
   const t = useMemo(() => getTranslations(pricingConfig.minimumStay)[lang], [lang, pricingConfig.minimumStay]);
-  const dateFnsLocale = lang === "nl" ? nl : enUS;
+  const dateFnsLocale = lang === "nl" ? nl : lang === "es" ? es : enUS;
 
   // Scroll listener for nav
   useEffect(() => {
@@ -828,6 +944,26 @@ export default function Index() {
                 {s.label}
               </button>
             ))}
+            {/* Language switch */}
+            <div className="relative group">
+              <button className={`flex items-center gap-1 text-sm font-medium transition-colors duration-300 ${scrolled ? "text-foreground hover:text-primary" : "text-white/90 hover:text-white"}`}>
+                <Globe size={16} />
+                <span>{lang.toUpperCase()}</span>
+              </button>
+              <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="bg-card border border-border rounded-lg shadow-lg py-1 min-w-[120px]">
+                  {([["nl", "Nederlands"], ["en", "English"], ["es", "Español"]] as [Lang, string][]).map(([code, label]) => (
+                    <button
+                      key={code}
+                      onClick={() => { setLang(code); localStorage.setItem("site-lang", code); }}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors ${lang === code ? "text-primary font-medium" : "text-foreground"}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -853,6 +989,18 @@ export default function Index() {
                     {s.label}
                   </button>
                 ))}
+                <div className="flex items-center gap-2 pt-2 border-t border-border mt-2">
+                  <Globe size={16} className="text-muted-foreground" />
+                  {([["nl", "NL"], ["en", "EN"], ["es", "ES"]] as [Lang, string][]).map(([code, label]) => (
+                    <button
+                      key={code}
+                      onClick={() => { setLang(code); localStorage.setItem("site-lang", code); setMobileMenuOpen(false); }}
+                      className={`px-3 py-1.5 text-sm rounded-md transition-colors ${lang === code ? "bg-primary text-primary-foreground font-medium" : "text-foreground hover:bg-muted"}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </motion.div>
           )}
@@ -1074,7 +1222,7 @@ export default function Index() {
                   const monthEnd = endOfMonth(month);
                   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
                   const startPad = getDay(monthStart) === 0 ? 6 : getDay(monthStart) - 1;
-                  const dayLabels = lang === "nl" ? ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"] : ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+                  const dayLabels = lang === "nl" ? ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"] : lang === "es" ? ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"] : ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
                   return (
                     <div key={offset} className={offset === 1 ? "hidden sm:block" : ""}>
@@ -1283,7 +1431,7 @@ export default function Index() {
                     <Star key={s} size={16} className={s < r.rating ? "text-primary fill-primary" : "text-muted"} />
                   ))}
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 italic">"{lang === "nl" ? r.nl : r.en}"</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 italic">"{r[lang]}"</p>
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <span>{r.country}</span>
                   <span>{r.name}</span>
