@@ -51,8 +51,8 @@ export function Navbar({ lang, onLangChange, static: isStatic }: NavbarProps) {
   const showWhiteLogo = isHome && !scrolled && !mobileOpen;
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      scrolled || !isHome ? "bg-white/80 backdrop-blur-xl shadow-sm" : "bg-transparent"
+    <nav className={`${isStatic ? "relative" : "fixed top-0"} w-full z-50 transition-all duration-300 ${
+      isStatic || scrolled || !isHome ? "bg-white/80 backdrop-blur-xl shadow-sm" : "bg-transparent"
     }`}>
       <div className="flex justify-between items-center px-6 md:px-8 py-3 max-w-screen-2xl mx-auto">
         <Link to="/">
