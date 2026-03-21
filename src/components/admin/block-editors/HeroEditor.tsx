@@ -1,7 +1,7 @@
 import { TranslatableInput } from "./TranslatableInput";
-import { ImageUploadField } from "./ImageUploadField";
+import { ResponsiveImageField } from "./ResponsiveImageField";
 import { emptyTr } from "@/components/blocks/types";
-import type { HeroBlockData } from "@/components/blocks/types";
+import type { HeroBlockData, ResponsiveImage } from "@/components/blocks/types";
 
 interface Props {
   data: Record<string, any>;
@@ -13,12 +13,18 @@ export function HeroEditor({ data, onChange, pageId }: Props) {
   const d = data as unknown as HeroBlockData;
   const update = (partial: Partial<HeroBlockData>) => onChange({ ...data, ...partial });
 
+  // Normalize backgroundImage to ResponsiveImage
+  const bgImage: ResponsiveImage =
+    typeof d.backgroundImage === "string"
+      ? { desktop: d.backgroundImage, tablet: "", mobile: "" }
+      : d.backgroundImage || { desktop: "", tablet: "", mobile: "" };
+
   return (
     <div className="space-y-4">
       <TranslatableInput label="Heading" value={d.heading || emptyTr()} onChange={(v) => update({ heading: v })} />
       <TranslatableInput label="Heading Italic Line" value={d.headingItalicLine || emptyTr()} onChange={(v) => update({ headingItalicLine: v })} />
       <TranslatableInput label="Subtitle" value={d.subtitle || emptyTr()} onChange={(v) => update({ subtitle: v })} multiline />
-      <ImageUploadField label="Background Image" value={d.backgroundImage || ""} onChange={(v) => update({ backgroundImage: v })} pageId={pageId} />
+      <ResponsiveImageField label="Achtergrond afbeelding" value={bgImage} onChange={(v) => update({ backgroundImage: v })} pageId={pageId} />
 
       <div className="flex items-center gap-3">
         <input

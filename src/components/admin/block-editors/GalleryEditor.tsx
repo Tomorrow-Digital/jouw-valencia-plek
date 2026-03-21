@@ -1,7 +1,7 @@
 import { TranslatableInput } from "./TranslatableInput";
-import { ImageUploadField } from "./ImageUploadField";
+import { ResponsiveImageField } from "./ResponsiveImageField";
 import { emptyTr } from "@/components/blocks/types";
-import type { GalleryBlockData, GalleryImage } from "@/components/blocks/types";
+import type { GalleryBlockData, GalleryImage, ResponsiveImage } from "@/components/blocks/types";
 import { Plus, Trash2 } from "lucide-react";
 
 interface Props {
@@ -21,12 +21,19 @@ export function GalleryEditor({ data, onChange, pageId }: Props) {
   };
 
   const addImage = () => {
-    onChange({ ...data, images: [...images, { src: "", alt: emptyTr(), caption: emptyTr() }] });
+    const emptyImg: ResponsiveImage = { desktop: "", tablet: "", mobile: "" };
+    onChange({ ...data, images: [...images, { src: emptyImg, alt: emptyTr(), caption: emptyTr() }] });
   };
 
   const removeImage = (idx: number) => {
-    onChange({ ...data, images: images.filter((_, i) => i !== idx) });
+    onChange({ ...data, images: images.filter((_: any, i: number) => i !== idx) });
   };
+
+  // Normalize src to ResponsiveImage
+  const normalizeImgSrc = (src: string | ResponsiveImage): ResponsiveImage =>
+    typeof src === "string"
+      ? { desktop: src, tablet: "", mobile: "" }
+      : src || { desktop: "", tablet: "", mobile: "" };
 
   return (
     <div className="space-y-4">
@@ -51,10 +58,15 @@ export function GalleryEditor({ data, onChange, pageId }: Props) {
 
       <div className="space-y-3">
         <label className="text-xs font-medium text-foreground">Afbeeldingen ({images.length})</label>
-        {images.map((img, idx) => (
+        {images.map((img: GalleryImage, idx: number) => (
           <div key={idx} className="border border-border rounded-lg p-3 space-y-2 relative">
             <button type="button" onClick={() => removeImage(idx)} className="absolute top-2 right-2 text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
-            <ImageUploadField label={`Afbeelding ${idx + 1}`} value={img.src} onChange={(v) => updateImage(idx, { src: v })} pageId={pageId} />
+            <ResponsiveImageField
+              label={`Afbeelding ${idx + 1}`}
+              value={normalizeImgSrc(img.src)}
+              onChange={(v) => updateImage(idx, { src: v })}
+              pageId={pageId}
+            />
             <TranslatableInput label="Alt text" value={img.alt || emptyTr()} onChange={(v) => updateImage(idx, { alt: v })} />
             <TranslatableInput label="Caption" value={img.caption || emptyTr()} onChange={(v) => updateImage(idx, { caption: v })} />
           </div>

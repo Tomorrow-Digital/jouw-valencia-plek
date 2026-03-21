@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { tr } from "./types";
+import { tr, getResponsiveSources, resolveImage } from "./types";
 import type { GalleryBlockData } from "./types";
 import { X } from "lucide-react";
 
@@ -18,25 +18,32 @@ export function GalleryBlock({ data, lang }: { data: Record<string, any>; lang: 
           className="grid gap-4"
           style={{ gridTemplateColumns: `repeat(${Math.min(columns, 4)}, minmax(0, 1fr))` }}
         >
-          {images.map((img, i) => (
-            <div
-              key={i}
-              className="relative group aspect-[4/3] rounded-xl overflow-hidden cursor-pointer bg-muted"
-              onClick={() => setLightboxIdx(i)}
-            >
-              <img
-                src={img.src}
-                alt={tr(img.alt, lang)}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-              />
-              {tr(img.caption, lang) && (
-                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                  <p className="text-white text-sm">{tr(img.caption, lang)}</p>
-                </div>
-              )}
-            </div>
-          ))}
+          {images.map((img, i) => {
+            const sources = getResponsiveSources(img.src);
+            return (
+              <div
+                key={i}
+                className="relative group aspect-[4/3] rounded-xl overflow-hidden cursor-pointer bg-muted"
+                onClick={() => setLightboxIdx(i)}
+              >
+                <picture>
+                  {sources.mobile && <source media="(max-width: 767px)" srcSet={sources.mobile} />}
+                  {sources.tablet && <source media="(max-width: 1023px)" srcSet={sources.tablet} />}
+                  <img
+                    src={resolveImage(img.src)}
+                    alt={tr(img.alt, lang)}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </picture>
+                {tr(img.caption, lang) && (
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3">
+                    <p className="text-white text-sm">{tr(img.caption, lang)}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -53,7 +60,7 @@ export function GalleryBlock({ data, lang }: { data: Record<string, any>; lang: 
             <X size={32} />
           </button>
           <img
-            src={images[lightboxIdx].src}
+            src={resolveImage(images[lightboxIdx].src)}
             alt={tr(images[lightboxIdx].alt, lang)}
             className="max-w-full max-h-[90vh] object-contain rounded-lg"
           />

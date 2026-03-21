@@ -184,3 +184,24 @@ export function tr(value: TranslatableString | string | undefined, lang: string)
 export function emptyTr(): TranslatableString {
   return { nl: "", en: "", es: "" };
 }
+
+// Resolve responsive image to a single URL based on viewport
+export function resolveImage(value: string | ResponsiveImage | undefined, viewport?: "desktop" | "tablet" | "mobile"): string {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  const vp = viewport || "desktop";
+  if (vp === "mobile") return value.mobile || value.tablet || value.desktop || "";
+  if (vp === "tablet") return value.tablet || value.desktop || "";
+  return value.desktop || "";
+}
+
+// Get all srcSet entries for a responsive image (for <picture> element)
+export function getResponsiveSources(value: string | ResponsiveImage | undefined): { desktop: string; tablet: string; mobile: string } {
+  if (!value) return { desktop: "", tablet: "", mobile: "" };
+  if (typeof value === "string") return { desktop: value, tablet: "", mobile: "" };
+  return {
+    desktop: value.desktop || "",
+    tablet: value.tablet || "",
+    mobile: value.mobile || "",
+  };
+}

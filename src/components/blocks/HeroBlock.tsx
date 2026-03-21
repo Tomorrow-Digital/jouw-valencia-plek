@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { tr } from "./types";
+import { tr, getResponsiveSources } from "./types";
 import type { HeroBlockData } from "./types";
 
 export function HeroBlock({ data, lang }: { data: Record<string, any>; lang: string }) {
@@ -16,15 +16,26 @@ export function HeroBlock({ data, lang }: { data: Record<string, any>; lang: str
 
   const heightClass = d.fullHeight ? "h-screen" : "min-h-[70vh]";
 
+  const sources = getResponsiveSources(d.backgroundImage);
+  const hasBackground = sources.desktop || sources.tablet || sources.mobile;
+
   return (
     <section className={`relative ${heightClass} w-full flex items-center justify-center overflow-hidden`}>
-      {d.backgroundImage && (
+      {hasBackground && (
         <div className="absolute inset-0 z-0">
-          <img
-            src={d.backgroundImage}
-            alt=""
-            className="w-full h-full object-cover"
-          />
+          <picture>
+            {sources.mobile && (
+              <source media="(max-width: 767px)" srcSet={sources.mobile} />
+            )}
+            {sources.tablet && (
+              <source media="(max-width: 1023px)" srcSet={sources.tablet} />
+            )}
+            <img
+              src={sources.desktop || sources.tablet || sources.mobile}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          </picture>
           <div className="absolute inset-0 bg-foreground/20" />
         </div>
       )}
