@@ -11,6 +11,7 @@ import flagEs from "@/assets/flag-es.svg";
 interface NavbarProps {
   lang: SiteLang;
   onLangChange: (lang: SiteLang) => void;
+  static?: boolean;
 }
 
 const langs: SiteLang[] = ["nl", "en", "es"];
