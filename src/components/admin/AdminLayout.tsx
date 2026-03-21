@@ -205,33 +205,41 @@ function AdminSidebar({
       <SidebarFooter className="p-3 space-y-1">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => {
-                const langs: Language[] = ['nl', 'en', 'es'];
-                const current = getLanguage();
-                const next = langs[(langs.indexOf(current) + 1) % langs.length];
-                setLanguage(next);
-                window.location.reload();
-              }}
-              tooltip="Taal / Language / Idioma"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Globe className="w-4 h-4" />
-              <span>{getLanguage().toUpperCase()}</span>
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  tooltip={`${t('common.language')}: ${LANGUAGE_LABELS[getLanguage()]}`}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>{LANGUAGE_LABELS[getLanguage()]}</span>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start">
+                {(Object.keys(LANGUAGE_LABELS) as Language[]).map(lang => (
+                  <DropdownMenuItem
+                    key={lang}
+                    onClick={() => { setLanguage(lang); window.location.reload(); }}
+                    className={lang === getLanguage() ? "font-medium text-primary" : ""}
+                  >
+                    {LANGUAGE_LABELS[lang]}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Naar website" className="text-muted-foreground hover:text-foreground">
+            <SidebarMenuButton asChild tooltip={t('nav.toWebsite')} className="text-muted-foreground hover:text-foreground">
               <a href="/" target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="w-4 h-4" />
-                <span>Naar website</span>
+                <span>{t('nav.toWebsite')}</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={onLogout} tooltip="Uitloggen" className="text-muted-foreground hover:text-destructive">
+            <SidebarMenuButton onClick={onLogout} tooltip={t('nav.logout')} className="text-muted-foreground hover:text-destructive">
               <LogOut className="w-4 h-4" />
-              <span>Uitloggen</span>
+              <span>{t('nav.logout')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
