@@ -63,7 +63,10 @@ export default function Admin() {
       {section === "photos" && <PhotosSection />}
       {section === "calendar" && <CalendarSection />}
       {section === "pricing" && <PricingSection />}
-      {section === "pages" && <PagesSection />}
+      {section === "pages" && <PagesSection onEditBlocks={handleEditBlocks} />}
+      {section === "page-editor" && editingPageId && (
+        <PageEditor pageId={editingPageId} onBack={() => handleSectionChange("pages")} />
+      )}
       {section === "deletion" && <DeletionRequestsSection />}
       {section === "users" && <UsersSection />}
       {section === "crm-inbox" && <CrmInbox />}
