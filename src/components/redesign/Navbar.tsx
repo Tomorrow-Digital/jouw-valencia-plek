@@ -33,10 +33,10 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
   }, []);
 
   const navItems = [
-    { to: "/rooms", label: st("nav.rooms", lang) },
-    { to: "/surroundings", label: st("nav.surroundings", lang) },
-    { to: "/booking", label: st("nav.pricing", lang) },
-    { to: "/contact", label: st("nav.contact", lang) },
+    { to: "/p/kamers", label: st("nav.rooms", lang) },
+    { to: "/p/omgeving", label: st("nav.surroundings", lang) },
+    { to: "/p/boeken", label: st("nav.pricing", lang) },
+    { to: "/p/contact", label: st("nav.contact", lang) },
   ];
 
   const isActive = (path: string) => location.pathname === path;
