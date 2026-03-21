@@ -551,9 +551,9 @@ function BookingsSection() {
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[b.status] || "bg-muted text-muted-foreground"}`}>{statusLabels[b.status] || b.status}</span>
                   <select value={b.status} onChange={e => updateStatus(b.id, e.target.value)} className="rounded border border-input bg-background px-2 py-1 text-xs">
-                    <option value="pending">In afwachting</option>
-                    <option value="confirmed">Bevestigd</option>
-                    <option value="cancelled">Geannuleerd</option>
+                    <option value="pending">{t('bookings.statusPending')}</option>
+                    <option value="confirmed">{t('bookings.statusConfirmed')}</option>
+                    <option value="cancelled">{t('bookings.statusCancelled')}</option>
                   </select>
                   <button onClick={() => handleDelete(b.id)} className="text-destructive hover:text-destructive/80 transition-colors ml-1"><Trash2 size={14} /></button>
                 </div>
