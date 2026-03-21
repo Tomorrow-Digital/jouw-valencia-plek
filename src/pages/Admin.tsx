@@ -451,7 +451,7 @@ function PricingSection() {
 
       {/* Custom pricing */}
       <div className="bg-background rounded-xl border border-border p-6">
-        <h3 className="font-semibold text-foreground mb-4">Speciale periodes</h3>
+        <h3 className="font-semibold text-foreground mb-4">{t('pricing.special')}</h3>
         <div className="space-y-2 mb-4">
           {custom.map(c => (
             <div key={c.id} className="flex items-center justify-between bg-muted/40 rounded-lg p-3 gap-2">
