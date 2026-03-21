@@ -173,7 +173,7 @@ function AdminSidebar({
                                 <span>{item.label}</span>
                               </SidebarMenuButton>
                             </TooltipTrigger>
-                            <TooltipContent side="right">Binnenkort beschikbaar</TooltipContent>
+                            <TooltipContent side="right">{t('nav.comingSoon')}</TooltipContent>
                           </Tooltip>
                         </SidebarMenuItem>
                       );
