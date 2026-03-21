@@ -1431,7 +1431,7 @@ export default function Index() {
                     <Star key={s} size={16} className={s < r.rating ? "text-primary fill-primary" : "text-muted"} />
                   ))}
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 italic">"{lang === "nl" ? r.nl : r.en}"</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 italic">"{r[lang]}"</p>
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <span>{r.country}</span>
                   <span>{r.name}</span>
