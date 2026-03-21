@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getLanguage, setLanguage, type Language } from "@/lib/i18n";
 import {
   SidebarProvider,
   SidebarTrigger,
@@ -33,6 +34,7 @@ import {
   Mail,
   CreditCard,
   CalendarDays,
+  Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -200,6 +202,22 @@ function AdminSidebar({
 
       <SidebarFooter className="p-3 space-y-1">
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={() => {
+                const langs: Language[] = ['nl', 'en', 'es'];
+                const current = getLanguage();
+                const next = langs[(langs.indexOf(current) + 1) % langs.length];
+                setLanguage(next);
+                window.location.reload();
+              }}
+              tooltip="Taal / Language / Idioma"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Globe className="w-4 h-4" />
+              <span>{getLanguage().toUpperCase()}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Naar website" className="text-muted-foreground hover:text-foreground">
               <a href="/" target="_blank" rel="noopener noreferrer">
