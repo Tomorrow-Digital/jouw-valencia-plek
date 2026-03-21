@@ -4,44 +4,56 @@
 
 @layer base {
   :root {
-    --background: 34 33% 96%;
-    --foreground: 0 0% 18%;
+    --background: 30 27% 97%;
+    --foreground: 0 0% 11%;
 
-    --card: 34 33% 96%;
-    --card-foreground: 0 0% 18%;
+    --card: 30 27% 97%;
+    --card-foreground: 0 0% 11%;
 
-    --popover: 34 33% 96%;
-    --popover-foreground: 0 0% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 11%;
 
-    --primary: 14 42% 56%;
-    --primary-foreground: 34 33% 96%;
+    --primary: 14 55% 37%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 104 15% 43%;
-    --secondary-foreground: 34 33% 96%;
+    --primary-container: 18 67% 62%;
+    --primary-container-foreground: 16 91% 18%;
 
-    --muted: 30 20% 90%;
-    --muted-foreground: 0 0% 40%;
+    --secondary: 209 78% 35%;
+    --secondary-foreground: 0 0% 100%;
 
-    --accent: 30 20% 90%;
-    --accent-foreground: 0 0% 18%;
+    --muted: 15 22% 96%;
+    --muted-foreground: 17 16% 28%;
+
+    --accent: 15 22% 96%;
+    --accent-foreground: 0 0% 11%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 85%;
-    --input: 30 15% 85%;
-    --ring: 14 42% 56%;
+    --border: 16 28% 79%;
+    --input: 16 28% 79%;
+    --ring: 14 55% 37%;
 
     --radius: 0.625rem;
 
-    --sidebar-background: 34 33% 96%;
-    --sidebar-foreground: 0 0% 18%;
-    --sidebar-primary: 14 42% 56%;
-    --sidebar-primary-foreground: 34 33% 96%;
-    --sidebar-accent: 30 20% 90%;
-    --sidebar-accent-foreground: 0 0% 18%;
-    --sidebar-border: 30 15% 85%;
-    --sidebar-ring: 14 42% 56%;
+    --surface: 30 27% 97%;
+    --surface-container-low: 15 22% 96%;
+    --surface-container: 0 8% 94%;
+    --surface-container-high: 0 7% 91%;
+    --surface-container-highest: 20 6% 89%;
+    --on-surface-variant: 17 16% 28%;
+    --outline: 17 13% 47%;
+    --outline-variant: 16 28% 79%;
+
+    --sidebar-background: 30 27% 97%;
+    --sidebar-foreground: 0 0% 11%;
+    --sidebar-primary: 14 55% 37%;
+    --sidebar-primary-foreground: 30 27% 97%;
+    --sidebar-accent: 15 22% 96%;
+    --sidebar-accent-foreground: 0 0% 11%;
+    --sidebar-border: 16 28% 79%;
+    --sidebar-ring: 14 55% 37%;
 
     --success: 104 15% 43%;
     --calendar-blocked: 0 0% 82%;
@@ -55,11 +67,11 @@
 
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'Noto Serif', 'DM Serif Display', serif;
   }
 }
 

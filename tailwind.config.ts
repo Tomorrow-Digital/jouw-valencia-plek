@@ -14,8 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["DM Sans", "sans-serif"],
-        serif: ["DM Serif Display", "serif"],
+        sans: ["Plus Jakarta Sans", "DM Sans", "sans-serif"],
+        serif: ["Noto Serif", "DM Serif Display", "serif"],
+        headline: ["Noto Serif", "serif"],
+        body: ["Plus Jakarta Sans", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -63,6 +65,16 @@ export default {
         },
         success: "hsl(var(--success))",
         "calendar-blocked": "hsl(var(--calendar-blocked))",
+        "primary-container": "hsl(var(--primary-container))",
+        "primary-container-foreground": "hsl(var(--primary-container-foreground))",
+        surface: "hsl(var(--surface))",
+        "surface-container-low": "hsl(var(--surface-container-low))",
+        "surface-container": "hsl(var(--surface-container))",
+        "surface-container-high": "hsl(var(--surface-container-high))",
+        "surface-container-highest": "hsl(var(--surface-container-highest))",
+        "on-surface-variant": "hsl(var(--on-surface-variant))",
+        outline: "hsl(var(--outline))",
+        "outline-variant": "hsl(var(--outline-variant))",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -12,6 +12,11 @@ import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import TermsOfService from "./pages/TermsOfService.tsx";
 import DataDeletion from "./pages/DataDeletion.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import HomePage from "./pages/redesign/HomePage.tsx";
+import RoomsPage from "./pages/redesign/RoomsPage.tsx";
+import SurroundingsPage from "./pages/redesign/SurroundingsPage.tsx";
+import BookingPage from "./pages/redesign/BookingPage.tsx";
+import ContactPage from "./pages/redesign/ContactPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +28,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/rooms" element={<RoomsPage />} />
+          <Route path="/surroundings" element={<SurroundingsPage />} />
+          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
