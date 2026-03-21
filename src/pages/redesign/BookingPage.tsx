@@ -11,8 +11,13 @@ import {
   parseISO, startOfDay, addDays
 } from "date-fns";
 import { nl as nlLocale, enUS, es as esLocale } from "date-fns/locale";
+import { tr, resolveImage } from "@/components/blocks/types";
+import type { PageBlock } from "@/components/blocks/types";
+import { BookingCtaBlock } from "@/components/blocks/BookingCtaBlock";
 
-const COASTAL_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuBAh4BzcZ7eIzugN7AB2ZNNPP4FaAMXxx7_s5t3K3qag6O2Tn0AUGmeclh70iJwjEeegdQ6xU1Bd6ZMWSPrcGpsYEKQ_7kwSvOZF7dXJNiA27nFE0gJyLgyMjLDj3qutgQ-sUQ6m8lbBXf0opq-QxyoZsJ5RAu3yPUhQAZIMhrRK5lLtvOSRkANqz1MJ64rWbyr34335ks44xG6Sy4QXa2fxJdOcEcnoP0C1H_cwdkXhqGRx3NRqJUlsiobMPY-6sblmDKiGF7jQim6";
+const COASTAL_IMG_FALLBACK = "https://lh3.googleusercontent.com/aida-public/AB6AXuBAh4BzcZ7eIzugN7AB2ZNNPP4FaAMXxx7_s5t3K3qag6O2Tn0AUGmeclh70iJwjEeegdQ6xU1Bd6ZMWSPrcGpsYEKQ_7kwSvOZF7dXJNiA27nFE0gJyLgyMjLDj3qutgQ-sUQ6m8lbBXf0opq-QxyoZsJ5RAu3yPUhQAZIMhrRK5lLtvOSRkANqz1MJ64rWbyr34335ks44xG6Sy4QXa2fxJdOcEcnoP0C1H_cwdkXhqGRx3NRqJUlsiobMPY-6sblmDKiGF7jQim6";
+
+const BOOKING_PAGE_ID = "a1000000-0000-0000-0000-000000000004";
 
 const DAY_LABELS: Record<SiteLang, string[]> = {
   nl: ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"],
