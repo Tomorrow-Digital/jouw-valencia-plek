@@ -270,18 +270,8 @@ export function PageEditor({ pageId, onBack }: Props) {
           </div>
           {/* Preview container */}
           <div className="flex justify-center p-4">
-            <div
-              className={`transition-all duration-300 ${
-                previewMode !== "desktop"
-                  ? "border border-border rounded-xl shadow-lg bg-background overflow-hidden"
-                  : "bg-background"
-              }`}
-              style={{
-                width: activePreviewMode.width,
-                maxWidth: "100%",
-              }}
-            >
-              <div className="relative">
+            {previewMode === "desktop" ? (
+              <div className="w-full bg-background">
                 <Navbar lang={previewLang as any} onLangChange={(l) => setPreviewLang(l)} static />
                 <BlockRenderer blocks={blocks} lang={previewLang} />
                 {blocks.length === 0 && (
@@ -289,7 +279,20 @@ export function PageEditor({ pageId, onBack }: Props) {
                 )}
                 <Footer lang={previewLang as any} />
               </div>
-            </div>
+            ) : (
+              <div
+                className="border border-border rounded-xl shadow-lg bg-background overflow-hidden transition-all duration-300"
+                style={{ width: activePreviewMode.width, maxWidth: "100%" }}
+              >
+                <iframe
+                  key={previewMode + previewLang}
+                  src={`/p/${page?.slug || "home"}?lang=${previewLang}`}
+                  className="w-full border-0"
+                  style={{ height: previewMode === "tablet" ? "1024px" : "812px" }}
+                  title={`Preview (${previewMode})`}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

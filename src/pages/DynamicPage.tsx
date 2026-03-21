@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/redesign/Navbar";
 import { Footer } from "@/components/redesign/Footer";
@@ -9,7 +9,11 @@ import type { Page, PageBlock } from "@/components/blocks/types";
 
 export default function DynamicPage() {
   const { slug } = useParams<{ slug: string }>();
-  const [lang, setLang] = useState<SiteLang>(detectSiteLang);
+  const [searchParams] = useSearchParams();
+  const langParam = searchParams.get("lang");
+  const [lang, setLang] = useState<SiteLang>(() => 
+    (langParam && ["nl", "en", "es"].includes(langParam)) ? langParam as SiteLang : detectSiteLang()
+  );
   const [page, setPage] = useState<Page | null>(null);
   const [blocks, setBlocks] = useState<PageBlock[]>([]);
   const [loading, setLoading] = useState(true);
