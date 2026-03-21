@@ -13,6 +13,7 @@ import { BookingCtaEditor } from "./block-editors/BookingCtaEditor";
 import { LocationMapEditor } from "./block-editors/LocationMapEditor";
 import { FaqEditor } from "./block-editors/FaqEditor";
 import { BookingEditor } from "./block-editors/BookingEditor";
+import { FeatureEditor } from "./block-editors/FeatureEditor";
 import type { PageBlock, Page } from "@/components/blocks/types";
 import {
   ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, GripVertical,
