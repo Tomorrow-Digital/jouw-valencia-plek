@@ -125,7 +125,8 @@ export default function BookingPage() {
   const headerHeading = heroData ? tr(heroData.heading, lang) : st("book.title1", lang) + " " + st("book.title2", lang);
   const headerSubtitle = heroData ? tr(heroData.subtitle, lang) : st("book.description", lang);
   const sidebarImage = heroData ? resolveImage(heroData.backgroundImage) : COASTAL_IMG_FALLBACK;
-  }, []);
+
+
 
   const handleDateClick = useCallback((date: Date) => {
     if (isDateBlocked(date, blocked)) return;
