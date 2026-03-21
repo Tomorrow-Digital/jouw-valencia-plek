@@ -19,12 +19,38 @@ export default function DynamicPage() {
     if (!slug) { setNotFound(true); setLoading(false); return; }
 
     async function load() {
-      const { data: pageData } = await supabase
+      // Try matching slug, slug_en, or slug_es
+      let pageData: any = null;
+
+      const { data: bySlug } = await supabase
         .from("pages")
         .select("*")
         .eq("slug", slug)
         .eq("status", "published")
         .single();
+
+      if (bySlug) {
+        pageData = bySlug;
+      } else {
+        const { data: bySlugEn } = await supabase
+          .from("pages")
+          .select("*")
+          .eq("slug_en", slug)
+          .eq("status", "published")
+          .single();
+
+        if (bySlugEn) {
+          pageData = bySlugEn;
+        } else {
+          const { data: bySlugEs } = await supabase
+            .from("pages")
+            .select("*")
+            .eq("slug_es", slug)
+            .eq("status", "published")
+            .single();
+          if (bySlugEs) pageData = bySlugEs;
+        }
+      }
 
       if (!pageData) {
         setNotFound(true);

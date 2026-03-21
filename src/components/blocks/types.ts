@@ -138,12 +138,25 @@ export interface PageBlock {
 export interface Page {
   id: string;
   slug: string;
+  slug_en: string;
+  slug_es: string;
   title: string;
+  title_en: string;
+  title_es: string;
   meta_description: string | null;
+  meta_description_en: string | null;
+  meta_description_es: string | null;
   status: "draft" | "published";
   owner_id: string | null;
   created_at: string;
   updated_at: string;
+}
+
+// Helper to get localized page field
+export function trPage(page: Page, field: "title" | "slug" | "meta_description", lang: string): string {
+  if (lang === "en") return (page as any)[`${field}_en`] || (page as any)[field] || "";
+  if (lang === "es") return (page as any)[`${field}_es`] || (page as any)[field] || "";
+  return (page as any)[field] || "";
 }
 
 // Helper to get translated string

@@ -489,30 +489,48 @@ export type Database = {
           created_at: string | null
           id: string
           meta_description: string | null
+          meta_description_en: string | null
+          meta_description_es: string | null
           owner_id: string | null
           slug: string
+          slug_en: string | null
+          slug_es: string | null
           status: string
           title: string
+          title_en: string | null
+          title_es: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           meta_description?: string | null
+          meta_description_en?: string | null
+          meta_description_es?: string | null
           owner_id?: string | null
           slug: string
+          slug_en?: string | null
+          slug_es?: string | null
           status?: string
           title: string
+          title_en?: string | null
+          title_es?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           meta_description?: string | null
+          meta_description_en?: string | null
+          meta_description_es?: string | null
           owner_id?: string | null
           slug?: string
+          slug_en?: string | null
+          slug_es?: string | null
           status?: string
           title?: string
+          title_en?: string | null
+          title_es?: string | null
           updated_at?: string | null
         }
         Relationships: []
