@@ -53,7 +53,7 @@ export function IntegrationWhatsApp() {
     const newStatus = form.phone_number_id && form.access_token ? "connected" : "disconnected";
     await supabase
       .from("integration_configs")
-      .update({ config: form as unknown as Record<string, unknown>, status: newStatus, updated_at: new Date().toISOString() })
+      .update({ config: form as any, status: newStatus, updated_at: new Date().toISOString() })
       .eq("integration_type", "whatsapp");
     setStatus(newStatus);
     setSaving(false);

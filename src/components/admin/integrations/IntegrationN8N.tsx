@@ -50,7 +50,7 @@ export function IntegrationN8N() {
     const newStatus = form.base_url ? "connected" : "disconnected";
     await supabase
       .from("integration_configs")
-      .update({ config: form as unknown as Record<string, unknown>, status: newStatus, updated_at: new Date().toISOString() })
+      .update({ config: form as any, status: newStatus, updated_at: new Date().toISOString() })
       .eq("integration_type", "n8n");
     setStatus(newStatus);
     setSaving(false);

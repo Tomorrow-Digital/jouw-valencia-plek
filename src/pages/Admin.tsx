@@ -3,6 +3,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { DashboardSection } from "@/components/admin/DashboardSection";
+import { IntegrationWhatsApp } from "@/components/admin/integrations/IntegrationWhatsApp";
+import { IntegrationN8N } from "@/components/admin/integrations/IntegrationN8N";
+import { IntegrationPlaceholder } from "@/components/admin/integrations/IntegrationPlaceholder";
+import { CrmPlaceholder } from "@/components/admin/CrmPlaceholder";
 import {
   Trash2, Plus, Upload, Save, X, Pencil, Check, UserX, Link2, Copy, Clock,
 } from "lucide-react";
@@ -48,6 +52,14 @@ export default function Admin() {
       {section === "pricing" && <PricingSection />}
       {section === "deletion" && <DeletionRequestsSection />}
       {section === "users" && <UsersSection />}
+      {section === "crm-inbox" && <CrmPlaceholder type="inbox" />}
+      {section === "crm-guests" && <CrmPlaceholder type="guests" />}
+      {section === "crm-templates" && <CrmPlaceholder type="templates" />}
+      {section === "integrations-whatsapp" && <IntegrationWhatsApp />}
+      {section === "integrations-n8n" && <IntegrationN8N />}
+      {section === "integrations-email" && <IntegrationPlaceholder type="email" />}
+      {section === "integrations-payments" && <IntegrationPlaceholder type="payments" />}
+      {section === "integrations-calendar" && <IntegrationPlaceholder type="calendar" />}
     </AdminLayout>
   );
 }
