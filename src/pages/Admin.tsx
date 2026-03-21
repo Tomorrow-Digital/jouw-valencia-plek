@@ -184,7 +184,7 @@ function PhotosSection() {
         );
       })}
 
-      {photos.length === 0 && <p className="text-muted-foreground text-sm text-center py-12">Nog geen foto's geüpload.</p>}
+      {photos.length === 0 && <p className="text-muted-foreground text-sm text-center py-12">{t('photos.none')}</p>}
     </div>
   );
 }
