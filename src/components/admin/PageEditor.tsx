@@ -14,11 +14,20 @@ import { LocationMapEditor } from "./block-editors/LocationMapEditor";
 import { FaqEditor } from "./block-editors/FaqEditor";
 import type { PageBlock, Page } from "@/components/blocks/types";
 import {
-  ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown,
-  Save, Check, Loader2, Globe, FileText,
+  ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, GripVertical,
+  Check, Loader2, Globe, FileText,
   LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle,
   Monitor, Tablet, Smartphone,
 } from "lucide-react";
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove, SortableContext, sortableKeyboardCoordinates,
+  useSortable, verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const BLOCK_TYPES = [
   { type: "hero", label: "Hero", icon: LayoutTemplate },
@@ -44,6 +53,62 @@ const PREVIEW_LANGS = [
   { code: "es", label: "🇪🇸 ES" },
 ] as const;
 
+/* ── Sortable block item ── */
+function SortableBlockItem({
+  block, isEditing, editingBlock, typeInfo, onEdit, onToggleVisibility, onDelete, onDataChange, pageId,
+}: {
+  block: PageBlock;
+  isEditing: boolean;
+  editingBlock: PageBlock | undefined;
+  typeInfo: (typeof BLOCK_TYPES)[number] | undefined;
+  onEdit: () => void;
+  onToggleVisibility: () => void;
+  onDelete: () => void;
+  onDataChange: (data: Record<string, any>) => void;
+  pageId: string;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
+  const Icon = typeInfo?.icon || FileText;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 10 : undefined,
+        position: "relative",
+      }}
+      {...attributes}
+      className={`border rounded-lg transition-colors ${isEditing ? "border-primary bg-primary/5" : "border-border bg-background"} ${!block.is_visible ? "opacity-50" : ""}`}
+    >
+      <div className="flex items-center gap-2 px-3 py-2">
+        <button
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+          tabIndex={-1}
+        >
+          <GripVertical size={14} />
+        </button>
+        <Icon size={16} className="text-muted-foreground flex-shrink-0" />
+        <span className="text-sm font-medium flex-1 truncate">{typeInfo?.label || block.type}</span>
+        <div className="flex items-center gap-0.5">
+          <button onClick={onEdit} className={`p-1.5 rounded transition-colors ${isEditing ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}><Pencil size={13} /></button>
+          <button onClick={onToggleVisibility} className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">{block.is_visible ? <Eye size={13} /> : <EyeOff size={13} />}</button>
+          <button onClick={onDelete} className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={13} /></button>
+        </div>
+      </div>
+      {isEditing && editingBlock && (
+        <div className="px-3 pb-3 border-t border-border pt-3">
+          <BlockEditorSwitch block={editingBlock} onChange={onDataChange} pageId={pageId} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Main editor ── */
 interface Props {
   pageId: string;
   onBack: () => void;
@@ -59,6 +124,11 @@ export function PageEditor({ pageId, onBack }: Props) {
   const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [previewLang, setPreviewLang] = useState<string>("nl");
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   const fetchData = useCallback(async () => {
     const [{ data: pageData }, { data: blocksData }] = await Promise.all([
@@ -81,7 +151,6 @@ export function PageEditor({ pageId, onBack }: Props) {
   const handleBlockDataChange = (blockId: string, newData: Record<string, any>) => {
     setBlocks((prev) => prev.map((b) => (b.id === blockId ? { ...b, data: newData } : b)));
     setSaveState("unsaved");
-
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       const block = blocks.find((b) => b.id === blockId);
@@ -91,7 +160,7 @@ export function PageEditor({ pageId, onBack }: Props) {
 
   const handleAddBlock = async (type: string) => {
     const position = blocks.length;
-    const { data, error } = await supabase.from("page_blocks").insert({
+    const { data } = await supabase.from("page_blocks").insert({
       page_id: pageId, type, position, data: {} as any, is_visible: true,
     } as any).select().single();
     if (data) {
@@ -114,15 +183,14 @@ export function PageEditor({ pageId, onBack }: Props) {
     await supabase.from("page_blocks").update({ is_visible: updated.is_visible } as any).eq("id", block.id);
   };
 
-  const handleMoveBlock = async (blockId: string, direction: "up" | "down") => {
-    const idx = blocks.findIndex((b) => b.id === blockId);
-    if ((direction === "up" && idx === 0) || (direction === "down" && idx === blocks.length - 1)) return;
-    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-    const newBlocks = [...blocks];
-    [newBlocks[idx], newBlocks[swapIdx]] = [newBlocks[swapIdx], newBlocks[idx]];
-    const updated = newBlocks.map((b, i) => ({ ...b, position: i }));
-    setBlocks(updated);
-    await Promise.all(updated.map((b) => supabase.from("page_blocks").update({ position: b.position } as any).eq("id", b.id)));
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIdx = blocks.findIndex((b) => b.id === active.id);
+    const newIdx = blocks.findIndex((b) => b.id === over.id);
+    const reordered = arrayMove(blocks, oldIdx, newIdx).map((b, i) => ({ ...b, position: i }));
+    setBlocks(reordered);
+    await Promise.all(reordered.map((b) => supabase.from("page_blocks").update({ position: b.position } as any).eq("id", b.id)));
   };
 
   const handleToggleStatus = async () => {
@@ -170,35 +238,27 @@ export function PageEditor({ pageId, onBack }: Props) {
         {/* Left: Block list + editor */}
         <div className="w-[45%] border-r border-border flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {blocks.map((block, idx) => {
-              const typeInfo = BLOCK_TYPES.find((t) => t.type === block.type);
-              const Icon = typeInfo?.icon || FileText;
-              const isEditing = editingBlockId === block.id;
-
-              return (
-                <div key={block.id} className={`border rounded-lg transition-colors ${isEditing ? "border-primary bg-primary/5" : "border-border bg-background"} ${!block.is_visible ? "opacity-50" : ""}`}>
-                  <div className="flex items-center gap-2 px-3 py-2">
-                    <div className="flex flex-col gap-0.5">
-                      <button onClick={() => handleMoveBlock(block.id, "up")} disabled={idx === 0} className="text-muted-foreground hover:text-foreground disabled:opacity-30"><ChevronUp size={12} /></button>
-                      <button onClick={() => handleMoveBlock(block.id, "down")} disabled={idx === blocks.length - 1} className="text-muted-foreground hover:text-foreground disabled:opacity-30"><ChevronDown size={12} /></button>
-                    </div>
-                    <Icon size={16} className="text-muted-foreground flex-shrink-0" />
-                    <span className="text-sm font-medium flex-1 truncate">{typeInfo?.label || block.type}</span>
-                    <div className="flex items-center gap-0.5">
-                      <button onClick={() => setEditingBlockId(isEditing ? null : block.id)} className={`p-1.5 rounded transition-colors ${isEditing ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}><Pencil size={13} /></button>
-                      <button onClick={() => handleToggleVisibility(block)} className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">{block.is_visible ? <Eye size={13} /> : <EyeOff size={13} />}</button>
-                      <button onClick={() => handleDeleteBlock(block.id)} className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={13} /></button>
-                    </div>
-                  </div>
-
-                  {isEditing && editingBlock && (
-                    <div className="px-3 pb-3 border-t border-border pt-3">
-                      <BlockEditorSwitch block={editingBlock} onChange={(newData) => handleBlockDataChange(block.id, newData)} pageId={pageId} />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+                {blocks.map((block) => {
+                  const typeInfo = BLOCK_TYPES.find((t) => t.type === block.type);
+                  return (
+                    <SortableBlockItem
+                      key={block.id}
+                      block={block}
+                      isEditing={editingBlockId === block.id}
+                      editingBlock={editingBlockId === block.id ? editingBlock : undefined}
+                      typeInfo={typeInfo}
+                      onEdit={() => setEditingBlockId(editingBlockId === block.id ? null : block.id)}
+                      onToggleVisibility={() => handleToggleVisibility(block)}
+                      onDelete={() => handleDeleteBlock(block.id)}
+                      onDataChange={(data) => handleBlockDataChange(block.id, data)}
+                      pageId={pageId}
+                    />
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
 
             {blocks.length === 0 && !showTypeChooser && (
               <div className="text-center py-12 text-muted-foreground text-sm">
@@ -229,36 +289,29 @@ export function PageEditor({ pageId, onBack }: Props) {
 
         {/* Right: Live preview */}
         <div className="flex-1 overflow-y-auto bg-muted/30">
-          {/* Preview toolbar */}
           <div className="sticky top-0 z-10 bg-muted/80 backdrop-blur-sm px-4 py-2 border-b border-border flex items-center justify-between">
             <p className="text-xs text-muted-foreground font-medium">Preview</p>
             <div className="flex items-center gap-3">
-              {/* Language toggle */}
               <div className="flex gap-0.5 bg-background rounded-lg border border-border p-0.5">
                 {PREVIEW_LANGS.map((l) => (
                   <button
                     key={l.code}
                     onClick={() => setPreviewLang(l.code)}
                     className={`text-[10px] px-2 py-1 rounded-md transition-colors font-medium ${
-                      previewLang === l.code
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                      previewLang === l.code ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {l.label}
                   </button>
                 ))}
               </div>
-              {/* Device toggle */}
               <div className="flex gap-0.5 bg-background rounded-lg border border-border p-0.5">
                 {PREVIEW_MODES.map((m) => (
                   <button
                     key={m.id}
                     onClick={() => setPreviewMode(m.id)}
                     className={`p-1.5 rounded-md transition-colors ${
-                      previewMode === m.id
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                      previewMode === m.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                     }`}
                     title={m.label}
                   >
@@ -268,7 +321,6 @@ export function PageEditor({ pageId, onBack }: Props) {
               </div>
             </div>
           </div>
-          {/* Preview container */}
           <div className="flex justify-center p-4">
             {previewMode === "desktop" ? (
               <div className="w-full bg-background">
