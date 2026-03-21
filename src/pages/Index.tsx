@@ -989,6 +989,18 @@ export default function Index() {
                     {s.label}
                   </button>
                 ))}
+                <div className="flex items-center gap-2 pt-2 border-t border-border mt-2">
+                  <Globe size={16} className="text-muted-foreground" />
+                  {([["nl", "NL"], ["en", "EN"], ["es", "ES"]] as [Lang, string][]).map(([code, label]) => (
+                    <button
+                      key={code}
+                      onClick={() => { setLang(code); localStorage.setItem("site-lang", code); setMobileMenuOpen(false); }}
+                      className={`px-3 py-1.5 text-sm rounded-md transition-colors ${lang === code ? "bg-primary text-primary-foreground font-medium" : "text-foreground hover:bg-muted"}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </motion.div>
           )}
