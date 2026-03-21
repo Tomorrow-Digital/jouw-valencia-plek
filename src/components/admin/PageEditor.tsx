@@ -183,35 +183,38 @@ export function PageEditor({ pageId, onBack }: Props) {
         {/* Left: Block list + editor */}
         <div className="w-[45%] border-r border-border flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {blocks.map((block, idx) => {
-              const typeInfo = BLOCK_TYPES.find((t) => t.type === block.type);
-              const Icon = typeInfo?.icon || FileText;
-              const isEditing = editingBlockId === block.id;
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+                {blocks.map((block) => {
+                  const typeInfo = BLOCK_TYPES.find((t) => t.type === block.type);
+                  const Icon = typeInfo?.icon || FileText;
+                  const isEditing = editingBlockId === block.id;
 
-              return (
-                <div key={block.id} className={`border rounded-lg transition-colors ${isEditing ? "border-primary bg-primary/5" : "border-border bg-background"} ${!block.is_visible ? "opacity-50" : ""}`}>
-                  <div className="flex items-center gap-2 px-3 py-2">
-                    <div className="flex flex-col gap-0.5">
-                      <button onClick={() => handleMoveBlock(block.id, "up")} disabled={idx === 0} className="text-muted-foreground hover:text-foreground disabled:opacity-30"><ChevronUp size={12} /></button>
-                      <button onClick={() => handleMoveBlock(block.id, "down")} disabled={idx === blocks.length - 1} className="text-muted-foreground hover:text-foreground disabled:opacity-30"><ChevronDown size={12} /></button>
-                    </div>
-                    <Icon size={16} className="text-muted-foreground flex-shrink-0" />
-                    <span className="text-sm font-medium flex-1 truncate">{typeInfo?.label || block.type}</span>
-                    <div className="flex items-center gap-0.5">
-                      <button onClick={() => setEditingBlockId(isEditing ? null : block.id)} className={`p-1.5 rounded transition-colors ${isEditing ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}><Pencil size={13} /></button>
-                      <button onClick={() => handleToggleVisibility(block)} className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">{block.is_visible ? <Eye size={13} /> : <EyeOff size={13} />}</button>
-                      <button onClick={() => handleDeleteBlock(block.id)} className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={13} /></button>
-                    </div>
-                  </div>
+                  return (
+                    <SortableBlockItem key={block.id} id={block.id}>
+                      <div className={`border rounded-lg transition-colors ${isEditing ? "border-primary bg-primary/5" : "border-border bg-background"} ${!block.is_visible ? "opacity-50" : ""}`}>
+                        <div className="flex items-center gap-2 px-3 py-2">
+                          <DragHandle />
+                          <Icon size={16} className="text-muted-foreground flex-shrink-0" />
+                          <span className="text-sm font-medium flex-1 truncate">{typeInfo?.label || block.type}</span>
+                          <div className="flex items-center gap-0.5">
+                            <button onClick={() => setEditingBlockId(isEditing ? null : block.id)} className={`p-1.5 rounded transition-colors ${isEditing ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}><Pencil size={13} /></button>
+                            <button onClick={() => handleToggleVisibility(block)} className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">{block.is_visible ? <Eye size={13} /> : <EyeOff size={13} />}</button>
+                            <button onClick={() => handleDeleteBlock(block.id)} className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={13} /></button>
+                          </div>
+                        </div>
 
-                  {isEditing && editingBlock && (
-                    <div className="px-3 pb-3 border-t border-border pt-3">
-                      <BlockEditorSwitch block={editingBlock} onChange={(newData) => handleBlockDataChange(block.id, newData)} pageId={pageId} />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                        {isEditing && editingBlock && (
+                          <div className="px-3 pb-3 border-t border-border pt-3">
+                            <BlockEditorSwitch block={editingBlock} onChange={(newData) => handleBlockDataChange(block.id, newData)} pageId={pageId} />
+                          </div>
+                        )}
+                      </div>
+                    </SortableBlockItem>
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
 
             {blocks.length === 0 && !showTypeChooser && (
               <div className="text-center py-12 text-muted-foreground text-sm">
