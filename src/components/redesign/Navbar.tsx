@@ -68,7 +68,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             <Link
               key={item.to}
               to={item.to}
-              className={`font-serif tracking-wide text-sm uppercase transition-colors ${
+              className={`font-sans tracking-wide text-sm uppercase transition-colors ${
                 isActive(item.to)
                   ? "text-primary-container font-semibold border-b-2 border-primary-container pb-1"
                   : showWhiteLogo
