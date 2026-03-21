@@ -5,10 +5,17 @@ export type TranslatableString = {
   es: string;
 };
 
+// Responsive image: different images per viewport
+export interface ResponsiveImage {
+  desktop: string;
+  tablet?: string;
+  mobile?: string;
+}
+
 export interface HeroBlockData {
   heading: TranslatableString;
   subtitle: TranslatableString;
-  backgroundImage: string;
+  backgroundImage: string | ResponsiveImage;
   ctaText: TranslatableString;
   ctaLink: string;
   showBookingBar?: boolean;
