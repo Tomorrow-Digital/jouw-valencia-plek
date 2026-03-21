@@ -13,9 +13,6 @@ import TermsOfService from "./pages/TermsOfService.tsx";
 import DataDeletion from "./pages/DataDeletion.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import DynamicPage from "./pages/DynamicPage.tsx";
-import HomePage from "./pages/redesign/HomePage.tsx";
-import RoomsPage from "./pages/redesign/RoomsPage.tsx";
-import SurroundingsPage from "./pages/redesign/SurroundingsPage.tsx";
 import BookingPage from "./pages/redesign/BookingPage.tsx";
 import ContactPage from "./pages/redesign/ContactPage.tsx";
 
@@ -28,10 +25,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<DynamicPage fixedSlug="home" />} />
           <Route path="/legacy" element={<Index />} />
-          <Route path="/rooms" element={<RoomsPage />} />
-          <Route path="/surroundings" element={<SurroundingsPage />} />
+          <Route path="/rooms" element={<DynamicPage fixedSlug="kamers" />} />
+          <Route path="/surroundings" element={<DynamicPage fixedSlug="omgeving" />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<Login />} />
