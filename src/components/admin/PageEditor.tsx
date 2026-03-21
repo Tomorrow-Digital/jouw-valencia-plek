@@ -14,11 +14,14 @@ import { LocationMapEditor } from "./block-editors/LocationMapEditor";
 import { FaqEditor } from "./block-editors/FaqEditor";
 import { BookingEditor } from "./block-editors/BookingEditor";
 import { FeatureEditor } from "./block-editors/FeatureEditor";
+import { DestinationsEditor } from "./block-editors/DestinationsEditor";
+import { TipsEditor } from "./block-editors/TipsEditor";
 import type { PageBlock, Page } from "@/components/blocks/types";
 import {
   ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, GripVertical,
   Check, Loader2, Globe, FileText,
   LayoutTemplate, Type, Image, Euro, Star, Coffee, Phone, MapPin, HelpCircle, CalendarDays, Columns,
+  Navigation, Lightbulb,
   Monitor, Tablet, Smartphone,
 } from "lucide-react";
 import {
@@ -43,6 +46,8 @@ const BLOCK_TYPES = [
   { type: "faq", label: "FAQ", icon: HelpCircle },
   { type: "booking", label: "Boekingsmodule", icon: CalendarDays },
   { type: "feature", label: "Feature / Highlight", icon: Columns },
+  { type: "destinations", label: "Bestemmingen", icon: Navigation },
+  { type: "tips", label: "Lokale Tips", icon: Lightbulb },
 ];
 
 const PREVIEW_MODES = [
@@ -361,6 +366,8 @@ function BlockEditorSwitch({ block, onChange, pageId }: { block: PageBlock; onCh
     case "faq": return <FaqEditor data={block.data} onChange={onChange} />;
     case "booking": return <BookingEditor data={block.data} onChange={onChange} />;
     case "feature": return <FeatureEditor data={block.data} onChange={onChange} pageId={pageId} />;
+    case "destinations": return <DestinationsEditor data={block.data} onChange={onChange} pageId={pageId} />;
+    case "tips": return <TipsEditor data={block.data} onChange={onChange} pageId={pageId} />;
     default: return <p className="text-sm text-muted-foreground">Geen editor beschikbaar voor type: {block.type}</p>;
   }
 }
