@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+
 import { supabase } from "@/integrations/supabase/client";
 import { getLanguage, setLanguage, t, LANGUAGE_LABELS, type Language } from "@/lib/i18n";
 import {
