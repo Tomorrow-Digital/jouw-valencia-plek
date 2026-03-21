@@ -123,15 +123,19 @@ export function PageEditor({ pageId, onBack }: Props) {
     await supabase.from("page_blocks").update({ is_visible: updated.is_visible } as any).eq("id", block.id);
   };
 
-  const handleMoveBlock = async (blockId: string, direction: "up" | "down") => {
-    const idx = blocks.findIndex((b) => b.id === blockId);
-    if ((direction === "up" && idx === 0) || (direction === "down" && idx === blocks.length - 1)) return;
-    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-    const newBlocks = [...blocks];
-    [newBlocks[idx], newBlocks[swapIdx]] = [newBlocks[swapIdx], newBlocks[idx]];
-    const updated = newBlocks.map((b, i) => ({ ...b, position: i }));
-    setBlocks(updated);
-    await Promise.all(updated.map((b) => supabase.from("page_blocks").update({ position: b.position } as any).eq("id", b.id)));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIdx = blocks.findIndex((b) => b.id === active.id);
+    const newIdx = blocks.findIndex((b) => b.id === over.id);
+    const reordered = arrayMove(blocks, oldIdx, newIdx).map((b, i) => ({ ...b, position: i }));
+    setBlocks(reordered);
+    await Promise.all(reordered.map((b) => supabase.from("page_blocks").update({ position: b.position } as any).eq("id", b.id)));
   };
 
   const handleToggleStatus = async () => {
