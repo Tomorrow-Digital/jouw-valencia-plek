@@ -5,7 +5,7 @@ import {
   getDay, isSameDay, isWithinInterval, isBefore, isAfter, differenceInCalendarDays,
   parseISO, startOfDay, addDays
 } from "date-fns";
-import { nl, enUS } from "date-fns/locale";
+import { nl, enUS, es } from "date-fns/locale";
 import {
   Bath, ChefHat, Wifi, Bed, DoorOpen, Car, WashingMachine,
   TreePalm, BookOpen, Menu, X, ChevronLeft, ChevronRight,
