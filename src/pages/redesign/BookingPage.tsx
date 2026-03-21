@@ -100,6 +100,7 @@ export default function BookingPage() {
   const [seasons, setSeasons] = useState<SeasonalPrice[]>([]);
   const [custom, setCustom] = useState<CustomPrice[]>([]);
   const [config, setConfig] = useState<PricingConfigDB | null>(null);
+  const [blocks, setBlocks] = useState<PageBlock[]>([]);
 
   const [calMonth, setCalMonth] = useState(startOfMonth(new Date()));
   const [checkIn, setCheckIn] = useState<Date | null>(null);
@@ -114,6 +115,16 @@ export default function BookingPage() {
     supabase.from("seasonal_pricing").select("*").order("start_date", { ascending: true }).then(({ data }) => { if (data) setSeasons(data); });
     supabase.from("custom_pricing").select("*").order("start_date", { ascending: true }).then(({ data }) => { if (data) setCustom(data); });
     supabase.from("pricing_config").select("*").limit(1).single().then(({ data }) => { if (data) setConfig(data); });
+    supabase.from("page_blocks").select("*").eq("page_id", BOOKING_PAGE_ID).order("position", { ascending: true }).then(({ data }) => { if (data) setBlocks(data as unknown as PageBlock[]); });
+  }, []);
+
+  const heroBlock = blocks.find(b => b.type === "hero");
+  const ctaBlock = blocks.find(b => b.type === "booking_cta" && b.is_visible);
+
+  const heroData = heroBlock?.data;
+  const headerHeading = heroData ? tr(heroData.heading, lang) : st("book.title1", lang) + " " + st("book.title2", lang);
+  const headerSubtitle = heroData ? tr(heroData.subtitle, lang) : st("book.description", lang);
+  const sidebarImage = heroData ? resolveImage(heroData.backgroundImage) : COASTAL_IMG_FALLBACK;
   }, []);
 
   const handleDateClick = useCallback((date: Date) => {
