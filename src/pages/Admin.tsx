@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+import { parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { DashboardSection } from "@/components/admin/DashboardSection";
@@ -334,6 +336,31 @@ function PricingSection() {
     if (cus) setCustom(cus);
   }, []);
 
+  const rangeIsValid = (r: { start_date: string; end_date: string }) =>
+    !!r.start_date && !!r.end_date && parseISO(r.start_date) <= parseISO(r.end_date);
+
+  const rangesOverlap = (a: { start_date: string; end_date: string }, b: { start_date: string; end_date: string }) =>
+    parseISO(a.start_date) <= parseISO(b.end_date) && parseISO(a.end_date) >= parseISO(b.start_date);
+
+  const findOverlap = <T extends { id?: string; start_date: string; end_date: string }>(
+    rows: T[],
+    candidate: { id?: string; start_date: string; end_date: string },
+  ): T | undefined =>
+    rows.find(r => r.id !== candidate.id && rangesOverlap(r, candidate));
+
+  const seasonalOverlapIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (let i = 0; i < seasonal.length; i++) {
+      for (let j = i + 1; j < seasonal.length; j++) {
+        if (rangesOverlap(seasonal[i], seasonal[j])) {
+          ids.add(seasonal[i].id);
+          ids.add(seasonal[j].id);
+        }
+      }
+    }
+    return ids;
+  }, [seasonal]);
+
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const handleSaveConfig = async () => {
@@ -352,6 +379,15 @@ function PricingSection() {
 
   const handleAddSeasonal = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!rangeIsValid(newSeasonal)) {
+      toast.error("Einddatum moet op of na de startdatum liggen");
+      return;
+    }
+    const conflict = findOverlap(seasonal, newSeasonal);
+    if (conflict) {
+      toast.error(`Overlapt met "${conflict.label}" (${conflict.start_date} → ${conflict.end_date})`);
+      return;
+    }
     await supabase.from("seasonal_pricing").insert({ label: newSeasonal.label, label_en: newSeasonal.label_en, start_date: newSeasonal.start_date, end_date: newSeasonal.end_date, price_per_night: Number(newSeasonal.price_per_night) });
     setNewSeasonal({ label: "", label_en: "", start_date: "", end_date: "", price_per_night: "" });
     fetchAll();
@@ -366,6 +402,15 @@ function PricingSection() {
 
   const handleSaveSeasonal = async () => {
     if (!editingSeasonalId || !editingSeasonal) return;
+    if (!rangeIsValid(editingSeasonal)) {
+      toast.error("Einddatum moet op of na de startdatum liggen");
+      return;
+    }
+    const conflict = findOverlap(seasonal, { ...editingSeasonal, id: editingSeasonalId });
+    if (conflict) {
+      toast.error(`Overlapt met "${conflict.label}" (${conflict.start_date} → ${conflict.end_date})`);
+      return;
+    }
     await supabase.from("seasonal_pricing").update({ label: editingSeasonal.label, label_en: editingSeasonal.label_en, start_date: editingSeasonal.start_date, end_date: editingSeasonal.end_date, price_per_night: Number(editingSeasonal.price_per_night) }).eq("id", editingSeasonalId);
     setEditingSeasonalId(null); setEditingSeasonal(null);
     fetchAll();
@@ -373,6 +418,15 @@ function PricingSection() {
 
   const handleAddCustom = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!rangeIsValid(newCustom)) {
+      toast.error("Einddatum moet op of na de startdatum liggen");
+      return;
+    }
+    const conflict = findOverlap(custom, newCustom);
+    if (conflict) {
+      toast.error(`Overlapt met "${conflict.label}" (${conflict.start_date} → ${conflict.end_date})`);
+      return;
+    }
     await supabase.from("custom_pricing").insert({ label: newCustom.label, start_date: newCustom.start_date, end_date: newCustom.end_date, price_per_night: Number(newCustom.price_per_night) });
     setNewCustom({ label: "", start_date: "", end_date: "", price_per_night: "" });
     fetchAll();
@@ -387,6 +441,15 @@ function PricingSection() {
 
   const handleSaveCustom = async () => {
     if (!editingCustomId || !editingCustom) return;
+    if (!rangeIsValid(editingCustom)) {
+      toast.error("Einddatum moet op of na de startdatum liggen");
+      return;
+    }
+    const conflict = findOverlap(custom, { ...editingCustom, id: editingCustomId });
+    if (conflict) {
+      toast.error(`Overlapt met "${conflict.label}" (${conflict.start_date} → ${conflict.end_date})`);
+      return;
+    }
     await supabase.from("custom_pricing").update({ label: editingCustom.label, start_date: editingCustom.start_date, end_date: editingCustom.end_date, price_per_night: Number(editingCustom.price_per_night) }).eq("id", editingCustomId);
     setEditingCustomId(null); setEditingCustom(null);
     fetchAll();
@@ -443,7 +506,14 @@ function PricingSection() {
                 </>
               ) : (
                 <>
-                  <div className="text-sm"><span className="font-medium">{s.label}</span><span className="text-muted-foreground ml-2">{s.start_date} → {s.end_date}</span><span className="ml-2 font-medium">€{s.price_per_night}/nacht</span></div>
+                  <div className="text-sm">
+                    <span className="font-medium">{s.label}</span>
+                    <span className="text-muted-foreground ml-2">{s.start_date} → {s.end_date}</span>
+                    <span className="ml-2 font-medium">€{s.price_per_night}/nacht</span>
+                    {seasonalOverlapIds.has(s.id) && (
+                      <span className="ml-2 inline-block rounded bg-destructive/10 text-destructive px-2 py-0.5 text-xs font-medium">overlap</span>
+                    )}
+                  </div>
                   <div className="flex gap-1">
                     <button onClick={() => handleEditSeasonal(s)} className="text-muted-foreground hover:text-foreground"><Pencil size={14} /></button>
                     <button onClick={() => handleDeleteSeasonal(s.id)} className="text-destructive hover:text-destructive/80"><Trash2 size={14} /></button>
