@@ -31,12 +31,23 @@ function hasBlockedInRange(start: Date, end: Date, blocked: BlockedDate[]) {
   return eachDayOfInterval({ start, end: addDays(end, -1) }).some(d => isDateBlocked(d, blocked));
 }
 function getPriceForDate(date: Date, seasons: SeasonalPrice[], custom: CustomPrice[], defaultPrice: number) {
-  for (const cp of custom) {
-    if (isWithinInterval(date, { start: parseISO(cp.start_date), end: parseISO(cp.end_date) })) return cp.price_per_night;
-  }
-  for (const sp of seasons) {
-    if (isWithinInterval(date, { start: parseISO(sp.start_date), end: parseISO(sp.end_date) })) return sp.price_per_night;
-  }
+  // Bij overlap wint de meest specifieke (kortste) range. Zo blijft het tarief
+  // voorspelbaar als er per ongeluk dubbele rijen in de DB staan.
+  const rangeDays = (r: { start_date: string; end_date: string }) =>
+    differenceInCalendarDays(parseISO(r.end_date), parseISO(r.start_date));
+  const matchesIn = <T extends { start_date: string; end_date: string }>(rows: T[]): T[] =>
+    rows
+      .filter(r => {
+        const start = parseISO(r.start_date);
+        const end = parseISO(r.end_date);
+        if (start > end) return false; // sla ongeldige range over zodat isWithinInterval niet gooit
+        return isWithinInterval(date, { start, end });
+      })
+      .sort((a, b) => rangeDays(a) - rangeDays(b));
+  const cm = matchesIn(custom);
+  if (cm.length) return cm[0].price_per_night;
+  const sm = matchesIn(seasons);
+  if (sm.length) return sm[0].price_per_night;
   return defaultPrice;
 }
 function calculatePricing(checkIn: Date, checkOut: Date, seasons: SeasonalPrice[], custom: CustomPrice[], config: PricingConfigDB) {
@@ -188,7 +199,7 @@ export function BookingBlock({ data, lang }: { data: Record<string, any>; lang: 
       )}
 
       {/* Calendar + sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:items-start mb-16">
         <div className="lg:col-span-8 bg-surface-container-low p-4 sm:p-8 md:p-12 rounded-xl">
           <h3 className="text-3xl font-headline mb-8">{l("calendarTitle", lang)}</h3>
 
@@ -257,11 +268,38 @@ export function BookingBlock({ data, lang }: { data: Record<string, any>; lang: 
           <div className={`mt-6 text-center text-sm ${belowMinimum ? "text-destructive font-medium" : "text-on-surface-variant"}`}>{statusText}</div>
         </div>
 
-        {/* Sidebar */}
+        {/* Sidebar — beide kaarten zijn altijd zichtbaar zodat de kalender-kolom niet 'springt' bij selectie */}
         <aside className="lg:col-span-4 space-y-6">
-          {pricing && !belowMinimum ? (
-            <div className="bg-surface-container-low p-8 rounded-xl">
-              <h3 className="font-headline text-2xl mb-6">{l("priceSummary", lang)}</h3>
+          {/* Seizoenstarieven */}
+          <div className="bg-surface-container-low p-8 rounded-xl">
+            <h3 className="font-headline text-2xl mb-6">{l("seasonalRates", lang)}</h3>
+            <div className="space-y-6">
+              {seasons.map(s => (
+                <div key={s.id} className="flex justify-between items-start">
+                  <div>
+                    <p className="text-primary font-body font-bold tracking-[0.2em] uppercase text-[10px]">{lang === "en" ? (s.label_en || s.label) : s.label}</p>
+                    <p className="text-xs text-on-surface-variant italic">
+                      {format(parseISO(s.start_date), "MMM", { locale: dateFnsLocale })} – {format(parseISO(s.end_date), "MMM", { locale: dateFnsLocale })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-2xl font-headline">€{s.price_per_night}</span>
+                    <span className="text-xs text-on-surface-variant">/{l("night", lang)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {config && (
+              <div className="mt-6 p-4 bg-surface-container-high/50 rounded-lg text-xs text-on-surface-variant leading-relaxed">
+                * Min. {config.minimum_stay} {l("nights", lang)} · {l("cleaningFee", lang)}: €{config.cleaning_fee}
+              </div>
+            )}
+          </div>
+
+          {/* Prijsoverzicht */}
+          <div className="bg-surface-container-low p-8 rounded-xl">
+            <h3 className="font-headline text-2xl mb-6">{l("priceSummary", lang)}</h3>
+            {pricing && !belowMinimum ? (
               <div className="space-y-3 text-sm">
                 {pricing.groups.map((g, i) => (
                   <div key={i} className="flex justify-between">
@@ -284,33 +322,12 @@ export function BookingBlock({ data, lang }: { data: Record<string, any>; lang: 
                   <span>€{pricing.total}</span>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="bg-surface-container-low p-8 rounded-xl">
-              <h3 className="font-headline text-2xl mb-6">{l("seasonalRates", lang)}</h3>
-              <div className="space-y-6">
-                {seasons.map(s => (
-                  <div key={s.id} className="flex justify-between items-start">
-                    <div>
-                      <p className="text-primary font-body font-bold tracking-[0.2em] uppercase text-[10px]">{lang === "en" ? (s.label_en || s.label) : s.label}</p>
-                      <p className="text-xs text-on-surface-variant italic">
-                        {format(parseISO(s.start_date), "MMM", { locale: dateFnsLocale })} – {format(parseISO(s.end_date), "MMM", { locale: dateFnsLocale })}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-2xl font-headline">€{s.price_per_night}</span>
-                      <span className="text-xs text-on-surface-variant">/{l("night", lang)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {config && (
-                <div className="mt-6 p-4 bg-surface-container-high/50 rounded-lg text-xs text-on-surface-variant leading-relaxed">
-                  * Min. {config.minimum_stay} {l("nights", lang)} · {l("cleaningFee", lang)}: €{config.cleaning_fee}
-                </div>
-              )}
-            </div>
-          )}
+            ) : (
+              <p className={`text-sm ${belowMinimum ? "text-destructive font-medium" : "text-on-surface-variant"}`}>
+                {statusText}
+              </p>
+            )}
+          </div>
         </aside>
       </div>
 
