@@ -1,12 +1,21 @@
 export type SiteLang = "nl" | "en" | "es";
 
-export function detectSiteLang(): SiteLang {
-  const saved = localStorage.getItem("site-lang") as SiteLang | null;
-  if (saved && ["nl", "en", "es"].includes(saved)) return saved;
+export const ALL_SITE_LANGS: SiteLang[] = ["nl", "en", "es"];
+
+export const DEFAULT_SITE_LANG: SiteLang = "nl";
+
+export function detectSiteLang(enabled: SiteLang[] = ALL_SITE_LANGS): SiteLang {
+  const isEnabled = (l: string): l is SiteLang =>
+    (ALL_SITE_LANGS as string[]).includes(l) && enabled.includes(l as SiteLang);
+
+  const saved = localStorage.getItem("site-lang");
+  if (saved && isEnabled(saved)) return saved;
+
   const browserLang = navigator.language?.slice(0, 2).toLowerCase();
-  if (browserLang === "nl") return "nl";
-  if (browserLang === "es") return "es";
-  return "en";
+  if (browserLang && isEnabled(browserLang)) return browserLang;
+  if (isEnabled("en")) return "en";
+
+  return enabled.includes(DEFAULT_SITE_LANG) ? DEFAULT_SITE_LANG : enabled[0] ?? DEFAULT_SITE_LANG;
 }
 
 export function saveSiteLang(lang: SiteLang) {

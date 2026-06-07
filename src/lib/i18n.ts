@@ -13,6 +13,7 @@ const translations: Record<string, Record<Language, string>> = {
   'nav.photos': { nl: "Foto's", en: 'Photos', es: 'Fotos' },
   'nav.calendar': { nl: 'Kalender', en: 'Calendar', es: 'Calendario' },
   'nav.pricing': { nl: 'Prijzen', en: 'Pricing', es: 'Precios' },
+  'nav.siteSettings': { nl: 'Site-instellingen', en: 'Site settings', es: 'Ajustes del sitio' },
   'nav.deletion': { nl: 'Verwijderverzoeken', en: 'Deletion Requests', es: 'Solicitudes de eliminación' },
   'nav.users': { nl: 'Gebruikers', en: 'Users', es: 'Usuarios' },
   'nav.inbox': { nl: 'Inbox', en: 'Inbox', es: 'Bandeja' },
@@ -93,6 +94,18 @@ const translations: Record<string, Record<Language, string>> = {
   'pricing.label': { nl: 'Label', en: 'Label', es: 'Etiqueta' },
   'pricing.start': { nl: 'Start', en: 'Start', es: 'Inicio' },
   'pricing.end': { nl: 'Eind', en: 'End', es: 'Fin' },
+
+  // ── Site settings ──
+  'siteSettings.title': { nl: 'Site-instellingen', en: 'Site settings', es: 'Ajustes del sitio' },
+  'siteSettings.subtitle': { nl: 'Beheer algemene instellingen van de publieke website.', en: 'Manage general settings for the public website.', es: 'Gestiona los ajustes generales del sitio público.' },
+  'siteSettings.languages': { nl: 'Beschikbare talen', en: 'Available languages', es: 'Idiomas disponibles' },
+  'siteSettings.languagesDesc': { nl: 'Schakel talen aan of uit voor bezoekers van de website. Nederlands is altijd actief en dient als fallback.', en: 'Enable or disable languages for website visitors. Dutch is always active and serves as the fallback.', es: 'Activa o desactiva idiomas para los visitantes del sitio. El neerlandés siempre está activo y es el idioma de respaldo.' },
+  'siteSettings.langNl': { nl: 'Nederlands', en: 'Dutch', es: 'Neerlandés' },
+  'siteSettings.langEn': { nl: 'Engels', en: 'English', es: 'Inglés' },
+  'siteSettings.langEs': { nl: 'Spaans', en: 'Spanish', es: 'Español' },
+  'siteSettings.alwaysOn': { nl: 'Altijd aan', en: 'Always on', es: 'Siempre activo' },
+  'siteSettings.saved': { nl: 'Instellingen opgeslagen', en: 'Settings saved', es: 'Ajustes guardados' },
+  'siteSettings.saveError': { nl: 'Kon instellingen niet opslaan', en: 'Could not save settings', es: 'No se pudieron guardar los ajustes' },
 
   // ── Contact Messages ──
   'messages.title': { nl: 'Berichten', en: 'Messages', es: 'Mensajes' },

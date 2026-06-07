@@ -45,7 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export type AdminSection =
-  | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "pages" | "page-editor" | "deletion" | "users"
+  | "dashboard" | "bookings" | "messages" | "photos" | "calendar" | "pricing" | "pages" | "page-editor" | "site-settings" | "deletion" | "users"
   | "crm-inbox" | "crm-guests" | "crm-templates"
   | "integrations-whatsapp" | "integrations-n8n" | "integrations-email" | "integrations-payments" | "integrations-calendar";
 
@@ -65,6 +65,7 @@ const getNavItems = (): NavItem[] => [
   { id: "calendar", label: t('nav.calendar'), icon: Calendar, group: "content" },
   { id: "pricing", label: t('nav.pricing'), icon: Euro, group: "content" },
   { id: "pages", label: t('nav.pages'), icon: PanelLeft, group: "content" },
+  { id: "site-settings", label: t('nav.siteSettings'), icon: Globe, group: "content" },
   { id: "crm-inbox", label: t('nav.inbox'), icon: MessageCircle, group: "crm" },
   { id: "crm-guests", label: t('nav.guests'), icon: Users, group: "crm" },
   { id: "crm-templates", label: t('nav.templates'), icon: FileText, group: "crm" },
