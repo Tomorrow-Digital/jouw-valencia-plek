@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/redesign/Navbar";
 import { Footer } from "@/components/redesign/Footer";
-import { type SiteLang, detectSiteLang } from "@/lib/site-i18n";
+import { useSiteLang } from "@/hooks/useSiteLang";
 import { supabase } from "@/integrations/supabase/client";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
 import type { PageBlock } from "@/components/blocks/types";
@@ -9,7 +9,7 @@ import type { PageBlock } from "@/components/blocks/types";
 const BOOKING_PAGE_ID = "a1000000-0000-0000-0000-000000000004";
 
 export default function BookingPage() {
-  const [lang, setLang] = useState<SiteLang>(detectSiteLang);
+  const { lang, setLang } = useSiteLang();
   const [blocks, setBlocks] = useState<PageBlock[]>([]);
 
   useEffect(() => {

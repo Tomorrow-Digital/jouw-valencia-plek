@@ -622,6 +622,24 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          enabled_languages: string[]
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          enabled_languages?: string[]
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          enabled_languages?: string[]
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_photos: {
         Row: {
           category: string

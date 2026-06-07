@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { parseISO } from "date-fns";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout, type AdminSection } from "@/components/admin/AdminLayout";
 import { DashboardSection } from "@/components/admin/DashboardSection";
@@ -13,7 +14,10 @@ import { CrmGuests } from "@/components/admin/crm/CrmGuests";
 import { CrmTemplates } from "@/components/admin/crm/CrmTemplates";
 import { PagesSection } from "@/components/admin/PagesSection";
 import { PageEditor } from "@/components/admin/PageEditor";
+import { Switch } from "@/components/ui/switch";
 import { t } from "@/lib/i18n";
+import { ALL_SITE_LANGS, DEFAULT_SITE_LANG, type SiteLang } from "@/lib/site-i18n";
+import { SITE_SETTINGS_QUERY_KEY } from "@/hooks/useEnabledLanguages";
 import {
   Trash2, Plus, Upload, Save, X, Pencil, Check, UserX, Link2, Copy, Clock,
 } from "lucide-react";
@@ -69,6 +73,7 @@ export default function Admin() {
       {section === "page-editor" && editingPageId && (
         <PageEditor pageId={editingPageId} onBack={() => handleSectionChange("pages")} />
       )}
+      {section === "site-settings" && <SiteSettingsSection />}
       {section === "deletion" && <DeletionRequestsSection />}
       {section === "users" && <UsersSection />}
       {section === "crm-inbox" && <CrmInbox />}
@@ -571,6 +576,129 @@ function PricingSection() {
           <div><label className="block text-xs font-medium mb-1">€/nacht</label><input type="number" value={newCustom.price_per_night} onChange={e => setNewCustom({ ...newCustom, price_per_night: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm w-24" required /></div>
           <button type="submit" className="flex items-center gap-1 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm font-medium hover:bg-primary/90 active:scale-[0.97]"><Plus size={14} /> Toevoegen</button>
         </form>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════
+// SITE SETTINGS
+// ═══════════════════════════════════════
+
+function SiteSettingsSection() {
+  const queryClient = useQueryClient();
+  const [enabled, setEnabled] = useState<Set<SiteLang>>(new Set(ALL_SITE_LANGS));
+  const [original, setOriginal] = useState<Set<SiteLang>>(new Set(ALL_SITE_LANGS));
+  const [saving, setSaving] = useState(false);
+
+  const { data, isLoading } = useQuery({
+    queryKey: SITE_SETTINGS_QUERY_KEY,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("*")
+        .limit(1)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  useEffect(() => {
+    if (!data) return;
+    const initial = new Set<SiteLang>(
+      (data.enabled_languages ?? []).filter((l): l is SiteLang =>
+        (ALL_SITE_LANGS as string[]).includes(l),
+      ),
+    );
+    initial.add(DEFAULT_SITE_LANG);
+    setEnabled(new Set(initial));
+    setOriginal(new Set(initial));
+  }, [data]);
+
+  const labels: Record<SiteLang, string> = {
+    nl: t('siteSettings.langNl'),
+    en: t('siteSettings.langEn'),
+    es: t('siteSettings.langEs'),
+  };
+
+  const toggle = (lang: SiteLang, checked: boolean) => {
+    if (lang === DEFAULT_SITE_LANG) return;
+    setEnabled(prev => {
+      const next = new Set(prev);
+      if (checked) next.add(lang);
+      else next.delete(lang);
+      next.add(DEFAULT_SITE_LANG);
+      return next;
+    });
+  };
+
+  const dirty = useMemo(() => {
+    if (enabled.size !== original.size) return true;
+    for (const l of enabled) if (!original.has(l)) return true;
+    return false;
+  }, [enabled, original]);
+
+  const handleSave = async () => {
+    if (!data || !dirty) return;
+    setSaving(true);
+    const next = ALL_SITE_LANGS.filter(l => enabled.has(l));
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ enabled_languages: next })
+      .eq("id", data.id);
+    setSaving(false);
+    if (error) {
+      toast.error(t('siteSettings.saveError'));
+      return;
+    }
+    toast.success(t('siteSettings.saved'));
+    setOriginal(new Set(enabled));
+    queryClient.invalidateQueries({ queryKey: SITE_SETTINGS_QUERY_KEY });
+  };
+
+  if (isLoading || !data) {
+    return <p className="text-muted-foreground text-sm">{t('common.loading')}</p>;
+  }
+
+  return (
+    <div className="space-y-8">
+      <SectionHeader title={t('siteSettings.title')} subtitle={t('siteSettings.subtitle')} />
+
+      <div className="bg-background rounded-xl border border-border p-6">
+        <h3 className="font-semibold text-foreground">{t('siteSettings.languages')}</h3>
+        <p className="text-sm text-muted-foreground mt-1 mb-4">{t('siteSettings.languagesDesc')}</p>
+
+        <div className="divide-y divide-border">
+          {ALL_SITE_LANGS.map(l => {
+            const locked = l === DEFAULT_SITE_LANG;
+            return (
+              <div key={l} className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{labels[l]} <span className="text-xs text-muted-foreground font-normal">({l.toUpperCase()})</span></p>
+                  {locked && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{t('siteSettings.alwaysOn')}</p>
+                  )}
+                </div>
+                <Switch
+                  checked={enabled.has(l)}
+                  disabled={locked}
+                  onCheckedChange={(c) => toggle(l, c)}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-6">
+          <button
+            onClick={handleSave}
+            disabled={!dirty || saving}
+            className="flex items-center gap-2 bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 active:scale-[0.97]"
+          >
+            <Save size={16} /> {saving ? t('common.saving') : t('common.save')}
+          </button>
+        </div>
       </div>
     </div>
   );

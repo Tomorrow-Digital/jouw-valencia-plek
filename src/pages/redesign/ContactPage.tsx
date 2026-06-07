@@ -1,7 +1,8 @@
 import { useState, useEffect, FormEvent } from "react";
 import { Navbar } from "@/components/redesign/Navbar";
 import { Footer } from "@/components/redesign/Footer";
-import { type SiteLang, detectSiteLang, st } from "@/lib/site-i18n";
+import { st } from "@/lib/site-i18n";
+import { useSiteLang } from "@/hooks/useSiteLang";
 import { Clock, Ban, PartyPopper, PawPrint, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -19,7 +20,7 @@ const rules = [
 const faqKeys = ["faq1", "faq2", "faq3", "faq4"] as const;
 
 export default function ContactPage() {
-  const [lang, setLang] = useState<SiteLang>(detectSiteLang);
+  const { lang, setLang } = useSiteLang();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [hostImg, setHostImg] = useState(FALLBACK_HOST);
   const [submitting, setSubmitting] = useState(false);

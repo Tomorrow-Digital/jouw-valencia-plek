@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { type SiteLang, st, saveSiteLang } from "@/lib/site-i18n";
+import { useEnabledLanguages } from "@/hooks/useEnabledLanguages";
 import logoColor from "@/assets/logo-color.png";
 import logoWhite from "@/assets/logo-white.png";
 import flagNl from "@/assets/flag-nl.svg";
@@ -15,7 +16,6 @@ interface NavbarProps {
   previewViewport?: "desktop" | "tablet" | "mobile";
 }
 
-const langs: SiteLang[] = ["nl", "en", "es"];
 const langLabels: Record<SiteLang, string> = { nl: "Nederlands", en: "English", es: "Español" };
 const flagMap: Record<SiteLang, string> = { nl: flagNl, en: flagEn, es: flagEs };
 
@@ -24,6 +24,8 @@ export function Navbar({ lang, onLangChange, static: isStatic, previewViewport }
   const [langOpen, setLangOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { enabled: langs } = useEnabledLanguages();
+  const showLangSwitcher = langs.length > 1;
 
   const isHome = location.pathname === "/" || location.pathname === "/home";
   const isForcedViewport = Boolean(previewViewport);
@@ -107,30 +109,32 @@ export function Navbar({ lang, onLangChange, static: isStatic, previewViewport }
         </div>
 
         <div className={desktopActionsClass}>
-          <div className="relative">
-            <button
-              onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-2 p-2 rounded-full hover:bg-black/5 transition-colors"
-            >
-              <img src={flagMap[lang]} alt={langLabels[lang]} className="w-6 h-4 object-cover rounded-sm" />
-            </button>
-            {langOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-outline-variant/20 py-1 min-w-[160px]">
-                {langs.map((l) => (
-                  <button
-                    key={l}
-                    onClick={() => handleLang(l)}
-                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low transition-colors flex items-center gap-3 ${
-                      l === lang ? "text-primary font-medium" : "text-foreground"
-                    }`}
-                  >
-                    <img src={flagMap[l]} alt={langLabels[l]} className="w-6 h-4 object-cover rounded-sm" />
-                    {langLabels[l]}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          {showLangSwitcher && (
+            <div className="relative">
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center gap-2 p-2 rounded-full hover:bg-black/5 transition-colors"
+              >
+                <img src={flagMap[lang]} alt={langLabels[lang]} className="w-6 h-4 object-cover rounded-sm" />
+              </button>
+              {langOpen && (
+                <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-outline-variant/20 py-1 min-w-[160px]">
+                  {langs.map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => handleLang(l)}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low transition-colors flex items-center gap-3 ${
+                        l === lang ? "text-primary font-medium" : "text-foreground"
+                      }`}
+                    >
+                      <img src={flagMap[l]} alt={langLabels[l]} className="w-6 h-4 object-cover rounded-sm" />
+                      {langLabels[l]}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           <Link
             to="/p/boeken"
@@ -163,20 +167,22 @@ export function Navbar({ lang, onLangChange, static: isStatic, previewViewport }
               {item.label}
             </Link>
           ))}
-          <div className="flex gap-3 pt-4 border-t border-outline-variant/20">
-            {langs.map((l) => (
-              <button
-                key={l}
-                onClick={() => { handleLang(l); setMobileOpen(false); }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm ${
-                  l === lang ? "bg-primary/10 ring-2 ring-primary" : "bg-surface-container-low"
-                }`}
-              >
-                <img src={flagMap[l]} alt={langLabels[l]} className="w-5 h-3.5 object-cover rounded-sm" />
-                <span className="text-xs font-medium">{l.toUpperCase()}</span>
-              </button>
-            ))}
-          </div>
+          {showLangSwitcher && (
+            <div className="flex gap-3 pt-4 border-t border-outline-variant/20">
+              {langs.map((l) => (
+                <button
+                  key={l}
+                  onClick={() => { handleLang(l); setMobileOpen(false); }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm ${
+                    l === lang ? "bg-primary/10 ring-2 ring-primary" : "bg-surface-container-low"
+                  }`}
+                >
+                  <img src={flagMap[l]} alt={langLabels[l]} className="w-5 h-3.5 object-cover rounded-sm" />
+                  <span className="text-xs font-medium">{l.toUpperCase()}</span>
+                </button>
+              ))}
+            </div>
+          )}
           <Link
             to="/p/boeken"
             onClick={() => setMobileOpen(false)}

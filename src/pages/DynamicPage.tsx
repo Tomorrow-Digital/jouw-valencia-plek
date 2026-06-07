@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/redesign/Navbar";
 import { Footer } from "@/components/redesign/Footer";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
-import { detectSiteLang, type SiteLang } from "@/lib/site-i18n";
+import { type SiteLang } from "@/lib/site-i18n";
+import { useSiteLang } from "@/hooks/useSiteLang";
 import type { Page, PageBlock } from "@/components/blocks/types";
 
 interface DynamicPageProps {
@@ -16,9 +17,9 @@ export default function DynamicPage({ fixedSlug }: DynamicPageProps) {
   const slug = fixedSlug || routeSlug;
   const [searchParams] = useSearchParams();
   const langParam = searchParams.get("lang");
-  const [lang, setLang] = useState<SiteLang>(() => 
-    (langParam && ["nl", "en", "es"].includes(langParam)) ? langParam as SiteLang : detectSiteLang()
-  );
+  const initialLang: SiteLang | undefined =
+    langParam && ["nl", "en", "es"].includes(langParam) ? (langParam as SiteLang) : undefined;
+  const { lang, setLang } = useSiteLang(initialLang);
   const [page, setPage] = useState<Page | null>(null);
   const [blocks, setBlocks] = useState<PageBlock[]>([]);
   const [loading, setLoading] = useState(true);
