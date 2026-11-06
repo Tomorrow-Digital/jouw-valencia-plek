@@ -47,7 +47,8 @@ Deno.serve(async (req) => {
     if (linkError) throw linkError;
 
     // Build the redirect URL with the token hash
-    const resetUrl = `${req.headers.get("origin") || "https://casitavalencia.nl"}/reset-password#access_token=${linkData.properties?.access_token}&type=recovery`;
+    const resetToken = (linkData?.properties as { access_token?: string } | undefined)?.access_token ?? "";
+    const resetUrl = `${req.headers.get("origin") || "https://casitavalencia.nl"}/reset-password#access_token=${resetToken}&type=recovery`;
 
     // 3. Check if user has a phone number in profiles
     const { data: profile } = await adminClient
@@ -94,7 +95,7 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("Password reset error:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
